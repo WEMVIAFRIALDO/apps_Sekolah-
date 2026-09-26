@@ -1,0 +1,372 @@
+Software Requirements Specification
+Pengembangan SALUT (Sistem Arsip Lulusan & Tracer Study)
+Version 4.0 (Final)
+Prepared by:
+Wemvi Afrialdo
+2413025052
+Pendidikan Teknologi Informasi - Universitas Lampung
+
+
+1 Pendahuluan
+1.1 Latar Belakang
+Pengelolaan data arsip siswa di tingkat SMA/SMK saat ini sering kali terpecah antara masa aktif bersekolah dan masa pasca-kelulusan. Pencatatan rekam jejak akademik seperti nilai rapor, SKHUN, ijazah, dan sertifikat prestasi masih banyak yang dikelola secara konvensional atau tersebar di berbagai platform yang tidak terintegrasi. Kondisi ini menyulitkan proses rekapitulasi saat siswa memasuki fase kelulusan, rentan terhadap kerusakan atau kehilangan dokumen fisik, serta menghambat pelacakan rekam jejak alumni (Tracer Study) karena sulitnya menjangkau lulusan setelah mereka meninggalkan sekolah.
+Oleh karena itu, diperlukan sebuah sistem komprehensif yang mengawal siklus hidup data siswa secara end-to-end, mulai dari awal pendaftaran di kelas 10 hingga mereka bertransformasi menjadi alumni. Aplikasi SALUT (Sistem Arsip Lulusan & Tracer Study) dikembangkan dengan arsitektur Client-Server untuk menjembatani kebutuhan administratif sekolah dengan kemudahan akses bagi pengguna. Sistem ini menerapkan pendekatan crowdsourcing di mana siswa aktif dapat menabung data portofolio mereka sendiri, yang kemudian diintegrasikan dengan validasi guru, otomatisasi transisi status kelulusan, digitalisasi arsip final (SKL, SKHUN, dan Ijazah), serta form Tracer Study dalam satu platform terpusat.
+
+1.2 Lingkup Masalah
+Proyek ini berfokus pada digitalisasi Buku Induk dan pelacakan lulusan. Ruang lingkup dibatasi pada:
+1.	Onboarding Siswa 
+Pembuatan akun massal untuk siswa kelas 10 menggunakan metode impor data Excel.
+2.	Manajemen Portofolio Aktif
+Pengunggahan data prestasi oleh siswa aktif yang disertai sistem validasi oleh pihak guru atau administrator.
+3.	Otomatisasi Transisi Kelulusan
+ Perubahan hak akses (role) dan antarmuka aplikasi secara otomatis dari "Siswa" menjadi "Alumni" berdasarkan hasil keputusan Musyawarah kelulusan.
+4.	Manajemen Arsip Final
+Pengunggahan dokumen krusial kelulusan (Rapor, SKL, SKHUN, Ijazah) oleh Admin ke dalam cloud storage yang terhubung dengan profil siswa.
+5.	Tracer Study & Akses Arsip Digital 
+Pengisian form dinamis pelacakan status pasca-lulus melalui aplikasi mobile, serta fitur pengunduhan arsip pribadi secara utuh (SKL, SKHUN, Ijazah, dan Portofolio) oleh alumni.
+1.3 Aturan Penomoran
+Penomoran spesifikasi kebutuhan fungsional menggunakan format REQ-F-XX, sedangkan kebutuhan non-fungsional menggunakan format REQ-NF-XX.
+
+
+2 Deskripsi Umum Perangkat Lunak
+2.1 Deskripsi Umum Sistem
+Sistem SALUT dibangun dengan arsitektur Client-Server yang melayani siklus data sejak kelas 10 hingga pasca-kelulusan. Antarmuka Web berfungsi sebagai panel kontrol manajemen tata usaha dan guru, sementara antarmuka Mobile (Android) bersifat dinamis dan akan menyesuaikan bentuk layarnya berdasarkan status pengguna (Siswa Aktif atau Alumni). Sistem ini didukung oleh Backend PHP (Laravel Framework), database relasional, dan penyimpanan cloud untuk mengelola file dokumen PDF secara aman.
+2.2 Karakteristik Pengguna
+Kategori Pengguna	Tugas	Hak dan Akses Aplikasi 
+Admin (tata Usaha	Mendaftarkan akun siswa massal via Excel, mengunggah arsip akhir (Ijazah, SKHUN, Rapor), memasukkan status kelulusan, dan mengunduh laporan Tracer Study.	Akses penuh ke antarmuka Web (Frontend Web).
+Guru Pembina / Kurikulum	Memvalidasi pengajuan prestasi siswa dan memasukkan nilai rapor berkala setiap akhir semester.	Akses antarmuka Web untuk modul validasi dan akademik.
+Siswa aktif 	Masuk ke sistem menggunakan NISN, mengubah password awal, dan mengunggah data prestasi beserta sertifikat secara mandiri.	Akses aplikasi Mobile (Android) dengan mode antarmuka Siswa.
+Alumni	Melihat dan mengunduh arsip digital pribadi secara lengkap (SKL, SKHUN, Ijazah, Rapor, Portofolio), serta mengisi form dinamis Tracer Study	Akses aplikasi Mobile (Android) dengan mode antarmuka Alumni.
+
+2.3 Batasan
+Pengembangan dan oeprasional SALUT dibatasi oleh beberapa kondisi berikut:
+●	Aplikasi Android hanya difokuskan untuk alumni dengan ukuran APK dibatasi maksimal 120MB agar ringan.
+●	Sistem mewajibkan penggunaan Android minimal versi 8.0 (Oreo).
+●	Privasi dan Keamanan Dokumen File dokumen akademik (seperti Rapor, SKL, SKHUN, dan Ijazah) bersifat sangat rahasia. Tautan (link) dokumen tidak dapat diakses secara publik dan mutlak memerlukan token autentikasi yang valid saat dipanggil melalui API.
+●	Transisi Sistem Perubahan hak akses dari "Siswa Aktif" menjadi "Alumni" dirancang berjalan secara otomatis berdasarkan trigger jadwal pengumuman kelulusan.
+2.4 Lingkungan Operasi
+●	Frontend Web
+Diakses melalui browser internet standar (seperti Google Chrome atau Microsoft Edge) yang mendukung HTML, CSS (Tailwind), dan JavaScript.
+●	Frontend Mobile
+Beroperasi pada perangkat seluler pintar (smartphone) dengan Sistem Operasi Android, yang dikembangkan menggunakan framework lintas platform (Flutter).
+●	Backend & API
+Logika server dibangun menggunakan antarmuka REST API berbasis PHP (Laravel Framework).
+●	Database
+Menggunakan Sistem Manajemen Basis Data Relasional (RDBMS) seperti MySQL atau TiDB.
+●	Penyimpanan Arsip 
+Menggunakan layanan Cloud Storage pihak ketiga (seperti AWS S3 atau Cloudinary) khusus untuk menyimpan file biner dokumen (PDF/Gambar) agar beban server utama tetap ringan.
+
+
+
+
+
+3 Deskripsi Kebutuhan
+
+3.1 Kebutuhan Antarmuka
+Antarmuka Web bagi Admin dan Guru difokuskan pada pengunggahan data secara terstruktur, validasi, dan pembuatan laporan. Antarmuka Mobile dirancang menerapkan Dynamic UI Rendering, di mana menu yang muncul akan menyesuaikan secara otomatis dengan status pengguna saat itu (Siswa Aktif atau Alumni). Rincian fungsionalitas antarmuka dijabarkan pada tabel berikut:
+No.	Halaman Antarmuka	Aktor	Deskripsi Layar (UI) & Interaksi Pengguna
+1	Halaman Login	Admin, Guru, Siswa Aktif, Alumni	Menampilkan form input username/NISN dan password. Interaksi: Pengguna memasukkan kredensial untuk mendapatkan hak akses (JWT Token).
+2	Dashboard & Manajemen Arsip (Web)	Admin	Menampilkan statistik pengguna dan menu kelola arsip. Interaksi: Admin mengunggah data siswa massal via Excel, mengatur status kelulusan, serta mengunggah file dokumen final (SKL, SKHUN, Ijazah).
+3	Dashboard Akademik & Validasi (Web)	Guru Pembina/Kurikulum	Menampilkan tabel daftar pengajuan prestasi siswa dan form nilai rapor. Interaksi: Guru menekan tombol "Setujui" (Approve) pada sertifikat yang valid dan memasukkan nilai rapor semester.
+4	Dashboard Mobile (Dinamis)	Siswa Aktif, Alumni	Menampilkan menu yang berubah sesuai peran pengguna.
+• Jika Siswa Aktif: Memunculkan form "Tambah Prestasi", unggah sertifikat, dan lihat tabungan nilai rapor.
+• Jika Alumni: Menu sebelumnya disembunyikan, diganti dengan menu riwayat arsip pribadi untuk mengunduh dokumen utuh (SKHUN, Ijazah) dan form dinamis Tracer Study. 
+
+5	Halaman Laporan (Web)	Admin	Menampilkan tabel rekapitulasi data. Interaksi: Admin dapat memfilter angkatan dan menekan tombol "Export CSV/Excel" untuk mengunduh laporan Tracer Study
+
+
+3.2 Kebutuhan Fungsional
+Kode	Kebutuhan Fungsional
+REQ-F-01	Sistem dapat melakukan autentikasi login pengguna menggunakan kredensial dan menghasilkan token keamanan (JWT).
+REQ-F-02	Sistem menyediakan fitur bagi Admin (via Web) untuk membuat akun massal siswa kelas 10 menggunakan metode import file Excel (berisi NISN, Nama, Tempat Tanggal Lahir, Kelas).
+REQ-F-03	Aplikasi Android menyediakan fitur bagi Siswa Aktif untuk menginput data prestasi dan mengunggah bukti sertifikat, dengan status default "Pending".
+REQ-F-04	Sistem Web menyediakan antarmuka bagi Guru/Admin untuk memverifikasi keaslian sertifikat dan mengubah status prestasi menjadi "Approved".
+REQ-F-05	Sistem Web memfasilitasi penginputan rekapitulasi nilai rapor siswa pada akhir setiap semester (Semester 1 hingga 5).
+REQ-F-06	Sistem Web menyediakan fitur bagi Admin untuk mengimpor status kelulusan (Lulus/Tidak Lulus) serta mengunggah dokumen arsip final (SKL, SKHUN, dan Ijazah) setelah rapat pleno kelulusan.
+REQ-F-07	(Sistem Trigger Otomatis) Sistem membaca status kelulusan dan secara otomatis mengubah hak akses (role) pengguna dari "Siswa Aktif" menjadi "Alumni" pada waktu rilis pengumuman yang ditentukan, yang secara instan merombak tampilan Dasbor Mobile pengguna.
+REQ-F-08	Aplikasi Android menyediakan form dinamis Tracer Study khusus untuk Alumni. Jika alumni memilih status "Bekerja", aplikasi memunculkan field tambahan (Nama Perusahaan & Jabatan). Data dikirim ke endpoint API secara asinkron
+REQ-F-09	Aplikasi Android menyediakan fitur bagi Alumni untuk melihat dan mengunduh arsip dokumen digital akademik mereka secara utuh, meliputi SKL, SKHUN, Ijazah, Rapor, dan Portofolio Prestasi terverifikasi.
+REQ-F-10	Sistem menyediakan fitur khusus Admin di Web untuk mengunduh rekapitulasi data Tracer Study seluruh angkatan dalam format laporan Excel/CSV. 
+
+
+
+
+
+
+3.3 Kebutuhan Non Fungsional
+Kode	Kebutuhan Non-Fungsional
+REQ-NF-01	File arsip seperti Rapor, SKHUN, dan Ijazah tidak boleh bersifat publik. Tautan (link) dokumen yang dipanggil melalui API ke aplikasi Android harus dilengkapi token autentikasi (Bearer Token JWT) demi privasi file. 
+REQ-NF-02	Tabel pengguna (Users) pada database harus dikonfigurasi untuk mendukung arsitektur multi-role (Admin, Guru, Siswa Aktif, Alumni) untuk memastikan otomatisasi transisi akun dapat berjalan.
+REQ-NF-03	Tabel prestasi (Achievements) di database harus memiliki parameter status_validasi (Pending, Approved, Rejected) agar sistem peninjauan oleh guru dapat direkam.
+REQ-NF-04	Aplikasi mobile harus dibangun dengan sistem Dynamic UI Rendering yang sanggup merender dan menyembunyikan komponen visual secara langsung (real-time) berdasarkan status token role pengguna saat proses masuk (login).
+REQ-NF-05	Aplikasi Android harus mendukung minimal Android 8.0 (Oreo) dan dioptimalkan agar ringan dengan ukuran APK maksimal 30MB, menyesuaikan kebutuhan alumni yang jarang mengakses secara harian. 
+
+REQ-NF-06	Backend harus mengatur folder cloud storage secara hierarkis (contoh: angkatan_2026/nisn_12345/ijazah.pdf) untuk mengoptimalkan kinerja pemuatan dokumen di aplikasi mobile
+
+
+
+
+
+
+
+
+3.4 Model Analisis
+Bagian ini memodelkan alur logika, interaksi pengguna, dan pergerakan data di dalam sistem SALUT. Dengan adanya perubahan arsitektur menjadi sistem rekam jejak berkesinambungan (dari pendaftaran hingga pasca-kelulusan), pemodelan ini mencakup empat entitas pengguna dan mekanisme otomatisasi transisi status data.
+
+3.4.1 Diagram Use Case (Narasi)
+ 
+Sistem SALUT melayani empat aktor utama dengan batasan hak akses spesifik:
+•	Aktor Admin Sekolah
+Melakukan autentikasi masuk, mengimpor data siswa massal (Excel), mengunggah dokumen akademik final (SKL, SKHUN, Ijazah), mengeksekusi impor status kelulusan (Lulus/Tidak Lulus), dan mengunduh laporan rekapitulasi Tracer Study. 
+•	Aktor Guru/Kurikulum
+Melakukan autentikasi masuk, melihat dasbor verifikasi, menyetujui (Approve) atau menolak (Reject) unggahan sertifikat prestasi siswa, dan menginput rekapitulasi nilai rapor setiap akhir semester.
+•	Aktor Siswa Aktif
+Melakukan login awal menggunakan NISN, mengubah kata sandi, memasukkan data prestasi, dan mengunggah file bukti sertifikat (menunggu validasi).
+•	Aktor Alumni
+Melakukan autentikasi masuk (dengan status akun yang telah bertransisi otomatis), mengunduh dokumen arsip pribadi secara penuh (SKL, SKHUN, Ijazah, Portofolio), dan mengisi form dinamis Tracer Study.
+
+
+
+
+3.4.2 Diagram Activity: Pengisian Tracer Study (Narasi)
+Alur kerja (Activity) pada sistem SALUT dibagi menjadi dua tingkatan, yaitu alur siklus hidup sistem secara keseluruhan (makro) dan alur kerja spesifik yang dilakukan oleh masing-masing entitas aktor (mikro).
+A. Alur Sistem Secara Keseluruhan (Makro)
+
+ 
+Alur ini menggambarkan perjalanan siklus data siswa dari awal masuk hingga menjadi alumni secara utuh:
+1.	Fase Onboarding (Kelas 10)
+Admin Sekolah mendaftarkan akun siswa baru secara massal menggunakan metode impor file Excel.
+2.	Fase Menabung Data (Kelas 10 - 12)
+Siswa masuk ke aplikasi untuk mulai mengunggah sertifikat dan mencatat prestasi. Secara paralel, Guru memvalidasi (menyetujui/menolak) prestasi tersebut dan memasukkan rekap nilai rapor pada setiap akhir semester.
+3.	Fase Akhir Tahun Ajaran (Ujung Kelas 12)
+Sekolah mengadakan rapat pleno kelulusan. Admin mengunggah status kelulusan (Lulus/Tidak Lulus) serta dokumen arsip final (SKL, SKHUN, dan Ijazah) ke dalam database.
+4.	Fase Transisi Otomatis (Hari Pengumuman)
+Pada waktu yang dijadwalkan, sistem secara otomatis mengubah hak akses (role) siswa yang dinyatakan "Lulus" menjadi "Alumni".
+5.	Fase Pasca-Kelulusan (Alumni)
+Pengguna dengan status Alumni mengakses dasbor baru di aplikasi untuk mengunduh seluruh arsip digital mereka dan wajib mengisi form pelacakan (Tracer Study).
+
+
+
+B. Alur Sistem Secara Keseluruhan (Makro)
+
+1.	Alur Aktor Admin Sekolah (Manajemen & Finalisasi)
+ 
+•	Mulai (Start)
+ Ditandai dengan titik hitam penuh.
+•	Buka Web dan Login
+Admin memulai dengan membuka antarmuka website dan melakukan autentikasi masuk ke sistem.
+•	  Menu Impor Data Siswa
+ Di awal tahun ajaran, Admin memilih menu ini untuk mendaftarkan siswa baru.
+•	Unggah File Excel Siswa
+ Admin mengunggah file Excel (NISN, Nama, Kelas) dan sistem akan memproses pembuatan akun secara otomatis.
+•	Menu Manajemen Kelulusan
+ Pada akhir kelas 12, Admin beralih ke menu kelulusan
+•	Unggah Status & Distribusi Dokumen
+Admin mengunggah rekap kelulusan (Lulus/Tidak Lulus) beserta mendistribusikan dokumen final (SKL, SKHUN, Ijazah berformat PDF) ke profil masing-masing siswa.
+•	Buka Menu Laporan
+Admin menavigasi ke menu laporan untuk kebutuhan pelacakan data pasca-lulus.
+•	 Unduh Rekapitulasi Tracer Study
+Admin mengunduh data Tracer Study seluruh angkatan dalam format Excel/CSV.
+•	Selesai (End)
+ Ditandai dengan lingkaran yang memiliki titik hitam di tengahnya.
+
+2.	Alur Aktor Siswa Aktif (Pendataan Portofolio)
+ 
+•	Siswa membuka aplikasi mobile Android dan melakukan login awal menggunakan kredensial NISN.
+•	Sistem memvalidasi token dan menampilkan Dasbor Siswa Aktif.
+•	Siswa memilih menu "Input Prestasi".
+•	Siswa mengisi form detail lomba (nama, tingkat, tahun) dan mengunggah foto/PDF sertifikat pendukung.
+•	Siswa menekan tombol "Kirim", dan data tersimpan di database dengan status Pending (menunggu persetujuan).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3.	Alur Aktor Guru/Kurikulum (Validasi & Akademik)
+ 
+•	Guru membuka antarmuka Web dan melakukan autentikasi login.
+•	Guru masuk ke menu "Validasi Prestasi" untuk melihat daftar ajuan siswa.
+•	Guru meninjau sertifikat fisik/digital. Jika valid, Guru menekan "Setujui" (Approved). Jika tidak sesuai, Guru menekan "Tolak" (Rejected).
+•	Pada setiap akhir semester (Semester 1–5), Guru masuk ke menu "Akademik" untuk menginput rekapitulasi nilai rapor masing-masing siswa.
+
+4.	Alur Otomatisasi Sistem (Trigger Kelulusan)
+ 
+•	Backend server (cron job) berjalan di latar belakang dan membaca pengaturan jadwal rilis pengumuman kelulusan.
+•	Saat waktu rilis tiba, sistem memindai tabel profil siswa di database.
+•	 Untuk setiap siswa dengan status "Lulus", sistem secara instan mengubah role akun dari "Siswa" menjadi "Alumni".
+•	Sistem memicu perubahan tampilan antarmuka secara real-time saat pengguna tersebut mengakses aplikasi kembali.
+
+5.	Alur Aktor Alumni (Tracer Study & Unduh Arsip)
+ 
+•	 Alumni login ke aplikasi Android. Sistem memvalidasi token JWT dan mengidentifikasi peran pengguna sebagai "Alumni".
+•	Sistem merender "Dasbor Alumni" secara dinamis (menu "Input Prestasi" disembunyikan).
+•	Alumni membuka menu "Tracer Study" dan memilih status aktivitas saat ini (contoh: Bekerja atau Kuliah).
+•	 Sistem memunculkan form tambahan (field dinamis) seperti Nama Perusahaan atau Nama Kampus.
+•	Alumni mengisi form tersebut dan menekan "Simpan".
+•	Setelah itu, Alumni membuka menu "Arsip Pribadi" untuk mengunduh kompilasi dokumen digital (SKL, SKHUN, Ijazah, Rapor, dan Portofolio Prestasi) ke dalam memori perangkat.
+
+
+3.4.3 Diagram Data Flow (DFD)
+1. Context Diagram (Level 0)
+Diagram Konteks memperlihatkan batasan sistem SALUT secara keseluruhan dengan lingkungan luarnya (entitas eksternal). Pada arsitektur baru ini, terdapat empat entitas yang berinteraksi langsung dengan pusat sistem.
+ 
+•	Sistem Utama
+ 0. Sistem Arsip Lulusan & Tracer Study (SALUT)
+•	Aliran Data Entitas Admin Sekolah:
+o	Input ke Sistem
+Kredensial Login, Data Impor Siswa Baru (Excel), File Arsip Final (SKL, SKHUN, Ijazah), dan Status Kelulusan.
+o	Output dari Sistem
+Status Berhasil/Gagal, Laporan Rekapitulasi Tracer Study (Excel/CSV).
+•	Aliran Data Entitas Guru/Kurikulum:
+•	Input ke Sistem
+Kredensial Login, Data Nilai Rapor Semester, dan Status Validasi Prestasi (Setuju/Tolak).
+•	Output dari Sistem
+Daftar Pengajuan Prestasi Siswa yang berstatus Pending, Pesan Konfirmasi.
+•	Aliran Data Entitas Siswa Aktif:
+o	Input ke Sistem
+Kredensial Login awal, Data Form Prestasi (Nama Lomba, dll), dan File Bukti Sertifikat.
+o	Output dari Sistem
+Pembaruan Status Validasi Prestasi (Pending/Approved/Rejected).
+•	Aliran Data Entitas Alumni:
+o	Input ke Sistem
+Kredensial Login (JWT), dan Isian Form Dinamis Tracer Study (Status Pekerjaan/Pendidikan).
+o	Output dari Sistem
+Akses Tautan Unduhan Arsip Digital (SKL, SKHUN, Ijazah, Rapor, Portofolio), Pesan Konfirmasi Penyimpanan.
+
+
+2. DFD Level 0 (Proses Utama)
+DFD Level 0 memecah sistem utama menjadi lima proses inti dan melibatkan lima penyimpan data (Data Store): D1 Users, D2 Student Profiles, D3 Academic Records, D4 Achievements, dan D5 Tracer Studies.
+
+ 
+•	Proses 1.0 (Autentikasi & Manajemen Hak Akses)
+Menerima kredensial dari keempat aktor. Proses ini memvalidasi data dengan D1 Users dan mengeluarkan JWT Token. Proses ini juga bertanggung jawab mengatur trigger otomatis yang mengubah role pengguna menjadi Alumni.
+•	Proses 2.0 (Manajemen Data Akademik & Arsip)
+Admin mengunggah data siswa dan arsip final. Guru memasukkan nilai rapor. Proses ini menyimpan data biodata ke D2 Student Profiles dan file dokumen (SKL, SKHUN, Ijazah, Rapor) ke D3 Academic Records.
+•	Proses 3.0 (Pengelolaan Portofolio Siswa)
+ Siswa Aktif mengirimkan unggahan prestasi. Guru menerima aliran data tersebut untuk diverifikasi. Keputusan validasi (Approved/Rejected) disimpan ke dalam D4 Achievements.
+•	Proses 4.0 (Pendataan Tracer Study & Layanan Arsip)
+ Alumni mengirimkan form isian pasca-lulus. Proses ini menyimpan riwayat tersebut ke D5 Tracer Studies. Ketika Alumni meminta unduhan arsip, proses ini mengambil file dari D3 dan D4 untuk disajikan ke layar Alumni.
+•	Proses 5.0 (Pembuatan Laporan)
+Admin mengirimkan filter permintaan laporan. Sistem mengambil aliran data dari D2 (Biodata) dan D5 (Riwayat Tracer Study), lalu mengekspornya menjadi file rekapitulasi untuk Admin.
+
+3. DFD Level 1 (Rincian Proses 4.0: Tracer Study & Layanan Arsip)
+DFD Level 1 ini adalah "zoom-in" atau rincian lebih dalam dari Proses 4.0 yang berfokus pada interaksi Alumni setelah mereka lulus.
+ 
+•	 Proses 4.1 (Validasi Identitas Alumni)
+Sistem menerima token JWT dari Alumni, mengecek ke D1 Users dan D2 Student Profiles untuk memastikan bahwa status akademik pengguna tersebut sudah benar-benar "Lulus" dan berhak mengakses dasbor Alumni.
+•	 Proses 4.2 (Input Form Dinamis Tracer Study)
+Sesi pengguna yang tervalidasi diizinkan mengakses form kuesioner. Alumni menginput status (Bekerja/Kuliah), sistem merender field tambahan, lalu jawaban dikompilasi dan disimpan secara permanen ke D5 Tracer Studies. Sistem mengembalikan pesan "Penyimpanan Berhasil".
+•	 Proses 4.3 (Kompilasi & Distribusi Arsip Digital)
+Alumni menekan tombol unduh dokumen. Proses ini menarik file Ijazah, SKHUN, SKL, dan Rapor dari D3 Academic Records, serta menarik sertifikat prestasi yang berstatus Approved dari D4 Achievements. Proses ini menggabungkan tautan file tersebut dan mengirimkannya kembali ke antarmuka aplikasi Alumni untuk diunduh.
+
+3.4.4 Entity Relationship Diagram (ERD)
+Entity Relationship Diagram (ERD) ini memodelkan struktur penyimpanan data dan hubungan antar entitas (tabel) dalam basis data SALUT. Arsitektur data telah disesuaikan untuk mendukung fitur multi-role, validasi prestasi oleh guru, serta transisi otomatis akun siswa menjadi alumni.
+
+
+ 
+
+•	Komponen Entitas dan Atribut Berdasarkan diagram
+o	Users
+Menyimpan data kredensial akun pengguna. Atribut yang digunakan adalah id_user (Primary Key), username, email, password, address, dan role. 
+o	Student_Profiles
+Menyimpan biodata dan status riwayat siswa. Atributnya mencakup id_profile (Primary Key), full_name, phone_number, dan status_akademik. Atribut status_akademik digunakan sebagai acuan trigger untuk mendeteksi apakah pengguna masih berstatus siswa atau sudah menjadi alumni. 
+o	Academic_Records
+Menyimpan tautan ke arsip dokumen final (SKL, SKHUN, Ijazah, Rapor). Atributnya meliputi id_record (Primary Key), type, semester, dan file_url. 
+o	Achievements
+Menyimpan rekam jejak portofolio lomba. Atributnya terdiri dari id_achievement (Primary Key), title, date_received, awarding_body, certificate_url, dan status_validasi. 
+
+
+o	Tracer_Studies
+Menyimpan form isian pelacakan pasca-lulus. Atributnya adalah id_study (Primary Key), graduation_date, graduation_datus, employment_status, dan detail_info. Atribut detail_info dipasang untuk menampung jawaban spesifik yang muncul dari form dinamis. 
+
+•	Hubungan (Relationship) dan Kardinalitas Relasi 
+o	Users (1) – Memiliki – (1) Student_Profiles
+Relasi One-to-One. Satu akun login hanya dapat memiliki tepat satu entitas profil siswa. 
+o	Student_Profiles (1) – Mempunyai – (N) Academic_Records
+Relasi One-to-Many. Satu siswa dapat memiliki banyak entitas arsip akademik di dalam sistem (contoh: memiliki 5 file rapor semester dan 1 ijazah). 
+o	Student_Profiles (1) – Mencetak – (N) Achievements
+ Relasi One-to-Many. Satu siswa dapat mengunggah dan memvalidasi banyak sertifikat prestasi. 
+o	Student_Profiles (1) – Melaporkan – (N) Tracer_Studies
+Relasi One-to-Many. Satu alumni dapat melaporkan lebih dari satu pembaruan status tracer study seiring berjalannya waktu pasca-kelulusan. 
+
+
+
+3.5 Software Development Life Cycle (SDLC)
+Dalam kerangka kerja Software Development Life Cycle (SDLC), pengembangan aplikasi SALUT diimplementasikan menggunakan metodologi Agile Software Development dengan pendekatan kerangka kerja Scrum. 
+Berbeda dengan metode tradisional (seperti Waterfall) yang mengharuskan setiap tahapan selesai secara penuh sebelum melanjutkan ke tahap berikutnya, pendekatan Agile berfokus pada pengembangan yang iteratif (bertahap) dan fleksibel. Hal ini sangat cocok untuk proyek SALUT karena memungkinkan sistem beradaptasi dengan cepat jika terdapat perubahan format pendataan arsip kelulusan dari pihak sekolah atau penyesuaian alur validasi prestasi. 
+Siklus SDLC menggunakan Agile pada proyek ini dijalankan dalam beberapa putaran kerja singkat (Sprint):
+
+1.	Product Backlog (Analisis & Perencanaan) 
+Mendefinisikan dan mengumpulkan seluruh daftar fitur sistem (seperti Login JWT, fitur import Excel, crowdsourcing prestasi, trigger transisi kelulusan otomatis, dan Form Dinamis Tracer Study) berdasarkan prioritas kebutuhan sekolah. 
+
+
+2.	Sprint 1 (Desain & Fondasi API) 
+Eksekusi tahap desain database (ERD dengan atribut multi-role dan validasi) serta implementasi kode awal. Fokus pengerjaan pada pembuatan database (MySQL/TiDB), konfigurasi backend Laravel, pembuatan REST API, serta sistem autentikasi keamanan (JWT). 
+
+3.	 Sprint 2 (Frontend Web Admin & Guru)
+Tim berfokus membangun antarmuka panel Tata Usaha dan Dasbor Validasi Guru berbasis web menggunakan HTML, CSS (Tailwind), dan JavaScript. Tahap ini mencakup integrasi API untuk mengelola arsip, validasi approval, dan fitur generator laporan (Excel/CSV). 
+
+4.	Sprint 3 (Aplikasi Android Mobile) 
+Fokus mengembangkan antarmuka mobile khusus bagi Siswa Aktif dan Alumni menggunakan framework Flutter. Di tahap ini, aplikasi dibangun dengan menerapkan Dynamic UI Rendering, memastikan ukuran APK maksimal 30MB, mengintegrasikan form Tracer Study, dan mengonsumsi API yang dibuat pada Sprint 1. 
+
+5.	 Review, Testing & Retrospective
+ Di setiap akhir Sprint, sistem diuji (Testing) secara berkala untuk memastikan alur transisi akun berjalan otomatis dan keamanan file arsip terjaga. Evaluasi ini memastikan jika ada bug atau penyesuaian alur pendataan, dapat langsung direvisi pada iterasi pengembangan berikutnya (Maintenance).
+
+
+3.6. Jadwal Pengerjaan (Timeline)
+Pengembangan sistem SALUT dilakukan secara iteratif menggunakan metode Agile. Berikut adalah rekapitulasi jadwal pengerjaan proyek berdasarkan tahapan Sprint mingguan:
+Waktu Pengerjaan	Fase Sprint	Target dan Relasi Pekerjaan
+Minggu ke-1	Product Backlog & Desain	1.	Analisis kebutuhan sistem dan pembuatan dokumen PRD & SRS
+2.	Perancangan desain basis data (ERD) dan alur sistem (DFD Level 0 & 1).
+Minggu ke – 2 	Sprint 1 (Desain UI/UX & Fondasi Backend)	1.	Pembuatan wireframe (rancangan antarmuka) awal untuk Web Admin dan Aplikasi Android Alumni.
+2.	Setup database (MySQL/TiDB) sesuai rancangan skema ERD
+3.	Inisialisasi framework backend PHP (Laravel)
+Minggu ke-3	Sprint 2 (Frontend Web & Pembuatan API)	1.	Pengembangan antarmuka panel Admin Tata Usaha menggunakan HTML, CSS (Tailwind), dan JavaScript
+2.	Pembuatan REST API untuk autentikasi (JWT Token) dan manajemen dokumen (upload arsip)
+Minggu ke-4	Sprint 3 (Setup & Inisialisasi Mobile Android)	1.	Pengecekan kesiapan ekosistem Flutter dan instalasi SDK via command prompt
+2.	Instalasi Android Studio beserta penyelesaian error command-line tools (CMake & konfigurasi versi NDK 28.2.13676358). 
+3.	Pembuatan proyek Flutter baru (apps_sekolah) di VS Code dan pengujian running aplikasi ke perangkat Android fisik secara debugging
+4.	Inisialisasi repository Git dan melakukan komit pertama ke GitHub.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+WAIRFRAME SALUT
+•	Halaman Untuk Lulusan 
+ 	 	 
+
+
+•	Halaman Untuk Admin
+ 	 	 
+ 	 	 
+
