@@ -1,43 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import 'routes/app_pages.dart';
+import 'routes/app_routes.dart';
 
 void main() {
-  runApp(const AplikasiSekolah());
+  runApp(const SalutApp());
 }
 
-class AplikasiSekolah extends StatelessWidget {
-  const AplikasiSekolah({super.key});
+class SalutApp extends StatelessWidget {
+  const SalutApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false, // Menghilangkan pita merah 'Debug' di layar
-      title: 'Aplikasi Sekolah',
+    return GetMaterialApp(
+      title: 'SALUT App',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1E3A5F)),
         useMaterial3: true,
+        fontFamily: 'Roboto',
       ),
-      home: const BerandaSekolah(),
-    );
-  }
-}
-
-class BerandaSekolah extends StatelessWidget {
-  const BerandaSekolah({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Beranda Sekolah'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-      ),
-      body: const Center(
-        child: Text(
-          'Selamat datang di Aplikasi Sekolah Wemvi!',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-      ),
+      // ── Routing GetX ──────────────────────────────────────────────────
+      initialRoute: AppRoutes.login,
+      getPages: AppPages.routes,
     );
   }
 }

@@ -1,0 +1,28 @@
+=== CATATAN PROGRES PROYEK SALUT ===
+
+Rabu, 30 September 2026
+---------------------------------
+[FRONTEND FLUTTER]
+- Setup proyek Flutter dengan GetX.
+- Membuat struktur direktori: lib/models, lib/pages, lib/controllers, lib/services, lib/routes.
+- Implementasi sistem Autentikasi JWT (Dio interceptor & flutter_secure_storage).
+- Membuat UI Login Page.
+- Membuat UI Dashboard Dinamis (Siswa Aktif vs Alumni).
+- Membuat UI daftar & input prestasi (Siswa).
+- Membuat UI arsip dokumen & kuesioner Tracer Study (Alumni).
+- Setup model data (User, Prestasi, Tracer).
+
+
+Kamis, 1 Oktober 2026 (Sesi 2)
+---------------------------------
+[BACKEND LARAVEL]
+- Setup proyek Laravel 12 di folder "salut-backend".
+- Instalasi dan konfigurasi JWT Auth (php-open-source-saver/jwt-auth).
+- Membuat 5 Migrations database sesuai struktur SRS (Student Profiles, Academic Records, Achievements, Tracer Studies, Graduation Schedules).
+- Membuat 6 Model Eloquent beserta relasinya.
+- Membuat 5 Controller API (Auth, Siswa, Alumni, Guru, Admin) dengan total 23 endpoints.
+- Membuat Middleware CheckRole untuk keamanan endpoint per-role.
+- Membuat Cron Job (salut:transisi-kelulusan) untuk transisi otomatis Siswa menjadi Alumni.
+- Troubleshooting MySQL (Corrupted InnoDB log file) dan berhasil menghidupkan server database.
+- Membuat Seeder Database dan berhasil melakukan seeding data awal (Admin, Guru, Siswa, Alumni).
+- Testing endpoint Login via cURL dan berhasil mendapatkan JWT Token (HTTP 200).
