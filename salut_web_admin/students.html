@@ -55,7 +55,10 @@
   <main class="main">
     <div class="topbar">
       <div><div class="page-title">Siswa & Alumni</div><div class="page-sub">Manajemen akun pengguna SALUT</div></div>
-      <button class="btn btn-primary" onclick="document.getElementById('modal-add').classList.add('show')">➕ Tambah Pengguna</button>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-ghost" onclick="exportAlumni()" style="border: 1px solid var(--border)">📊 Export Alumni CSV</button>
+        <button class="btn btn-primary" onclick="document.getElementById('modal-add').classList.add('show')">➕ Tambah Pengguna</button>
+      </div>
     </div>
     <div class="content">
       <div class="toolbar">
@@ -118,6 +121,26 @@ async function promoteAlumni(id, name) {
         if (u) { u.role = 'alumni'; u.angkatan = new Date().getFullYear(); }
         doSearch(document.getElementById('search').value);
     } catch(e) { toast(e.message || 'Gagal promosi.', 'error'); }
+}
+
+async function exportAlumni() {
+    try {
+        toast('Menyiapkan file CSV...', 'info');
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://127.0.0.1:8000/api/alumni/export', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Gagal export data (hanya Admin yang diizinkan)');
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Data_Alumni_SALUT_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        toast('Berhasil download data alumni!', 'success');
+    } catch(e) { toast(e.message, 'error'); }
 }
 
 function toggleFields() {
