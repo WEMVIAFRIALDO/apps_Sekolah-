@@ -257,16 +257,24 @@ class ProfilePage extends StatelessWidget {
         children: [
           Icon(icon, size: 20, color: const Color(0xFF1E3A5F)),
           const SizedBox(width: 14),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label,
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
-              const SizedBox(height: 2),
-              Text(value,
+          Expanded(                                    // ← fix overflow
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
                   style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w600)),
-            ],
+                      fontSize: 14, fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,     // ← teks panjang dipotong
+                  maxLines: 1,
+                ),
+              ],
+            ),
           ),
         ],
       ),

@@ -26,3 +26,21 @@ Kamis, 1 Oktober 2026 (Sesi 2)
 - Troubleshooting MySQL (Corrupted InnoDB log file) dan berhasil menghidupkan server database.
 - Membuat Seeder Database dan berhasil melakukan seeding data awal (Admin, Guru, Siswa, Alumni).
 - Testing endpoint Login via cURL dan berhasil mendapatkan JWT Token (HTTP 200).
+
+Jumat, 2 Oktober 2026 (Sesi 3)
+---------------------------------
+[FRONTEND & WEB ADMIN]
+- Merapikan error 'Right Overflow' pada halaman Profil Android menggunakan widget Expanded.
+- Menambahkan tombol 'Export Alumni CSV' di dashboard Web Admin (students.html) beserta fungsi download javascript yang terhubung ke API.
+
+[BACKEND LARAVEL]
+- Mengatasi masalah Character Encoding (BOM / Byte Order Mark) pada file PHP yang merusak output JSON API.
+- Konfigurasi CORS (Cross-Origin Resource Sharing) agar Flutter dan Web Admin bisa mengakses API Laravel secara bersamaan di local server.
+- Mengimplementasikan Cron Job (salut:promote-alumni) dan di-schedule setiap tengah malam untuk mempromosikan Siswa aktif yang telah melewati tanggal lulus menjadi Alumni.
+- Membuat Service Push Notification FCM (Firebase Cloud Messaging) dan di-trigger secara otomatis ketika Cron Job mengubah status siswa.
+- Mengimplementasikan fitur Export data Alumni ke format CSV dan dibatasi khusus untuk Role Admin.
+
+[INFRASTRUKTUR & GIT]
+- Menjadikan struktur aplikasi menjadi Monorepo (satu repositori), menggabungkan Flutter (apps_sekolah), Web Admin (salut_web_admin), dan Laravel (salut_backend).
+- Mendorong (push) seluruh aplikasi SALUT ke GitHub repository WEMVIAFRIALDO/apps_Sekolah-.
+- Menuliskan dokumentasi akun login pada LOGIN_SALUT.txt.
