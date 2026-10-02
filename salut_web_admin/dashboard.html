@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — SALUT Admin</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h1><span>SALUT</span></h1>
+      <p>Admin Panel v1.0</p>
+    </div>
+    <nav class="nav-section">
+      <p class="nav-label">Menu Utama</p>
+      <a href="dashboard.html" class="nav-item active">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Dashboard
+      </a>
+      <a href="students.html" class="nav-item">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Siswa & Alumni
+      </a>
+      <a href="prestasi.html" class="nav-item">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+        Validasi Prestasi
+        <span id="badge-pending" style="margin-left:auto;background:rgba(245,158,11,0.2);color:#FBBF24;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700;display:none"></span>
+      </a>
+      <a href="arsip.html" class="nav-item">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+        Arsip Dokumen
+      </a>
+      <a href="tracer.html" class="nav-item">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Tracer Study
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div class="user-name" id="nav-user-name">Loading...</div>
+          <div class="user-role" id="nav-user-role">role</div>
+        </div>
+      </div>
+      <button class="btn-logout" id="btn-logout">🚪 Keluar</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub" id="greeting">Selamat datang di panel admin SALUT</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span id="live-time" style="font-size:13px;color:var(--muted);font-weight:500"></span>
+      </div>
+    </div>
+    <div class="content">
+      <!-- Stats -->
+      <div class="stat-grid">
+        <div class="stat-card indigo">
+          <div class="stat-icon" style="background:rgba(99,102,241,0.15)">👨‍🎓</div>
+          <div class="stat-value" id="stat-siswa">—</div>
+          <div class="stat-label">Siswa Aktif</div>
+          <div class="stat-delta">↑ Terdaftar</div>
+        </div>
+        <div class="stat-card cyan">
+          <div class="stat-icon" style="background:rgba(6,182,212,0.15)">🎓</div>
+          <div class="stat-value" id="stat-alumni">—</div>
+          <div class="stat-label">Alumni</div>
+          <div class="stat-delta">↑ Total Lulusan</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-icon" style="background:rgba(245,158,11,0.15)">⏳</div>
+          <div class="stat-value" id="stat-pending">—</div>
+          <div class="stat-label">Prestasi Pending</div>
+          <div class="stat-delta" style="color:var(--orange)">⚠ Perlu Validasi</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon" style="background:rgba(16,185,129,0.15)">📊</div>
+          <div class="stat-value" id="stat-tracer">—</div>
+          <div class="stat-label">Tracer Study Diisi</div>
+          <div class="stat-delta">↑ Respon Alumni</div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">Distribusi Pengguna</div>
+          <div class="chart-sub">Perbandingan Siswa vs Alumni vs Guru</div>
+          <canvas id="chartUsers" height="220"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Status Validasi Prestasi</div>
+          <div class="chart-sub">Pending / Approved / Rejected</div>
+          <canvas id="chartPrestasi" height="220"></canvas>
+        </div>
+      </div>
+
+      <!-- Recent activity placeholder -->
+      <div class="card" style="margin-top:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <div>
+            <div style="font-size:16px;font-weight:700;">Aksi Cepat</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:2px;">Shortcut ke fitur utama</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+          <a href="students.html" style="text-decoration:none;">
+            <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.15);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+              <div style="font-size:28px;margin-bottom:10px;">👨‍🎓</div>
+              <div style="font-size:13px;font-weight:600;color:#A5B4FC;">Tambah Siswa</div>
+            </div>
+          </a>
+          <a href="prestasi.html" style="text-decoration:none;">
+            <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.15);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+              <div style="font-size:28px;margin-bottom:10px;">✅</div>
+              <div style="font-size:13px;font-weight:600;color:#FCD34D;">Validasi Prestasi</div>
+            </div>
+          </a>
+          <a href="arsip.html" style="text-decoration:none;">
+            <div style="background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.15);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+              <div style="font-size:28px;margin-bottom:10px;">📁</div>
+              <div style="font-size:13px;font-weight:600;color:#67E8F9;">Upload Arsip</div>
+            </div>
+          </a>
+          <a href="tracer.html" style="text-decoration:none;">
+            <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.15);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+              <div style="font-size:28px;margin-bottom:10px;">📊</div>
+              <div style="font-size:13px;font-weight:600;color:#6EE7B7;">Data Tracer Study</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+Auth.guard();
+Auth.initNav();
+
+// Live clock
+function tick() {
+    const d = new Date();
+    document.getElementById('live-time').textContent =
+        d.toLocaleDateString('id-ID', {weekday:'long',day:'numeric',month:'long',year:'numeric'}) +
+        ' • ' + d.toLocaleTimeString('id-ID');
+}
+tick(); setInterval(tick, 1000);
+
+// User greeting
+const user = Auth.user();
+if (user) {
+    const hr = new Date().getHours();
+    const greet = hr < 11 ? 'Selamat pagi' : hr < 15 ? 'Selamat siang' : hr < 18 ? 'Selamat sore' : 'Selamat malam';
+    document.getElementById('greeting').textContent = `${greet}, ${user.name} 👋`;
+    document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+}
+
+// Load stats
+async function loadStats() {
+    try {
+        const res = await Api.get('/admin/stats');
+        const d = res.data;
+        document.getElementById('stat-siswa').textContent   = d.total_siswa;
+        document.getElementById('stat-alumni').textContent  = d.total_alumni;
+        document.getElementById('stat-pending').textContent = d.prestasi_pending;
+        document.getElementById('stat-tracer').textContent  = d.tracer_filled;
+
+        if (d.prestasi_pending > 0) {
+            const badge = document.getElementById('badge-pending');
+            badge.textContent = d.prestasi_pending;
+            badge.style.display = 'inline';
+        }
+
+        // Charts
+        const palette = { indigo:'#6366F1', cyan:'#06B6D4', green:'#10B981', orange:'#F59E0B', red:'#EF4444' };
+        const chartCfg = {
+            plugins: { legend: { labels: { color: '#94A3B8', font: { family:'Inter', size:12 } } } }
+        };
+
+        new Chart(document.getElementById('chartUsers'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Siswa', 'Alumni', 'Guru'],
+                datasets: [{ data: [d.total_siswa, d.total_alumni, d.total_guru],
+                    backgroundColor: [palette.indigo, palette.cyan, palette.orange],
+                    borderWidth: 0, hoverOffset: 6 }]
+            },
+            options: { ...chartCfg, cutout: '65%' }
+        });
+        new Chart(document.getElementById('chartPrestasi'), {
+            type: 'bar',
+            data: {
+                labels: ['Pending', 'Approved'],
+                datasets: [{ data: [d.prestasi_pending, d.prestasi_approved],
+                    backgroundColor: [palette.orange, palette.green],
+                    borderRadius: 8, borderSkipped: false }]
+            },
+            options: { ...chartCfg, scales: { x: { ticks:{color:'#94A3B8'}, grid:{color:'rgba(255,255,255,0.04)'} }, y: { ticks:{color:'#94A3B8'}, grid:{color:'rgba(255,255,255,0.04)'} } }, plugins: { legend: { display:false } } }
+        });
+    } catch(e) { console.error(e); }
+}
+loadStats();
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manajemen Siswa — SALUT Admin</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="toast-container"></div>
+<!-- Modal Tambah Siswa -->
+<div class="modal-overlay" id="modal-add">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-title">Tambah Pengguna Baru</div>
+    <div class="modal-sub">Daftarkan akun siswa, alumni, atau guru baru</div>
+    <div id="add-alert" class="alert alert-error" style="display:none"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="form-group" style="margin:0"><label class="form-label">Nama Lengkap</label><input id="inp-name" class="form-input" placeholder="Nama lengkap"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">NISN (10 digit)</label><input id="inp-nisn" class="form-input" placeholder="0000000000" maxlength="10"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Email (opsional)</label><input id="inp-email" class="form-input" type="email" placeholder="email@example.com"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">No. HP</label><input id="inp-phone" class="form-input" placeholder="+62..."></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Role</label>
+        <select id="inp-role" class="form-input form-select" onchange="toggleFields()">
+          <option value="siswa">Siswa Aktif</option>
+          <option value="alumni">Alumni</option>
+          <option value="guru">Guru</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0"><label class="form-label">Password</label><input id="inp-pass" class="form-input" type="password" placeholder="Min. 6 karakter"></div>
+      <div class="form-group student-field" style="margin:0"><label class="form-label">Kelas</label><input id="inp-class" class="form-input" placeholder="XII IPA 1"></div>
+      <div class="form-group student-field" style="margin:0"><label class="form-label">Angkatan</label><input id="inp-angkatan" class="form-input" placeholder="2026" maxlength="4"></div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:20px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="submitAdd()">✅ Simpan</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-add').classList.remove('show')">Batal</button>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><h1><span>SALUT</span></h1><p>Admin Panel v1.0</p></div>
+    <nav class="nav-section">
+      <p class="nav-label">Menu Utama</p>
+      <a href="dashboard.html" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Dashboard</a>
+      <a href="students.html" class="nav-item active"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Siswa & Alumni</a>
+      <a href="prestasi.html" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>Validasi Prestasi</a>
+      <a href="arsip.html" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>Arsip Dokumen</a>
+      <a href="tracer.html" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>Tracer Study</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-card"><div class="user-avatar" id="user-avatar">A</div><div><div class="user-name" id="nav-user-name">Loading...</div><div class="user-role" id="nav-user-role">role</div></div></div>
+      <button class="btn-logout" id="btn-logout">🚪 Keluar</button>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <div><div class="page-title">Siswa & Alumni</div><div class="page-sub">Manajemen akun pengguna SALUT</div></div>
+      <button class="btn btn-primary" onclick="document.getElementById('modal-add').classList.add('show')">➕ Tambah Pengguna</button>
+    </div>
+    <div class="content">
+      <div class="toolbar">
+        <div class="search-input-wrap"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg><input type="text" class="search-input" id="search" placeholder="Cari nama atau NISN..." oninput="doSearch(this.value)"></div>
+        <select class="form-input form-select" id="filter-role" style="width:160px;" onchange="doSearch(document.getElementById('search').value)">
+          <option value="">Semua Role</option>
+          <option value="siswa">Siswa</option>
+          <option value="alumni">Alumni</option>
+          <option value="guru">Guru</option>
+        </select>
+      </div>
+      <div id="table-content"><div class="loading"><div class="spinner"></div>Memuat data pengguna...</div></div>
+    </div>
+  </main>
+</div>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+Auth.guard(); Auth.initNav();
+const user = Auth.user();
+if (user) document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+
+// Dummy data — akan ganti dengan GET /api/admin/users saat endpoint tersedia
+const mockUsers = [
+    {id:1,name:'Administrator SALUT',nisn:'0000000001',role:'admin',class_name:'',angkatan:'',is_active:true},
+    {id:2,name:'Drs. Suharto, M.Pd',nisn:'0000000002',role:'guru',class_name:'',angkatan:'',is_active:true},
+    {id:3,name:'Budi Santoso',nisn:'0054321987',role:'siswa',class_name:'XII IPA 3',angkatan:2026,is_active:true},
+    {id:4,name:'Siti Rahayu',nisn:'0067890123',role:'alumni',class_name:'XII IPS 2',angkatan:2024,is_active:true},
+];
+let allUsers = [...mockUsers];
+
+function renderUsers(data) {
+    if (!data.length) { document.getElementById('table-content').innerHTML = '<div class="empty"><div class="empty-icon">👤</div><div class="empty-title">Tidak ada data</div></div>'; return; }
+    const rows = data.map(u => `
+      <tr>
+        <td><div style="display:flex;align-items:center;gap:10px;"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6366F1,#06B6D4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">${u.name.charAt(0)}</div><div><div style="font-weight:600;font-size:13px;">${u.name}</div><div style="font-size:11px;color:var(--muted)">NISN: ${u.nisn}</div></div></div></td>
+        <td><span class="badge badge-${u.role}">${u.role}</span></td>
+        <td style="font-size:13px;">${u.class_name||'—'}</td>
+        <td style="font-size:13px;">${u.angkatan||'—'}</td>
+        <td><span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:${u.is_active?'#34D399':'#FCA5A5'}">${u.is_active?'✅ Aktif':'❌ Nonaktif'}</span></td>
+        <td>${u.role==='siswa'?`<button class="btn btn-ghost btn-sm" onclick="promoteAlumni(${u.id},'${u.name}')">🎓 Promosi Alumni</button>`:'<span style="color:var(--muted);font-size:12px;">—</span>'}</td>
+      </tr>`).join('');
+    document.getElementById('table-content').innerHTML = `<div class="table-wrap"><table><thead><tr><th>Nama</th><th>Role</th><th>Kelas</th><th>Angkatan</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function doSearch(q) {
+    const role = document.getElementById('filter-role').value;
+    let filtered = allUsers;
+    if (role) filtered = filtered.filter(u => u.role === role);
+    if (q) filtered = filtered.filter(u => u.name.toLowerCase().includes(q.toLowerCase()) || u.nisn.includes(q));
+    renderUsers(filtered);
+}
+
+async function promoteAlumni(id, name) {
+    if (!confirm(`Promosikan ${name} menjadi Alumni? Tindakan ini tidak bisa dibatalkan.`)) return;
+    try {
+        await Api.patch(`/admin/users/${id}/promote`);
+        toast(`${name} berhasil dipromosikan menjadi Alumni! 🎓`, 'success');
+        const u = allUsers.find(x => x.id === id);
+        if (u) { u.role = 'alumni'; u.angkatan = new Date().getFullYear(); }
+        doSearch(document.getElementById('search').value);
+    } catch(e) { toast(e.message || 'Gagal promosi.', 'error'); }
+}
+
+function toggleFields() {
+    const role = document.getElementById('inp-role').value;
+    document.querySelectorAll('.student-field').forEach(el => el.style.display = ['siswa','alumni'].includes(role) ? '' : 'none');
+}
+
+async function submitAdd() {
+    const data = {
+        name:       document.getElementById('inp-name').value.trim(),
+        nisn:       document.getElementById('inp-nisn').value.trim(),
+        email:      document.getElementById('inp-email').value.trim(),
+        phone:      document.getElementById('inp-phone').value.trim(),
+        role:       document.getElementById('inp-role').value,
+        password:   document.getElementById('inp-pass').value,
+        class_name: document.getElementById('inp-class').value.trim(),
+        angkatan:   document.getElementById('inp-angkatan').value.trim(),
+    };
+    const alertEl = document.getElementById('add-alert');
+    alertEl.style.display = 'none';
+    if (!data.name || !data.nisn || !data.password) { alertEl.textContent = 'Nama, NISN, dan password wajib diisi.'; alertEl.style.display='block'; return; }
+    try {
+        const res = await Api.post('/admin/users', data);
+        toast(`Akun ${data.name} berhasil dibuat! ✅`, 'success');
+        document.getElementById('modal-add').classList.remove('show');
+        allUsers.push({...res.data, is_active: true, class_name: data.class_name, angkatan: data.angkatan});
+        doSearch('');
+    } catch(e) { alertEl.textContent = e.message || 'Gagal membuat akun.'; alertEl.style.display='block'; }
+}
+
+function toast(msg, type='info') {
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `${type==='success'?'✅':type==='error'?'❌':'ℹ️'} ${msg}`;
+    document.getElementById('toast-container').appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+}
+
+renderUsers(allUsers);
+</script>
+</body>
+</html>

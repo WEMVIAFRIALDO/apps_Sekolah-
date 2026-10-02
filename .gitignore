@@ -46,3 +46,11 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# SALUT - File sensitif
+DATA_LOGIN_SALUT.txt
+salut_backend/.env
+salut_backend/vendor/
+salut_backend/storage/app/private/
+salut_backend/storage/logs/*.log
+

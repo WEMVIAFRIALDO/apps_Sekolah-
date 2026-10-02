@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Validasi Prestasi — SALUT Admin</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="toast-container"></div>
+<!-- Modal Validasi -->
+<div class="modal-overlay" id="modal-validate">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Validasi Prestasi</div>
+    <div class="modal-sub" id="modal-sub">Tinjau dan berikan keputusan validasi</div>
+    <div id="modal-info" style="background:rgba(255,255,255,0.04);border-radius:12px;padding:16px;margin-bottom:20px;font-size:13px;line-height:1.8;"></div>
+    <div class="form-group">
+      <label class="form-label">Catatan (opsional, wajib jika Reject)</label>
+      <textarea id="inp-catatan" class="form-input" rows="3" style="resize:vertical;" placeholder="Masukkan alasan penolakan atau catatan..."></textarea>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:8px;">
+      <button class="btn btn-success" style="flex:1;" onclick="submitValidasi('Approved')">✅ Setujui</button>
+      <button class="btn btn-danger" style="flex:1;" onclick="submitValidasi('Rejected')">❌ Tolak</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><h1><span>SALUT</span></h1><p>Admin Panel v1.0</p></div>
+    <nav class="nav-section">
+      <p class="nav-label">Menu Utama</p>
+      <a href="dashboard.html" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Dashboard</a>
+      <a href="students.html" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Siswa & Alumni</a>
+      <a href="prestasi.html" class="nav-item active"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>Validasi Prestasi</a>
+      <a href="arsip.html" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>Arsip Dokumen</a>
+      <a href="tracer.html" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>Tracer Study</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-card"><div class="user-avatar" id="user-avatar">A</div><div><div class="user-name" id="nav-user-name">Loading...</div><div class="user-role" id="nav-user-role">role</div></div></div>
+      <button class="btn-logout" id="btn-logout">🚪 Keluar</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div><div class="page-title">Validasi Prestasi</div><div class="page-sub">Review dan validasi prestasi yang dikirim siswa</div></div>
+    </div>
+    <div class="content">
+      <!-- Filter tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm tab-btn active" onclick="filterStatus('', this)">Semua</button>
+        <button class="btn btn-ghost btn-sm tab-btn" onclick="filterStatus('Pending', this)" style="border-color:rgba(245,158,11,0.3);color:#FBBF24">⏳ Pending</button>
+        <button class="btn btn-ghost btn-sm tab-btn" onclick="filterStatus('Approved', this)" style="border-color:rgba(16,185,129,0.3);color:#34D399">✅ Approved</button>
+        <button class="btn btn-ghost btn-sm tab-btn" onclick="filterStatus('Rejected', this)" style="border-color:rgba(239,68,68,0.3);color:#FCA5A5">❌ Rejected</button>
+      </div>
+
+      <div id="table-content">
+        <div class="loading"><div class="spinner"></div>Memuat data prestasi...</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+Auth.guard(); Auth.initNav();
+const user = Auth.user();
+if (user) document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+
+let allData = [];
+let currentId = null;
+
+async function loadData(status='') {
+    document.getElementById('table-content').innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>';
+    try {
+        const path = '/admin/achievements' + (status ? `?status=${status}` : '');
+        const res = await Api.get(path);
+        allData = res.data?.data || res.data || [];
+        renderTable(allData);
+    } catch(e) { document.getElementById('table-content').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Gagal memuat data</div></div>'; }
+}
+
+function renderTable(data) {
+    if (!data.length) {
+        document.getElementById('table-content').innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><div class="empty-title">Tidak ada prestasi</div><div class="empty-sub">Belum ada prestasi yang perlu divalidasi</div></div>';
+        return;
+    }
+    const rows = data.map(a => `
+        <tr>
+            <td>
+                <div style="font-weight:600;font-size:13px;">${a.nama_kegiatan}</div>
+                <div style="font-size:12px;color:var(--muted);">${a.penyelenggara}</div>
+            </td>
+            <td>
+                <div style="font-size:13px;font-weight:600;">${a.user?.name || '—'}</div>
+                <div style="font-size:12px;color:var(--muted);">NISN: ${a.user?.nisn || '—'}</div>
+            </td>
+            <td><span style="font-size:12px;background:rgba(255,255,255,0.06);padding:3px 10px;border-radius:6px;">${a.tingkat}</span></td>
+            <td><span style="font-weight:600;font-size:13px;">🥇 ${a.peringkat}</span></td>
+            <td>${a.tahun}</td>
+            <td><span class="badge badge-${a.status_validasi.toLowerCase()}">${a.status_validasi}</span></td>
+            <td>
+                ${a.status_validasi === 'Pending' ? `<button class="btn btn-primary btn-sm" onclick="openModal(${JSON.stringify(a).replace(/"/g,'&quot;')})">Review</button>` : '<span style="font-size:12px;color:var(--muted);">Sudah diproses</span>'}
+            </td>
+        </tr>`).join('');
+
+    document.getElementById('table-content').innerHTML = `
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Nama Kegiatan</th><th>Siswa</th><th>Tingkat</th>
+              <th>Peringkat</th><th>Tahun</th><th>Status</th><th>Aksi</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+}
+
+function filterStatus(status, el) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    loadData(status);
+}
+
+function openModal(achievement) {
+    currentId = achievement.id;
+    document.getElementById('modal-title').textContent = achievement.nama_kegiatan;
+    document.getElementById('modal-sub').textContent = `${achievement.penyelenggara} • ${achievement.tingkat} • ${achievement.tahun}`;
+    document.getElementById('modal-info').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div><span style="color:var(--muted)">Peringkat</span><br><strong>${achievement.peringkat}</strong></div>
+            <div><span style="color:var(--muted)">Siswa</span><br><strong>${achievement.user?.name || '—'}</strong></div>
+            <div style="grid-column:span 2"><span style="color:var(--muted)">Deskripsi</span><br>${achievement.deskripsi || '—'}</div>
+        </div>`;
+    document.getElementById('inp-catatan').value = '';
+    document.getElementById('modal-validate').classList.add('show');
+}
+function closeModal() { document.getElementById('modal-validate').classList.remove('show'); }
+
+async function submitValidasi(status) {
+    const catatan = document.getElementById('inp-catatan').value.trim();
+    if (status === 'Rejected' && !catatan) { toast('Wajib isi catatan alasan penolakan!','error'); return; }
+    try {
+        await Api.patch(`/admin/achievements/${currentId}/validate`, { status, catatan });
+        toast(`Prestasi berhasil di-${status}!`, 'success');
+        closeModal();
+        loadData();
+    } catch(e) { toast('Gagal memproses validasi.', 'error'); }
+}
+
+function toast(msg, type='info') {
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.innerHTML = `${type==='success'?'✅':type==='error'?'❌':'ℹ️'} ${msg}`;
+    document.getElementById('toast-container').appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+}
+
+loadData();
+</script>
+</body>
+</html>
