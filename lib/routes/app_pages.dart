@@ -5,6 +5,7 @@ import '../pages/dashboard_page.dart';
 import '../pages/prestasi_page.dart';
 import '../pages/tracer_page.dart';
 import '../pages/profile_page.dart';
+import '../pages/arsip_page.dart';
 
 import '../controllers/dashboard_controller.dart';
 import '../controllers/prestasi_controller.dart';
@@ -55,6 +56,12 @@ abstract class AppPages {
       binding: BindingsBuilder(() {
         Get.lazyPut<ProfileController>(() => ProfileController());
       }),
+      transition: Transition.rightToLeft,
+    ),
+    // REQ-F-09: Halaman Arsip Dokumen Alumni
+    GetPage(
+      name: AppRoutes.arsip,
+      page: () => const ArsipPage(),
       transition: Transition.rightToLeft,
     ),
   ];

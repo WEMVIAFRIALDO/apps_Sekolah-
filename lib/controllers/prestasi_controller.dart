@@ -53,18 +53,19 @@ class PrestasiController extends GetxController {
   /// Mendukung format: PDF, JPG, PNG. Maks. 5 MB.
   Future<void> pickCertificate() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      // file_picker v13: pickFiles adalah static method, return List<PlatformFile>
+      final files = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
-        allowMultiple: false,
       );
 
-      if (result == null || result.files.isEmpty) return; // User membatalkan
+      if (files.isEmpty) return; // User membatalkan
 
-      final file = result.files.first;
+      final file = files.first;
 
       // Validasi ukuran file (maks 5 MB)
-      final fileSizeInMB = (file.size / (1024 * 1024));
+      final sizeBytes = file.lengthSync() ?? await file.length() ?? 0;
+      final fileSizeInMB = (sizeBytes / (1024 * 1024));
       if (fileSizeInMB > 5) {
         Get.snackbar(
           'File Terlalu Besar',

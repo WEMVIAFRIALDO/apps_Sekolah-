@@ -44,10 +44,16 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Admin & Guru Panel
     Route::prefix('admin')->group(function () {
-        Route::get('/stats',                                  [AdminController::class, 'stats']);
-        Route::get('/achievements',                           [AdminController::class, 'listAchievements']);
-        Route::patch('/achievements/{achievement}/validate',  [AdminController::class, 'validateAchievement']);
-        Route::post('/users',                                 [AdminController::class, 'createUser']);
-        Route::patch('/users/{user}/promote',                 [AdminController::class, 'promoteToAlumni']);
+        Route::get('/stats',                                    [AdminController::class, 'stats']);
+        // Manajemen Pengguna (REQ-F-02)
+        Route::get('/users',                                    [AdminController::class, 'listUsers']);
+        Route::post('/users',                                   [AdminController::class, 'createUser']);
+        Route::patch('/users/{user}/promote',                   [AdminController::class, 'promoteToAlumni']);
+        // Validasi Prestasi (REQ-F-04)
+        Route::get('/achievements',                             [AdminController::class, 'listAchievements']);
+        Route::patch('/achievements/{achievement}/validate',    [AdminController::class, 'validateAchievement']);
+        // Tracer Study Rekapitulasi (REQ-F-10)
+        Route::get('/tracer-studies',                          [AdminController::class, 'listTracerStudies']);
+        Route::get('/tracer-studies/export-csv',               [AdminController::class, 'exportTracerCsv']);
     });
 });

@@ -8,8 +8,9 @@ class AuthService {
   AuthService._internal();
 
   // Menggunakan Android Keystore untuk keamanan ekstra
+  // flutter_secure_storage v11+ sudah enkripsi secara default
   static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    aOptions: AndroidOptions(),
   );
 
   // Key constants
