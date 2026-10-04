@@ -55,5 +55,8 @@ Route::middleware('jwt.auth')->group(function () {
         // Tracer Study Rekapitulasi (REQ-F-10)
         Route::get('/tracer-studies',                          [AdminController::class, 'listTracerStudies']);
         Route::get('/tracer-studies/export-csv',               [AdminController::class, 'exportTracerCsv']);
+        // Jadwal Kelulusan (REQ-F-07)
+        Route::get('/schedules',                               [AdminController::class, 'listSchedules']);
+        Route::post('/schedules',                              [AdminController::class, 'createSchedule']);
     });
 });

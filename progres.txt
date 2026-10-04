@@ -44,3 +44,25 @@ Jumat, 2 Oktober 2026 (Sesi 3)
 - Menjadikan struktur aplikasi menjadi Monorepo (satu repositori), menggabungkan Flutter (apps_sekolah), Web Admin (salut_web_admin), dan Laravel (salut_backend).
 - Mendorong (push) seluruh aplikasi SALUT ke GitHub repository WEMVIAFRIALDO/apps_Sekolah-.
 - Menuliskan dokumentasi akun login pada LOGIN_SALUT.txt.
+
+Senin, 5 Oktober 2026 (Sesi 4 - Gap Kritis)
+---------------------------------
+[DATABASE & SEEDER]
+- Memodifikasi `UserSeeder.php` untuk men-generate otomatis 210 pengguna (1 Admin, 4 Guru, 190 Siswa lengkap dengan pembagian kelas, 10 Alumni).
+- Membuat migration dan model `GraduationSchedule` untuk menampung tanggal rilis kelulusan.
+
+[WEB ADMIN]
+- Implementasi Sidebar Role-Aware di `auth.js` (Guru tidak bisa mengakses menu "Siswa & Alumni" dan "Arsip Dokumen").
+- Integrasi endpoint API asli ke halaman `students.html` dengan fitur filter role, kelas, dan angkatan.
+- Integrasi endpoint API asli ke halaman `tracer.html` lengkap dengan grafik rekapitulasi chart.js yang dinamis.
+- Perbaikan UI/UX pada elemen `<select>` (form-select) dengan menambahkan SVG panah dropdown di file `style.css`.
+- Membuat halaman baru `schedules.html` untuk Admin mengatur Jadwal Kelulusan Angkatan (tanggal pengumuman kelulusan otomatis).
+
+[FRONTEND FLUTTER]
+- Mendaftarkan dan menyempurnakan halaman `ArsipPage` agar terhubung ke dashboard Alumni untuk mengunduh Ijazah & SKHUN via API JWT.
+- Memastikan logika form kuesioner dinamis pada Tracer Study telah berjalan sempurna sesuai role (Bekerja vs Kuliah).
+
+[BACKEND LARAVEL]
+- Mendaftarkan rute API baru untuk manajemen arsip (`/api/arsip`) dan manajemen jadwal kelulusan (`/api/admin/schedules`).
+- Mengimplementasikan logika pembaruan role massal (Siswa ke Alumni) pada file command `PromoteAlumni.php`.
+- Menjadwalkan `salut:promote-alumni` agar dieksekusi otomatis oleh sistem setiap hari jam 00:00 melalui `routes/console.php`.

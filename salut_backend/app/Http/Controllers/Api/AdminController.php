@@ -275,5 +275,44 @@ class AdminController extends Controller
                 'tracer_filled'       => \App\Models\TracerStudy::count(),
             ],
         ]);
+    /**
+     * GET /api/admin/schedules — Lihat jadwal kelulusan
+     */
+    public function listSchedules(): JsonResponse
+    {
+        $admin = JWTAuth::user();
+        if (!$admin->isAdmin()) {
+            return response()->json(['message' => 'Hanya Admin.'], 403);
+        }
+
+        $schedules = \App\Models\GraduationSchedule::orderBy('angkatan', 'desc')->get();
+        return response()->json(['success' => true, 'data' => $schedules]);
+    }
+
+    /**
+     * POST /api/admin/schedules — Set jadwal kelulusan baru
+     */
+    public function createSchedule(Request $request): JsonResponse
+    {
+        $admin = JWTAuth::user();
+        if (!$admin->isAdmin()) {
+            return response()->json(['message' => 'Hanya Admin.'], 403);
+        }
+
+        $validated = $request->validate([
+            'angkatan' => 'required|integer',
+            'graduation_date' => 'required|date'
+        ]);
+
+        $schedule = \App\Models\GraduationSchedule::updateOrCreate(
+            ['angkatan' => $validated['angkatan']],
+            ['graduation_date' => $validated['graduation_date'], 'status' => 'pending']
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Jadwal kelulusan berhasil disimpan.',
+            'data' => $schedule
+        ]);
     }
 }

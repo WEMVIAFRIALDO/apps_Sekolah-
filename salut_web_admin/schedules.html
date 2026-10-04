@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jadwal Kelulusan — SALUT Admin</title>
+<meta name="description" content="Manajemen Jadwal Kelulusan Angkatan SALUT">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="toast-container"></div>
+
+<!-- Modal Tambah Jadwal (Admin only) -->
+<div class="modal-overlay" id="modal-add">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-title">Set Jadwal Kelulusan</div>
+    <div class="modal-sub">Otomatis luluskan siswa kelas XII angkatan tertentu (Cronjob)</div>
+    <div id="add-alert" class="alert alert-error" style="display:none"></div>
+    <div class="form-group">
+      <label class="form-label">Tahun Angkatan</label>
+      <input id="inp-angkatan" type="number" class="form-input" placeholder="Misal: 2026">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tanggal Pengumuman (Otomatis)</label>
+      <input id="inp-date" type="datetime-local" class="form-input">
+    </div>
+    <div style="display:flex;gap:12px;margin-top:20px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="submitAdd()">✅ Simpan Jadwal</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-add').classList.remove('show')">Batal</button>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><h1><span>SALUT</span></h1><p id="sidebar-role-label">Panel v1.0</p></div>
+    <nav class="nav-section" id="sidebar-nav"></nav>
+  </aside>
+
+  <main class="main-content">
+    <header class="header">
+      <div class="header-search"><h2>Jadwal Kelulusan (Cronjob)</h2></div>
+      <div class="header-actions">
+        <button class="btn btn-primary" id="btn-add-schedule" onclick="document.getElementById('modal-add').classList.add('show')" style="display:none">
+          + Set Jadwal Baru
+        </button>
+        <div class="user-profile" onclick="Auth.logout()">
+          <img src="https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff" alt="Profile" id="header-avatar">
+        </div>
+      </div>
+    </header>
+
+    <div style="padding: 24px;">
+      <div class="card" style="padding: 0">
+        <div style="overflow-x:auto;">
+          <table class="data-table" id="schedules-table">
+            <thead>
+              <tr>
+                <th>Angkatan</th>
+                <th>Tanggal Kelulusan</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="4" style="text-align:center;padding:24px;">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  function showAlert(msg) {
+    const el = document.getElementById('add-alert');
+    el.textContent = msg; el.style.display = 'block';
+  }
+
+  async function loadSchedules() {
+    const res = await Api.get('/admin/schedules');
+    if (!res.success) return;
+    
+    const tbody = document.querySelector('#schedules-table tbody');
+    tbody.innerHTML = '';
+    
+    if (res.data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;">Belum ada jadwal yang diset.</td></tr>`;
+      return;
+    }
+
+    res.data.forEach(s => {
+      const statusBadge = s.status === 'completed' 
+        ? `<span class="badge badge-success">Completed</span>`
+        : `<span class="badge badge-warning">Pending</span>`;
+      
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-weight:bold;">${s.angkatan}</td>
+        <td>${new Date(s.graduation_date).toLocaleString('id-ID')}</td>
+        <td>${statusBadge}</td>
+        <td>-</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function submitAdd() {
+    const angkatan = document.getElementById('inp-angkatan').value;
+    const date = document.getElementById('inp-date').value;
+
+    if(!angkatan || !date) return showAlert('Semua field harus diisi.');
+    
+    const res = await Api.post('/admin/schedules', { angkatan, graduation_date: date });
+    if (res.success) {
+      document.getElementById('modal-add').classList.remove('show');
+      document.getElementById('inp-angkatan').value = '';
+      document.getElementById('inp-date').value = '';
+      loadSchedules();
+    } else {
+      showAlert(res.message || 'Gagal menyimpan jadwal');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    Auth.init();
+    Auth.buildNav('schedules');
+    
+    const user = Auth.getUser();
+    if(user && user.role === 'admin') {
+      document.getElementById('btn-add-schedule').style.display = 'block';
+    }
+    loadSchedules();
+  });
+</script>
+</body>
+</html>
