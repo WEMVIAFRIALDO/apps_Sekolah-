@@ -397,7 +397,7 @@ class DashboardPage extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  Icons.assignment_turned_in_rounded,
+                  Icons.school_rounded,
                   color: Colors.tealAccent,
                   size: 26,
                 ),
@@ -408,7 +408,7 @@ class DashboardPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Pelacakan Alumni (Tracer Study)',
+                      'Layanan Alumni',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -417,7 +417,7 @@ class DashboardPage extends StatelessWidget {
                     ),
                     SizedBox(height: 2),
                     Text(
-                      'Bantu almamater dengan memperbarui data karir',
+                      'Tracer study & unduh arsip ijazah/rapor',
                       style: TextStyle(color: Colors.white70, fontSize: 12),
                     ),
                   ],
@@ -425,23 +425,39 @@ class DashboardPage extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: controller.handleOpenTracerStudy,
-            icon: const Icon(Icons.edit_note_rounded, size: 20),
-            label: const Text(
-              'Isi Tracer Study',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.tealAccent.shade400,
-              foregroundColor: const Color(0xFF0F172A),
-              minimumSize: const Size(double.infinity, 44),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: controller.handleOpenTracerStudy,
+                  icon: const Icon(Icons.edit_note_rounded, size: 18),
+                  label: const Text('Tracer Study', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.tealAccent.shade400,
+                    foregroundColor: const Color(0xFF0F172A),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                ),
               ),
-              elevation: 0,
-            ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => Get.toNamed('/arsip'),
+                  icon: const Icon(Icons.folder_shared_rounded, size: 18),
+                  label: const Text('Arsip Dokumen', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.indigo.shade700,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

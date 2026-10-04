@@ -9,4 +9,5 @@ abstract class AppRoutes {
   static const prestasi  = '/prestasi';
   static const tracer    = '/tracer';
   static const profile   = '/profile';
+  static const arsip     = '/arsip';   // REQ-F-09: Arsip Dokumen Alumni
 }

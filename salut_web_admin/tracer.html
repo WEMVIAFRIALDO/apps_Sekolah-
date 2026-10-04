@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tracer Study — SALUT Admin</title>
+<meta name="description" content="Rekapitulasi data Tracer Study alumni SALUT">
 <link rel="stylesheet" href="css/style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -10,15 +11,8 @@
 <div id="toast-container"></div>
 <div class="layout">
   <aside class="sidebar">
-    <div class="sidebar-logo"><h1><span>SALUT</span></h1><p>Admin Panel v1.0</p></div>
-    <nav class="nav-section">
-      <p class="nav-label">Menu Utama</p>
-      <a href="dashboard.html" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Dashboard</a>
-      <a href="students.html" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Siswa & Alumni</a>
-      <a href="prestasi.html" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>Validasi Prestasi</a>
-      <a href="arsip.html" class="nav-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>Arsip Dokumen</a>
-      <a href="tracer.html" class="nav-item active"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>Tracer Study</a>
-    </nav>
+    <div class="sidebar-logo"><h1><span>SALUT</span></h1><p id="sidebar-role-label">Panel v1.0</p></div>
+    <nav class="nav-section" id="sidebar-nav"></nav>
     <div class="sidebar-footer">
       <div class="user-card"><div class="user-avatar" id="user-avatar">A</div><div><div class="user-name" id="nav-user-name">Loading...</div><div class="user-role" id="nav-user-role">role</div></div></div>
       <button class="btn-logout" id="btn-logout">🚪 Keluar</button>
@@ -26,29 +20,42 @@
   </aside>
   <main class="main">
     <div class="topbar">
-      <div><div class="page-title">Data Tracer Study</div><div class="page-sub">Rekap data aktivitas alumni pasca-kelulusan</div></div>
+      <div><div class="page-title">Tracer Study</div><div class="page-sub">Rekapitulasi aktivitas alumni pasca-kelulusan</div></div>
+      <div style="display:flex;gap:10px;" id="topbar-export"></div>
     </div>
     <div class="content">
-      <!-- Stat mini -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
-        <div class="card" style="text-align:center;padding:20px;">
-          <div style="font-size:32px;font-weight:800;color:#6366F1" id="ts-kuliah">—</div>
-          <div style="font-size:13px;color:var(--muted);margin-top:4px;">Melanjutkan Kuliah</div>
-        </div>
-        <div class="card" style="text-align:center;padding:20px;">
-          <div style="font-size:32px;font-weight:800;color:#10B981" id="ts-kerja">—</div>
-          <div style="font-size:13px;color:var(--muted);margin-top:4px;">Bekerja / Wirausaha</div>
-        </div>
-        <div class="card" style="text-align:center;padding:20px;">
-          <div style="font-size:32px;font-weight:800;color:#F59E0B" id="ts-lain">—</div>
-          <div style="font-size:13px;color:var(--muted);margin-top:4px;">Lainnya</div>
-        </div>
+      <!-- Stat ringkas -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+        <div class="card" style="padding:18px;text-align:center"><div style="font-size:28px;font-weight:800;color:#6366F1" id="ts-total">—</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Total Responden</div></div>
+        <div class="card" style="padding:18px;text-align:center"><div style="font-size:28px;font-weight:800;color:#06B6D4" id="ts-kuliah">—</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Melanjutkan Kuliah</div></div>
+        <div class="card" style="padding:18px;text-align:center"><div style="font-size:28px;font-weight:800;color:#10B981" id="ts-kerja">—</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Bekerja</div></div>
+        <div class="card" style="padding:18px;text-align:center"><div style="font-size:28px;font-weight:800;color:#F59E0B" id="ts-wirausaha">—</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Wirausaha</div></div>
       </div>
-      <!-- Chart + Table -->
+
+      <!-- Filter -->
+      <div class="toolbar" style="margin-bottom:20px;">
+        <select class="form-input form-select" id="filter-angkatan" style="width:160px;" onchange="loadTracer()">
+          <option value="">Semua Angkatan</option>
+          <option value="2024">Angkatan 2024</option>
+          <option value="2025">Angkatan 2025</option>
+          <option value="2026">Angkatan 2026</option>
+        </select>
+        <select class="form-input form-select" id="filter-status" style="width:180px;" onchange="loadTracer()">
+          <option value="">Semua Status</option>
+          <option value="Bekerja">Bekerja</option>
+          <option value="Kuliah / Melanjutkan Studi">Kuliah</option>
+          <option value="Wirausaha">Wirausaha</option>
+        </select>
+        <div style="flex:1"></div>
+        <button class="btn btn-ghost" onclick="exportTracerCsv()" style="border:1px solid var(--border)" id="btn-export-csv">📥 Export CSV</button>
+      </div>
+
+      <!-- Charts -->
       <div class="charts-grid" style="margin-bottom:24px;">
         <div class="chart-card"><div class="chart-title">Distribusi Status Alumni</div><div class="chart-sub">Berdasarkan data tracer study yang masuk</div><canvas id="chart-status" height="240"></canvas></div>
-        <div class="chart-card"><div class="chart-title">Per Angkatan</div><div class="chart-sub">Respon tracer study per tahun kelulusan</div><canvas id="chart-angkatan" height="240"></canvas></div>
+        <div class="chart-card"><div class="chart-title">Per Angkatan</div><div class="chart-sub">Jumlah responden per tahun kelulusan</div><canvas id="chart-angkatan" height="240"></canvas></div>
       </div>
+
       <div id="table-content"><div class="loading"><div class="spinner"></div>Memuat data tracer study...</div></div>
     </div>
   </main>
@@ -56,51 +63,126 @@
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script>
-Auth.guard(); Auth.initNav();
-const user = Auth.user();
-if (user) document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+Auth.guard();
+Auth.buildNav('tracer');
+const currentUser = Auth.user();
+const isAdmin = currentUser && currentUser.role === 'admin';
+var chartStatus   = null;
+var chartAngkatan = null;
 
-// Demo data — backend endpoint GET /admin/tracer-study belum ada, pakai mock
-const mockTracer = [
-    {id:1, user:{name:'Siti Rahayu',nisn:'0067890123',angkatan:2024}, status:'Kuliah / Melanjutkan Studi', nama_instansi:'Universitas Indonesia', kota:'Depok', prodi:'Teknik Informatika'},
-];
+async function loadTracer() {
+  document.getElementById('table-content').innerHTML = '<div class="loading"><div class="spinner"></div>Memuat...</div>';
+  var angkatan = document.getElementById('filter-angkatan').value;
+  var status   = document.getElementById('filter-status').value;
+  var params   = new URLSearchParams({ per_page: 100 });
+  if (angkatan) params.set('angkatan', angkatan);
+  if (status)   params.set('status', status);
 
-function renderTracer(data) {
-    document.getElementById('ts-kuliah').textContent = data.filter(d => d.status.includes('Kuliah')).length;
-    document.getElementById('ts-kerja').textContent  = data.filter(d => d.status.includes('Bekerja') || d.status.includes('Wirausaha')).length;
-    document.getElementById('ts-lain').textContent   = data.filter(d => !d.status.includes('Kuliah') && !d.status.includes('Bekerja') && !d.status.includes('Wirausaha')).length;
+  try {
+    var res = await Api.get('/admin/tracer-studies?' + params.toString());
+    var s   = res.summary;
+    document.getElementById('ts-total').textContent    = s.total;
+    document.getElementById('ts-kuliah').textContent   = s.kuliah;
+    document.getElementById('ts-kerja').textContent    = s.bekerja;
+    document.getElementById('ts-wirausaha').textContent= s.wirausaha;
 
-    const statusCount = {};
-    data.forEach(d => { statusCount[d.status] = (statusCount[d.status]||0)+1; });
-    const colors = ['#6366F1','#06B6D4','#10B981','#F59E0B','#EF4444','#8B5CF6'];
-    new Chart(document.getElementById('chart-status'), {
-        type:'doughnut',
-        data:{ labels:Object.keys(statusCount), datasets:[{ data:Object.values(statusCount), backgroundColor:colors, borderWidth:0, hoverOffset:6 }] },
-        options:{ plugins:{ legend:{ position:'right', labels:{ color:'#94A3B8', font:{family:'Inter',size:11} } } }, cutout:'55%' }
-    });
-    new Chart(document.getElementById('chart-angkatan'), {
-        type:'bar',
-        data:{ labels:['2023','2024','2025'], datasets:[{ label:'Respon', data:[0,data.length,0], backgroundColor:'#6366F1', borderRadius:8, borderSkipped:false }] },
-        options:{ plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#94A3B8'},grid:{color:'rgba(255,255,255,0.04)'}}, y:{ticks:{color:'#94A3B8'},grid:{color:'rgba(255,255,255,0.04)'}} } }
-    });
-
-    if (!data.length) { document.getElementById('table-content').innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">Belum ada data Tracer Study</div></div>'; return; }
-    const rows = data.map(t => `
-      <tr>
-        <td><div style="font-weight:600;font-size:13px;">${t.user.name}</div><div style="font-size:11px;color:var(--muted)">${t.user.nisn}</div></td>
-        <td><span class="badge badge-siswa" style="background:rgba(6,182,212,0.1);color:#67E8F9">${t.user.angkatan}</span></td>
-        <td><span style="font-size:12px;background:rgba(255,255,255,0.06);padding:3px 10px;border-radius:6px;">${t.status}</span></td>
-        <td style="font-size:13px;">${t.nama_instansi||'—'}</td>
-        <td style="font-size:13px;">${t.kota||'—'}</td>
-        <td style="font-size:13px;">${t.prodi||t.jabatan||'—'}</td>
-      </tr>`).join('');
-    document.getElementById('table-content').innerHTML = `
-      <div class="table-wrap"><table>
-        <thead><tr><th>Alumni</th><th>Angkatan</th><th>Status</th><th>Instansi</th><th>Kota</th><th>Prodi/Jabatan</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table></div>`;
+    renderCharts(res.data.data);
+    renderTable(res.data.data);
+  } catch(e) {
+    document.getElementById('table-content').innerHTML =
+      '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Gagal memuat data</div><div class="empty-sub">' + e.message + '</div></div>';
+  }
 }
-renderTracer(mockTracer);
+
+function renderCharts(data) {
+  // Hitung per status
+  var statusCount = {};
+  var angkatanCount = {};
+  data.forEach(function(d) {
+    statusCount[d.status] = (statusCount[d.status] || 0) + 1;
+    var ang = d.user ? d.user.angkatan : 'Unknown';
+    angkatanCount[ang] = (angkatanCount[ang] || 0) + 1;
+  });
+
+  var colors = ['#6366F1','#06B6D4','#10B981','#F59E0B','#EF4444','#8B5CF6'];
+
+  if (chartStatus) chartStatus.destroy();
+  chartStatus = new Chart(document.getElementById('chart-status'), {
+    type: 'doughnut',
+    data: { labels: Object.keys(statusCount), datasets: [{ data: Object.values(statusCount), backgroundColor: colors, borderWidth: 0, hoverOffset: 6 }] },
+    options: { plugins: { legend: { position: 'right', labels: { color: '#94A3B8', font: { family: 'Inter', size: 11 } } } }, cutout: '55%' }
+  });
+
+  if (chartAngkatan) chartAngkatan.destroy();
+  chartAngkatan = new Chart(document.getElementById('chart-angkatan'), {
+    type: 'bar',
+    data: { labels: Object.keys(angkatanCount), datasets: [{ label: 'Responden', data: Object.values(angkatanCount), backgroundColor: '#6366F1', borderRadius: 8, borderSkipped: false }] },
+    options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94A3B8' }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: '#94A3B8' }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
+  });
+}
+
+function renderTable(data) {
+  if (!data || !data.length) {
+    document.getElementById('table-content').innerHTML = '<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">Belum ada data Tracer Study</div></div>';
+    return;
+  }
+  var rows = data.map(function(t) {
+    var u      = t.user || {};
+    var detail = t.jabatan || t.prodi || '—';
+    return '<tr>' +
+      '<td><div style="font-weight:600;font-size:13px;">' + (u.name || '—') + '</div><div style="font-size:11px;color:var(--muted)">' + (u.nisn || '') + '</div></td>' +
+      '<td><span class="badge" style="background:rgba(6,182,212,0.1);color:#67E8F9">' + (u.angkatan || '—') + '</span></td>' +
+      '<td><span class="badge badge-' + statusBadge(t.status) + '">' + t.status + '</span></td>' +
+      '<td style="font-size:13px;">' + (t.nama_instansi || '—') + '</td>' +
+      '<td style="font-size:13px;">' + (t.kota || '—') + '</td>' +
+      '<td style="font-size:13px;">' + detail + '</td>' +
+      '<td style="font-size:13px;">' + (t.tahun_masuk || '—') + '</td>' +
+      '</tr>';
+  }).join('');
+  document.getElementById('table-content').innerHTML =
+    '<div class="table-wrap"><table><thead><tr><th>Alumni</th><th>Angkatan</th><th>Status</th><th>Instansi</th><th>Kota</th><th>Prodi/Jabatan</th><th>Tahun Masuk</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+function statusBadge(status) {
+  if (!status) return 'siswa';
+  if (status.includes('Kuliah')) return 'siswa';
+  if (status === 'Bekerja') return 'alumni';
+  return 'guru';
+}
+
+async function exportTracerCsv() {
+  try {
+    toast('Menyiapkan file CSV Tracer Study...', 'info');
+    var angkatan = document.getElementById('filter-angkatan').value;
+    var token    = localStorage.getItem('salut_token');
+    var url      = 'http://127.0.0.1:8000/api/admin/tracer-studies/export-csv' + (angkatan ? '?angkatan=' + angkatan : '');
+    var res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) throw new Error('Gagal export — hanya Admin yang diizinkan.');
+    var blob = await res.blob();
+    var burl = window.URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href = burl; a.download = 'Tracer_Study_SALUT_' + new Date().toISOString().split('T')[0] + '.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('CSV Tracer Study berhasil diunduh!', 'success');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+function toast(msg, type) {
+  type = type || 'info';
+  var el = document.createElement('div');
+  el.className = 'toast toast-' + type;
+  el.innerHTML = (type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️') + ' ' + msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(function() { el.remove(); }, 4000);
+}
+
+// Sembunyikan export CSV untuk Guru
+if (!isAdmin) {
+  var btnExport = document.getElementById('btn-export-csv');
+  if (btnExport) btnExport.style.display = 'none';
+}
+
+loadTracer();
 </script>
 </body>
 </html>

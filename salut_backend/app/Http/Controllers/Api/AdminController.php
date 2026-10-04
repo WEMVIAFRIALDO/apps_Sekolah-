@@ -3,15 +3,154 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Achievement;
+use App\Models\TracerStudy;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 /** Endpoint khusus Admin dan Guru */
 class AdminController extends Controller
 {
+    /**
+     * GET /api/admin/users — Daftar semua pengguna dengan filter role, kelas, angkatan, search
+     * Digunakan oleh students.html
+     */
+    public function listUsers(Request $request): JsonResponse
+    {
+        $caller = JWTAuth::user();
+        if (!$caller->isAdmin() && !$caller->isGuru()) {
+            return response()->json(['message' => 'Tidak diizinkan.'], 403);
+        }
+
+        $query = User::query()->orderBy('name');
+
+        // Filter role
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        } else {
+            // Default: tampilkan siswa, alumni, guru (bukan admin)
+            $query->whereIn('role', ['siswa', 'alumni', 'guru']);
+        }
+
+        // Filter kelas
+        if ($request->filled('class_name')) {
+            $query->where('class_name', $request->class_name);
+        }
+
+        // Filter angkatan
+        if ($request->filled('angkatan')) {
+            $query->where('angkatan', $request->angkatan);
+        }
+
+        // Search nama / NISN
+        if ($request->filled('search')) {
+            $q = $request->search;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('nisn', 'like', "%{$q}%");
+            });
+        }
+
+        $perPage = (int) $request->get('per_page', 50);
+        $paginated = $query->select(
+            'id','name','nisn','role','phone','class_name','angkatan','graduation_date','is_active','created_at'
+        )->paginate($perPage);
+
+        return response()->json(['success' => true, 'data' => $paginated]);
+    }
+
+    /**
+     * GET /api/admin/tracer-studies — Rekapitulasi Tracer Study semua alumni
+     * REQ-F-10
+     */
+    public function listTracerStudies(Request $request): JsonResponse
+    {
+        $caller = JWTAuth::user();
+        if (!$caller->isAdmin() && !$caller->isGuru()) {
+            return response()->json(['message' => 'Tidak diizinkan.'], 403);
+        }
+
+        $query = TracerStudy::with('user:id,name,nisn,angkatan,class_name,graduation_date')
+            ->orderBy('created_at', 'desc');
+
+        // Filter angkatan
+        if ($request->filled('angkatan')) {
+            $query->whereHas('user', fn($u) => $u->where('angkatan', $request->angkatan));
+        }
+
+        // Filter status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $perPage = (int) $request->get('per_page', 50);
+        $paginated = $query->paginate($perPage);
+
+        // Hitung ringkasan
+        $summary = [
+            'total'        => TracerStudy::count(),
+            'kuliah'       => TracerStudy::where('status', 'like', 'Kuliah%')->count(),
+            'bekerja'      => TracerStudy::where('status', 'Bekerja')->count(),
+            'wirausaha'    => TracerStudy::where('status', 'Wirausaha')->count(),
+            'lainnya'      => TracerStudy::whereNotIn('status', ['Bekerja', 'Wirausaha'])
+                                         ->where('status', 'not like', 'Kuliah%')->count(),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'summary' => $summary,
+            'data'    => $paginated,
+        ]);
+    }
+
+    /**
+     * GET /api/admin/tracer-studies/export-csv — Export CSV Tracer Study
+     * REQ-F-10
+     */
+    public function exportTracerCsv(Request $request): Response
+    {
+        $caller = JWTAuth::user();
+        if (!$caller->isAdmin()) {
+            abort(403, 'Hanya Admin.');
+        }
+
+        $query = TracerStudy::with('user:id,name,nisn,angkatan,class_name,graduation_date')
+            ->orderBy('created_at', 'desc');
+
+        if ($request->filled('angkatan')) {
+            $query->whereHas('user', fn($u) => $u->where('angkatan', $request->angkatan));
+        }
+
+        $rows = $query->get();
+        $csv  = "No,Nama,NISN,Angkatan,Kelas,Status Pasca-Lulus,Instansi,Kota,Jabatan/Prodi,Tahun Masuk\n";
+
+        foreach ($rows as $i => $r) {
+            $u = $r->user;
+            $detail = $r->jabatan ?? $r->prodi ?? '-';
+            $csv .= implode(',', [
+                $i + 1,
+                '"' . ($u->name ?? '-') . '"',
+                $u->nisn ?? '-',
+                $u->angkatan ?? '-',
+                '"' . ($u->class_name ?? '-') . '"',
+                '"' . $r->status . '"',
+                '"' . ($r->nama_instansi ?? '-') . '"',
+                '"' . ($r->kota ?? '-') . '"',
+                '"' . $detail . '"',
+                $r->tahun_masuk ?? '-',
+            ]) . "\n";
+        }
+
+        $filename = 'Tracer_Study_SALUT_' . date('Y-m-d') . '.csv';
+        return response($csv, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename={$filename}",
+        ]);
+    }
+
     /** GET /api/admin/achievements — Semua prestasi (untuk validasi Guru) */
     public function listAchievements(Request $request): JsonResponse
     {
