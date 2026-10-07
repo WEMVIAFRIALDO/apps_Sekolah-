@@ -48,6 +48,7 @@ Route::middleware('jwt.auth')->group(function () {
         // Manajemen Pengguna (REQ-F-02)
         Route::get('/users',                                    [AdminController::class, 'listUsers']);
         Route::post('/users',                                   [AdminController::class, 'createUser']);
+        Route::post('/users/import-csv',                        [AdminController::class, 'importCsv']);
         Route::patch('/users/{user}/promote',                   [AdminController::class, 'promoteToAlumni']);
         // Validasi Prestasi (REQ-F-04)
         Route::get('/achievements',                             [AdminController::class, 'listAchievements']);
@@ -58,5 +59,14 @@ Route::middleware('jwt.auth')->group(function () {
         // Jadwal Kelulusan (REQ-F-07)
         Route::get('/schedules',                               [AdminController::class, 'listSchedules']);
         Route::post('/schedules',                              [AdminController::class, 'createSchedule']);
+        // Arsip Siswa (REQ-F-09)
+        Route::get('/arsip/{id}',                              [AdminController::class, 'getStudentArsip']);
+    });
+
+    // Guru Panel
+    Route::prefix('guru')->group(function () {
+        Route::get('/rapor/students',                          [\App\Http\Controllers\Api\RaporController::class, 'getSiswaList']);
+        Route::get('/rapor/students/{id}',                     [\App\Http\Controllers\Api\RaporController::class, 'getStudentRapor']);
+        Route::post('/rapor/students/{id}',                    [\App\Http\Controllers\Api\RaporController::class, 'storeRapor']);
     });
 });

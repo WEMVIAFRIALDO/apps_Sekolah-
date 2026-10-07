@@ -233,6 +233,56 @@ class AdminController extends Controller
     }
 
     /**
+     * POST /api/admin/users/import-csv — Import data siswa massal
+     */
+    public function importCsv(Request $request): JsonResponse
+    {
+        $admin = JWTAuth::user();
+        if (!$admin->isAdmin()) {
+            return response()->json(['message' => 'Hanya Admin.'], 403);
+        }
+
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt|max:2048',
+        ]);
+
+        $file = $request->file('file');
+        $handle = fopen($file->getRealPath(), 'r');
+        
+        $header = fgetcsv($handle); // Lewati header
+        $importedCount = 0;
+
+        while (($row = fgetcsv($handle)) !== false) {
+            // Asumsi kolom CSV: Nama, NISN, Email, Role, Class, Angkatan, Phone
+            if (count($row) < 7) continue;
+
+            $nisn = trim($row[1]);
+            if (empty($nisn) || User::where('nisn', $nisn)->exists()) {
+                continue; // Skip kalau NISN kosong atau sudah ada
+            }
+
+            User::create([
+                'name'       => trim($row[0]),
+                'nisn'       => $nisn,
+                'email'      => trim($row[2]) ?: null,
+                'password'   => Hash::make('rahasia123'), // Default password
+                'role'       => strtolower(trim($row[3])) ?: 'siswa',
+                'class_name' => trim($row[4]) ?: null,
+                'angkatan'   => trim($row[5]) ?: null,
+                'phone'      => trim($row[6]) ?: null,
+                'school'     => 'SMA Negeri 1 Teladan',
+            ]);
+            $importedCount++;
+        }
+        fclose($handle);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Berhasil mengimpor $importedCount data siswa."
+        ]);
+    }
+
+    /**
      * PATCH /api/admin/users/{id}/promote
      * REQ-F-07: Transisi manual Siswa → Alumni oleh Admin.
      * (Otomatis dijalankan via cron job saat jadwal pengumuman tiba)
@@ -275,6 +325,8 @@ class AdminController extends Controller
                 'tracer_filled'       => \App\Models\TracerStudy::count(),
             ],
         ]);
+    }
+
     /**
      * GET /api/admin/schedules — Lihat jadwal kelulusan
      */
@@ -314,5 +366,19 @@ class AdminController extends Controller
             'message' => 'Jadwal kelulusan berhasil disimpan.',
             'data' => $schedule
         ]);
+    }
+
+    /**
+     * GET /api/admin/arsip/{id} — Lihat arsip milik siswa tertentu
+     */
+    public function getStudentArsip($id): JsonResponse
+    {
+        $admin = JWTAuth::user();
+        if (!$admin->isAdmin()) {
+            return response()->json(['message' => 'Hanya Admin.'], 403);
+        }
+
+        $docs = \App\Models\GraduationDoc::where('user_id', $id)->orderBy('doc_type')->get();
+        return response()->json(['success' => true, 'data' => $docs]);
     }
 }

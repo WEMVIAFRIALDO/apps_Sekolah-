@@ -44,6 +44,9 @@ class AuthController extends Controller
         }
 
         try {
+            if ($request->has('fcm_token')) {
+                $user->update(['fcm_token' => $request->fcm_token]);
+            }
             $token = JWTAuth::fromUser($user);
         } catch (JWTException $e) {
             return response()->json([
