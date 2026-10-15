@@ -28,21 +28,35 @@
 
 ---
 
+## 📄 Berkas Dokumen Laporan Resmi Proyek
+
+Seluruh naskah laporan akademik, dokumentasi instalasi, pengujian API, dan integrasi mobile tersimpan dalam format dokumen **Microsoft Word (`.docx`)** dan **Web Preview (`.html`)**:
+
+| Nama Dokumen Laporan | Format | Deskripsi Isi Dokumen | Tautan Langsung |
+| :--- | :---: | :--- | :---: |
+| **Laporan Lengkap Master (Bab 1 - 6 + Instalasi)** | `.docx` | Dokumen akademik komprehensif 35-40 halaman, mencakup Laporan 1 & 2 (Instalasi), Laporan 3 (Backend API), Laporan 4 (Frontend Mobile), Laporan 5 (SKPI & Portofolio), dan Laporan 6 (Automasi & Tracer Study). | [📂 Buka Dokumen](./Laporan_Lengkap_Sistem_SALUT_dan_Instalasi.docx) |
+| **Laporan Kemajuan Sistem 3, 4, 5, 6** | `.docx` | Naskah laporan kompilasi teknis implementasi backend, mobile Flutter, portofolio SKPI, cron automasi, dan analitik web SMK beserta 32 tangkapan layar. | [📂 Buka Dokumen](./Laporan_Lengkap_3_4_5_6.docx) |
+| **Pratinjau Laporan Web Interaktif** | `.html` | Versi web yang dapat langsung dibuka dan dibaca di Google Chrome / browser tanpa perlu Microsoft Word. | [🌐 Buka di Browser](./Laporan_Lengkap_3_4_5_6.html) |
+| **Panduan Instalasi & Setup Awal (Laporan 1 & 2)** | `.docx` | Dokumen panduan instalasi Flutter SDK, Android Studio, XAMPP, Git, dan arsitektur database awal. | [📂 Buka Dokumen](../instalasi.docx) |
+
+---
+
 ## 📑 Daftar Isi
-1. [Latar Belakang & Gambaran Umum Proyek](#-1-latar-belakang--gambaran-umum-proyek)
-2. [Arsitektur Ekosistem Sistem](#-2-arsitektur-ekosistem-sistem)
-3. [Matriks Peran & Hak Akses Pengguna](#-3-matriks-peran--hak-akses-pengguna)
-4. [Fitur Unggulan & Galeri Screenshot Implementasi](#-4-fitur-unggulan--galeri-screenshot-implementasi)
+1. [Berkas Dokumen Laporan Resmi Proyek](#-berkas-dokumen-laporan-resmi-proyek)
+2. [Latar Belakang & Gambaran Umum Proyek](#-1-latar-belakang--gambaran-umum-proyek)
+3. [Arsitektur Ekosistem Sistem](#-2-arsitektur-ekosistem-sistem)
+4. [Matriks Peran & Hak Akses Pengguna](#-3-matriks-peran--hak-akses-pengguna)
+5. [Fitur Unggulan & Galeri Screenshot Implementasi](#-4-fitur-unggulan--galeri-screenshot-implementasi)
    - [A. Backend RESTful API & Basis Data (Laporan 3)](#a-backend-restful-api--basis-data-laporan-3)
    - [B. Frontend Mobile & Dynamic Role Logic (Laporan 4)](#b-frontend-mobile--dynamic-role-logic-laporan-4)
    - [C. Portofolio SKPI & Pengarsipan Dokumen Digital (Laporan 5)](#c-portofolio-skpi--pengarsipan-dokumen-digital-laporan-5)
    - [D. Otomatisasi Kelulusan, Push Notification FCM & Tracer Study (Laporan 6)](#d-otomatisasi-kelulusan-push-notification-fcm--tracer-study-laporan-6)
    - [E. Dashboard Web Admin & Analitik Kejuruan SMK](#e-dashboard-web-admin--analitik-kejuruan-smk)
-5. [Struktur Direktori Repositori](#-5-struktur-direktori-repositori)
-6. [Panduan Instalasi & Menjalankan Sistem](#-6-panduan-instalasi--menjalankan-sistem)
-7. [Daftar Kredensial Akun Pengujian (Testing Accounts)](#-7-daftar-kredensial-akun-pengujian-testing-accounts)
-8. [Dokumentasi Ringkas Endpoint REST API](#-8-dokumentasi-ringkas-endpoint-rest-api)
-9. [Milestone & Log Progres Pengembangan](#-9-milestone--log-progres-pengembangan)
+6. [Struktur Direktori Repositori](#-5-struktur-direktori-repositori)
+7. [Panduan Instalasi & Menjalankan Sistem](#-6-panduan-instalasi--menjalankan-sistem)
+8. [Daftar Kredensial Akun Pengujian (Testing Accounts)](#-7-daftar-kredensial-akun-pengujian-testing-accounts)
+9. [Dokumentasi Ringkas Endpoint REST API](#-8-dokumentasi-ringkas-endpoint-rest-api)
+10. [Milestone & Log Progres Pengembangan](#-9-milestone--log-progres-pengembangan)
 
 ---
 
