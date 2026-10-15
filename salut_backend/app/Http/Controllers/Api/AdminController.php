@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Achievement;
 use App\Models\TracerStudy;
 use App\Models\User;
+use App\Models\SkillCompetency;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -306,7 +307,7 @@ class AdminController extends Controller
         ]);
     }
 
-    /** GET /api/admin/stats — Dashboard statistik untuk web admin */
+    /** GET /api/admin/stats — Dashboard statistik untuk web admin (termasuk metrik SMK lengkap) */
     public function stats(): JsonResponse
     {
         $admin = JWTAuth::user();
@@ -314,15 +315,60 @@ class AdminController extends Controller
             return response()->json(['message' => 'Tidak diizinkan.'], 403);
         }
 
+        // 1. Siswa aktif per jurusan
+        $siswaPerJurusan = User::where('role', 'siswa')
+            ->selectRaw('COALESCE(jurusan, "Lainnya") as jurusan, COUNT(*) as total')
+            ->groupBy('jurusan')
+            ->orderBy('total', 'desc')
+            ->get();
+
+        // 2. Lulusan / Alumni per jurusan
+        $lulusanPerJurusan = User::where('role', 'alumni')
+            ->selectRaw('COALESCE(jurusan, "Lainnya") as jurusan, COUNT(*) as total')
+            ->groupBy('jurusan')
+            ->orderBy('total', 'desc')
+            ->get();
+
+        // 3. Rekapitulasi Tracer Study (Kuliah vs Bekerja vs Wirausaha vs Mencari Kerja)
+        $tracerStatus = TracerStudy::selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->orderBy('total', 'desc')
+            ->get();
+
+        // 4. Sebaran Kampus (Top 5)
+        $topKampus = TracerStudy::where(function($q) {
+                $q->whereNotNull('nama_kampus')->orWhereNotNull('nama_instansi');
+            })
+            ->where('status', 'like', '%Kuliah%')
+            ->selectRaw('COALESCE(nama_kampus, nama_instansi) as kampus, COUNT(*) as total')
+            ->groupBy('kampus')
+            ->orderBy('total', 'desc')
+            ->limit(5)
+            ->get();
+
+        // 5. Sebaran Industri / Bidang Kerja (Top 5)
+        $topIndustri = TracerStudy::whereNotNull('bidang_industri')
+            ->selectRaw('bidang_industri, COUNT(*) as total')
+            ->groupBy('bidang_industri')
+            ->orderBy('total', 'desc')
+            ->limit(5)
+            ->get();
+
         return response()->json([
             'success' => true,
             'data' => [
-                'total_siswa'         => User::where('role','siswa')->count(),
-                'total_alumni'        => User::where('role','alumni')->count(),
-                'total_guru'          => User::where('role','guru')->count(),
-                'prestasi_pending'    => Achievement::where('status_validasi','Pending')->count(),
-                'prestasi_approved'   => Achievement::where('status_validasi','Approved')->count(),
-                'tracer_filled'       => \App\Models\TracerStudy::count(),
+                'total_siswa'          => User::where('role','siswa')->count(),
+                'total_alumni'         => User::where('role','alumni')->count(),
+                'total_guru'           => User::where('role','guru')->count(),
+                'prestasi_pending'     => Achievement::where('status_validasi','Pending')->count(),
+                'prestasi_approved'    => Achievement::where('status_validasi','Approved')->count(),
+                'tracer_filled'        => TracerStudy::count(),
+                'total_kompetensi'     => SkillCompetency::count(),
+                'siswa_per_jurusan'    => $siswaPerJurusan,
+                'lulusan_per_jurusan'  => $lulusanPerJurusan,
+                'tracer_status'        => $tracerStatus,
+                'top_kampus'           => $topKampus,
+                'top_industri'         => $topIndustri,
             ],
         ]);
     }
@@ -365,6 +411,41 @@ class AdminController extends Controller
             'success' => true,
             'message' => 'Jadwal kelulusan berhasil disimpan.',
             'data' => $schedule
+        ]);
+    }
+
+    /**
+     * GET /api/admin/arsip-alumni — Lihat seluruh data alumni dan kelengkapan arsip dokumennya
+     */
+    public function listAlumniArsip(Request $request): JsonResponse
+    {
+        $admin = JWTAuth::user();
+        if (!$admin->isAdmin()) {
+            return response()->json(['message' => 'Hanya Admin.'], 403);
+        }
+
+        $query = User::where('role', 'alumni')->with('graduationDocs')->orderBy('angkatan', 'desc')->orderBy('name', 'asc');
+
+        if ($request->filled('angkatan')) {
+            $query->where('angkatan', $request->angkatan);
+        }
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('name', 'like', "%{$s}%")->orWhere('nisn', 'like', "%{$s}%");
+            });
+        }
+
+        $alumni = $query->paginate($request->get('limit', 25));
+
+        return response()->json([
+            'success' => true,
+            'data' => $alumni,
+            'summary' => [
+                'total_alumni' => User::where('role', 'alumni')->count(),
+                'total_docs'   => \App\Models\GraduationDoc::count(),
+            ]
         ]);
     }
 

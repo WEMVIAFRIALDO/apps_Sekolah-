@@ -53,4 +53,6 @@ salut_backend/.env
 salut_backend/vendor/
 salut_backend/storage/app/private/
 salut_backend/storage/logs/*.log
+~$*.docx
+~$*.doc
 

@@ -54,6 +54,9 @@ Senin, 5 Oktober 2026 (Sesi 4 - Gap Kritis)
 [WEB ADMIN]
 - Implementasi Sidebar Role-Aware di `auth.js` (Guru tidak bisa mengakses menu "Siswa & Alumni" dan "Arsip Dokumen").
 - Integrasi endpoint API asli ke halaman `students.html` dengan fitur filter role, kelas, dan angkatan.
+- Menambahkan Modal dan Tombol "Import CSV" di `students.html`.
+- Membuat halaman baru `rapor.html` khusus untuk Guru dan Admin mengelola Nilai Rapor siswa.
+- Merombak halaman `arsip.html` agar Admin bisa mencari siswa (via NISN/Nama) dan mengunggah dokumen (Ijazah/SKL) spesifik ke profil siswa tersebut.
 - Integrasi endpoint API asli ke halaman `tracer.html` lengkap dengan grafik rekapitulasi chart.js yang dinamis.
 - Perbaikan UI/UX pada elemen `<select>` (form-select) dengan menambahkan SVG panah dropdown di file `style.css`.
 - Membuat halaman baru `schedules.html` untuk Admin mengatur Jadwal Kelulusan Angkatan (tanggal pengumuman kelulusan otomatis).
@@ -61,8 +64,49 @@ Senin, 5 Oktober 2026 (Sesi 4 - Gap Kritis)
 [FRONTEND FLUTTER]
 - Mendaftarkan dan menyempurnakan halaman `ArsipPage` agar terhubung ke dashboard Alumni untuk mengunduh Ijazah & SKHUN via API JWT.
 - Memastikan logika form kuesioner dinamis pada Tracer Study telah berjalan sempurna sesuai role (Bekerja vs Kuliah).
+- Mengintegrasikan dependensi `firebase_messaging` dan `firebase_core` untuk Push Notification kelulusan, serta membuat `FcmService.dart`.
+- Membuat halaman `ChangePasswordPage` lengkap dengan form ganti password, validasi kecocokan, dan request API ke endpoint PATCH `/api/profile/password`.
 
 [BACKEND LARAVEL]
-- Mendaftarkan rute API baru untuk manajemen arsip (`/api/arsip`) dan manajemen jadwal kelulusan (`/api/admin/schedules`).
+- Mendaftarkan rute API baru untuk manajemen arsip (`/api/arsip`), manajemen jadwal kelulusan (`/api/admin/schedules`), dan input rapor (`/api/guru/rapor`).
+- Membuat endpoint `POST /api/admin/users/import-csv` untuk memproses unggahan file CSV secara massal.
+- Membuat `RaporController` untuk membaca daftar siswa dan menyimpan nilai rapor per semester (`academic_records`).
 - Mengimplementasikan logika pembaruan role massal (Siswa ke Alumni) pada file command `PromoteAlumni.php`.
 - Menjadwalkan `salut:promote-alumni` agar dieksekusi otomatis oleh sistem setiap hari jam 00:00 melalui `routes/console.php`.
+
+[RENCANA PENGEMBANGAN SELANJUTNYA - FOKUS SMK] (SELESAI DIEKSEKUSI)
+1. Mengubah struktur aplikasi agar dikhususkan untuk anak SMK.
+2. Skill Raport (Portofolio): Menambahkan fitur bagi Guru untuk mencatat spesifik kompetensi/skill yang dikuasai siswa sesuai jurusannya, yang bisa dicetak sebagai SKPI (Surat Keterangan Pendamping Ijazah) oleh alumni.
+3. Struktur Database Jurusan: Menambahkan pendataan Jurusan (misal: TKJ, RPL, Multimedia) pada data Siswa.
+4. Tracer Study Terpusat Jurusan: Menambahkan pertanyaan kuesioner Tracer Study yang lebih detail (Nama Perusahaan/Kampus, Bidang Industri/Prodi).
+5. Statistik & Visualisasi Lanjutan: Membuat chart di Web Admin yang bisa mem-filter sebaran lulusan (Kerja/Kuliah) berdasarkan grafik tiap Jurusan (TKJ, RPL, dsb).
+
+Selasa, 13 Oktober 2026 (Sesi 5 - Implementasi Ekosistem SMK & Saran Dosen)
+-------------------------------------------------------------------------
+[DATABASE & SEEDER SMK]
+- Menambahkan kolom `jurusan` pada tabel `users` (Migration: `2026_10_13_113957_add_jurusan_to_users_table.php`).
+- Membuat tabel `skill_competencies` untuk menampung data portofolio capaian unit keahlian siswa / SKPI (Migration: `2026_10_13_113957_create_skill_competencies_table.php`).
+- Menambahkan detail tracking pada `tracer_studies` (`nama_kampus`, `nama_prodi`, `bidang_industri`, `keselarasan_jurusan`, `gaji_pertama`).
+- Memperbarui `UserSeeder.php` dengan konteks SMK (TKJ, RPL, Multimedia, Akuntansi, Pemasaran), menghasilkan 190 siswa SMK aktif, 10 alumni, 4 wali jurusan, dan 136 unit kompetensi keahlian terverifikasi.
+
+[BACKEND LARAVEL]
+- Membuat `SkillController` (`/api/skills/my`, `/api/guru/skills/students`, `/api/guru/skills/{userId}`, `/api/guru/skills`, `/api/admin/skills/stats`).
+- Memperluas endpoint `AdminController::stats` untuk menyediakan analitik komprehensif SMK:
+  * Jumlah total siswa SMK dan distribusi per jurusan (TKJ: 97, RPL: 48, Multimedia: 45).
+  * Lulusan / Alumni per jurusan.
+  * Rekapitulasi status penyerapan alumni (Bekerja vs Kuliah vs Wirausaha).
+  * Top 5 Perguruan Tinggi favorit dan Top 5 Sektor Industri yang menyerap lulusan.
+- Mendaftarkan seluruh rute baru pada `routes/api.php`.
+
+[WEB ADMIN]
+- Mengembangkan `dashboard.html` dengan Analitik Kejuruan SMK: metric card kompetensi keahlian, grafik batang siswa per jurusan SMK, grafik doughnut penyerapan alumni, dan leaderboard top kampus & industri.
+- Membuat halaman baru `skills.html` untuk Guru & Admin mengelola dan menginput sertifikasi portofolio keahlian siswa (SKPI) dengan filter jurusan.
+- Menambahkan menu "Portofolio Keahlian" pada navigasi role-aware di `auth.js`.
+- Memperbarui kelas pada `rapor.html` ke format SMK (TKJ, RPL, Multimedia).
+
+[FRONTEND FLUTTER]
+- Membuat `SkillsController` dan halaman `SkillsPage` (`lib/pages/skills_page.dart`) lengkap dengan kartu SKPI, filter tingkat kemahiran (Mahir, Terampil, Dasar), dan detail guru penguji.
+- Mendaftarkan rute `/skills` di `AppRoutes` dan `AppPages`.
+- Menambahkan widget banner interaktif "Portofolio Keahlian SMK" pada `dashboard_page.dart` untuk peran Siswa dan Alumni.
+- Validasi kode menggunakan `flutter analyze` (0 error).
+

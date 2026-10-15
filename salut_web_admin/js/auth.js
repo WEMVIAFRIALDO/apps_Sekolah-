@@ -25,6 +25,15 @@ const Auth = {
         try { return JSON.parse(localStorage.getItem('salut_user')); } catch { return null; }
     },
 
+    getUser() {
+        return this.user();
+    },
+
+    /** Inisialisasi auth & guard halaman */
+    init() {
+        this.guard();
+    },
+
     /** Proteksi halaman — redirect ke login jika tidak ada token */
     guard() {
         if (!localStorage.getItem('salut_token')) {
@@ -72,6 +81,13 @@ const Auth = {
                 icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>',
             },
             {
+                id: 'rapor',
+                href: 'rapor.html',
+                label: 'Nilai Rapor',
+                roles: ['admin', 'guru'],
+                icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>',
+            },
+            {
                 id: 'prestasi',
                 href: 'prestasi.html',
                 label: 'Validasi Prestasi',
@@ -85,6 +101,13 @@ const Auth = {
                 label: 'Arsip Dokumen',
                 roles: ['admin'],  // Guru TIDAK bisa upload arsip
                 icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>',
+            },
+            {
+                id: 'skills',
+                href: 'skills.html',
+                label: 'Portofolio Keahlian',
+                roles: ['admin', 'guru'],
+                icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>',
             },
             {
                 id: 'tracer',
@@ -125,3 +148,65 @@ const Auth = {
         this.buildNav('');
     },
 };
+
+/**
+ * Theme Engine — Pengatur Mode Gelap / Terang (Dark / Light)
+ * Menyimpan preferensi di localStorage dan otomatis menyuntikkan toggle ke Topbar.
+ */
+const Theme = {
+    get() {
+        return localStorage.getItem('salut_theme') || 'dark';
+    },
+    set(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('salut_theme', theme);
+        this.updateButtons(theme);
+        if (typeof window !== 'undefined' && typeof window.onThemeChange === 'function') {
+            window.onThemeChange(theme);
+        }
+    },
+    toggle() {
+        const next = this.get() === 'dark' ? 'light' : 'dark';
+        this.set(next);
+    },
+    updateButtons(theme) {
+        document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+            btn.innerHTML = theme === 'dark' ? '☀️ Mode Terang' : '🌙 Mode Gelap';
+            btn.setAttribute('title', theme === 'dark' ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap');
+        });
+    },
+    init() {
+        const current = this.get();
+        document.documentElement.setAttribute('data-theme', current);
+        this.injectHeaderButton();
+    },
+    injectHeaderButton() {
+        const topbar = document.querySelector('.topbar');
+        if (!topbar) return;
+
+        let rightContainer = topbar.querySelector('div:last-child');
+        if (!rightContainer || rightContainer === topbar.querySelector('div:first-child')) {
+            rightContainer = document.createElement('div');
+            rightContainer.style.display = 'flex';
+            rightContainer.style.alignItems = 'center';
+            rightContainer.style.gap = '12px';
+            topbar.appendChild(rightContainer);
+        }
+
+        if (!document.getElementById('header-theme-toggle')) {
+            const btn = document.createElement('button');
+            btn.id = 'header-theme-toggle';
+            btn.className = 'btn btn-ghost btn-sm theme-toggle-btn';
+            btn.style.cssText = 'font-weight:700;display:inline-flex;align-items:center;gap:6px;border-radius:10px;cursor:pointer;';
+            btn.onclick = () => Theme.toggle();
+            rightContainer.insertBefore(btn, rightContainer.firstChild);
+        }
+        this.updateButtons(this.get());
+    }
+};
+
+// Jalankan auto-init tema saat script dimuat
+Theme.init();
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => Theme.injectHeaderButton());
+}

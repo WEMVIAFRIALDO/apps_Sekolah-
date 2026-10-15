@@ -7,8 +7,10 @@ import 'package:permission_handler/permission_handler.dart';
 import '../routes/app_routes.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
+import '../services/theme_service.dart';
 
 class DashboardController extends GetxController {
+  final themeService = ThemeService.to;
   // Variabel statis sementara untuk peran pengguna (Dynamic UI)
   // Nilai yang didukung: 'Siswa' atau 'Alumni'
   var currentRole = 'Siswa'.obs;
