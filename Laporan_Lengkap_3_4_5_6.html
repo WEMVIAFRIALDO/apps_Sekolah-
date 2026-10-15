@@ -73,43 +73,47 @@
 
 <h3 class="section-title">2.1 Akses Dokumentasi Resmi Flutter SDK</h3>
 <p>Pada bagian ini, saya mengakses situs web dokumentasi resmi Flutter (docs.flutter.dev) untuk mengikuti prosedur instalasi standar yang direkomendasikan bagi sistem operasi Windows 64-bit.</p>
-<figure><img src="instalasi_images/img_00.png"><figcaption>Gambar 2.1: Halaman dokumentasi instalasi resmi Flutter SDK pada peramban web.</figcaption></figure>
+<figure><img src="laporan_screenshots/instalasi/step01_flutter_website.png"><figcaption>Gambar 2.1: Halaman dokumentasi instalasi resmi Flutter SDK pada peramban web (docs.flutter.dev).</figcaption></figure>
 
 <h3 class="section-title">2.2 Pengunduhan Paket Bundel Flutter SDK</h3>
 <p>Selanjutnya, saya mengunduh bundel instalasi Flutter SDK versi stabil terbaru (flutter_windows_3.47.6-stable.zip) melalui menu Install manually untuk sistem operasi Windows.</p>
-<figure><img src="instalasi_images/img_01.png"><figcaption>Gambar 2.2: Proses pengunduhan berkas arsip Flutter SDK stable zip.</figcaption></figure>
+<figure><img src="laporan_screenshots/instalasi/step02_download_flutter_zip.png"><figcaption>Gambar 2.2: Tombol pengunduhan bundel Flutter SDK versi stabil (flutter_windows_3.47.6-stable.zip).</figcaption></figure>
 
 <h3 class="section-title">2.3 Konfigurasi System Environment Variables</h3>
 <p>Setelah mengekstrak file Flutter SDK, saya mendaftarkan direktori instalasinya, yaitu C:\Fluttersetup\flutter_windows_3.47.4-stable\flutter\bin, ke dalam System Environment Variables. Langkah ini dilakukan agar perintah-perintah eksekusi Flutter dapat diakses secara global melalui command line interface atau terminal di VS Code.</p>
-<figure><img src="instalasi_images/img_02.png"><figcaption>Gambar 2.3: Pendaftaran path binary Flutter ke dalam System Environment Variables Windows.</figcaption></figure>
+<figure><img src="laporan_screenshots/instalasi/step03_environment_variables.png" style="max-width:550px;"><figcaption>Gambar 2.3: Jendela konfigurasi Environment Variables Windows pendaftaran path bin Flutter dan JDK.</figcaption></figure>
 
 <h3 class="section-title">2.4 Verifikasi Deteksi Flutter Melalui Command Prompt</h3>
 <p>Untuk memastikan instalasi Flutter SDK berhasil dan jalurnya terbaca oleh sistem, saya menjalankan perintah flutter --version melalui Command Prompt. Hasilnya menunjukkan bahwa sistem telah berhasil mendeteksi Flutter versi 3.47.6 beserta kelengkapannya, termasuk Dart versi 3.13.5.</p>
-<figure><img src="instalasi_images/img_03.png"><figcaption>Gambar 2.4: Hasil eksekusi perintah flutter --version pada Command Prompt.</figcaption></figure>
+<figure><img src="laporan_screenshots/instalasi/step04_flutter_version_cmd.png"><figcaption>Gambar 2.4: Hasil eksekusi perintah flutter --version mendeteksi Flutter 3.47.6 dan Dart 3.13.5.</figcaption></figure>
 
 <h3 class="section-title">2.5 Pengunduhan Java Development Kit (JDK 21)</h3>
 <p>Pada tahap awal persiapan lingkungan kerja, saya mengunduh Java Development Kit (JDK) versi 21.0.2 berformat zip khusus untuk sistem operasi Windows 64-bit melalui situs resminya guna mendukung kompilasi proyek Android berbasis Gradle.</p>
-<figure><img src="instalasi_images/img_04.png"><figcaption>Gambar 2.5: Pengunduhan paket Java Development Kit (JDK 21) Windows x64.</figcaption></figure>
+<figure><img src="laporan_screenshots/instalasi/step05_download_jdk21.png"><figcaption>Gambar 2.5: Halaman unduhan paket Java Development Kit (JDK 21.0.2) untuk Windows 64-bit.</figcaption></figure>
 
 <h3 class="section-title">2.6 Verifikasi Pendaftaran Jalur JDK</h3>
 <p>Setelah mengekstrak dan mendaftarkan jalur JDK ke dalam sistem (Environment Variables), saya memverifikasi instalasinya melalui terminal VS Code menggunakan perintah java -version. Hasilnya menunjukkan bahwa OpenJDK versi 21.0.2 telah berhasil terbaca oleh sistem.</p>
-<figure><img src="instalasi_images/img_05.png"><figcaption>Gambar 2.6: Verifikasi eksekusi java -version di terminal lingkungan kerja.</figcaption></figure>
+<figure><img src="laporan_screenshots/instalasi/step06_java_version_terminal.png"><figcaption>Gambar 2.6: Verifikasi eksekusi java -version di terminal menampilkan OpenJDK 21.0.2.</figcaption></figure>
 
-<h3 class="section-title">2.7 Pemasangan Ekstensi Flutter & Dart pada Visual Studio Code</h3>
+<h3 class="section-title">2.7 Pemasangan Ekstensi Flutter pada Visual Studio Code</h3>
 <p>Pada tahap persiapan teks editor, saya memasang ekstensi resmi Flutter di dalam Visual Studio Code agar editor memiliki dukungan penuh untuk menulis kode, navigasi widget, hot reload, dan proses debugging aplikasi secara interaktif.</p>
-<figure><img src="instalasi_images/img_06.png"><figcaption>Gambar 2.7: Pemasangan ekstensi Flutter resmi di Visual Studio Code.</figcaption></figure>
+<figure><img src="laporan_screenshots/instalasi/step07_vscode_flutter_extension.png"><figcaption>Gambar 2.7: Tampilan ekstensi resmi Flutter oleh Dart Code di Extensions Marketplace VS Code.</figcaption></figure>
+
+<h3 class="section-title">2.8 Pemasangan Ekstensi Dart pada Visual Studio Code</h3>
 <p>Selain ekstensi Flutter, saya juga memastikan ekstensi Dart telah terinstal di Visual Studio Code, yang berfungsi sebagai penyedia dukungan sintaks dasar, penyorotan kode, dan analisis statis bahasa pemrograman Dart.</p>
-<figure><img src="instalasi_images/img_07.png"><figcaption>Gambar 2.8: Pemasangan ekstensi Dart di Visual Studio Code.</figcaption></figure>
+<figure><img src="laporan_screenshots/instalasi/step08_vscode_dart_extension.png"><figcaption>Gambar 2.8: Tampilan ekstensi Dart oleh Dart Code terinstal di Visual Studio Code.</figcaption></figure>
 
-<h3 class="section-title">2.8 Konfigurasi Android SDK Build Tools, CMake, dan Android NDK</h3>
+<h3 class="section-title">2.9 Konfigurasi Android SDK Build Tools dan CMake pada Android Studio</h3>
 <p>Pada tahap konfigurasi Android Studio, saya membuka menu SDK Manager dan masuk ke tab SDK Tools untuk memastikan bahwa komponen perakit dasar seperti Android SDK Command-line Tools dan CMake sudah berstatus terinstal (Installed).</p>
-<figure><img src="instalasi_images/img_08.png"><figcaption>Gambar 2.9: Pengaturan Android SDK Command-line Tools dan CMake pada SDK Manager.</figcaption></figure>
-<p>Pada tahap penyelesaian masalah (troubleshooting) akibat kegagalan build dari Gradle, saya menginstal komponen tambahan yaitu Android NDK (Side by side) versi 28.2.13676358 secara manual melalui SDK Manager.</p>
-<figure><img src="instalasi_images/img_09.png"><figcaption>Gambar 2.10: Pemasangan Android NDK Side by side pada Android Studio.</figcaption></figure>
+<figure><img src="laporan_screenshots/instalasi/step09_android_sdk_tools_cmake.png"><figcaption>Gambar 2.9: Pengaturan Android SDK Command-line Tools dan CMake terinstal pada SDK Manager.</figcaption></figure>
 
-<h3 class="section-title">2.9 Validasi Kesiapan Sistem Menggunakan Flutter Doctor</h3>
+<h3 class="section-title">2.10 Pemasangan Android NDK (Side by side)</h3>
+<p>Pada tahap penyelesaian masalah (troubleshooting) akibat kegagalan build dari Gradle, saya menginstal komponen tambahan yaitu Android NDK (Side by side) versi 28.2.13676358 secara manual melalui SDK Manager.</p>
+<figure><img src="laporan_screenshots/instalasi/step10_android_ndk_installed.png"><figcaption>Gambar 2.10: Pemasangan Android NDK (Side by side) versi 28.2.13676358 pada SDK Tools.</figcaption></figure>
+
+<h3 class="section-title">2.11 Validasi Kesiapan Sistem Menggunakan Flutter Doctor</h3>
 <p>Sebagai tahap validasi akhir setelah seluruh proses instalasi selesai, saya menjalankan perintah flutter doctor pada Command Prompt. Hasilnya menunjukkan indikator centang hijau pada komponen utama pengembangan mobile seperti Flutter SDK dan Android toolchain, yang menandakan lingkungan pengembangan siap digunakan.</p>
-<figure><img src="instalasi_images/img_10.png"><figcaption>Gambar 2.11: Hasil diagnosa lengkap flutter doctor pada Command Prompt.</figcaption></figure>
+<figure><img src="laporan_screenshots/instalasi/step11_flutter_doctor_output.png"><figcaption>Gambar 2.11: Hasil diagnosa lengkap flutter doctor pada Command Prompt.</figcaption></figure>
 
 <h2 class="chapter-title">BAB III: LAPORAN 3 - PENGEMBANGAN BACKEND API DAN BASIS DATA</h2>
 <h3 class="section-title">3.1 Konfigurasi Lingkungan Backend (Laravel 11)</h3>

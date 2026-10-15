@@ -19,8 +19,9 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 BASE_DIR = r"d:\proyek_applikasi"
 APPS_DIR = os.path.join(BASE_DIR, "apps_sekolah")
 SCREENSHOTS_DIR = os.path.join(APPS_DIR, "laporan_screenshots")
-INSTALASI_IMG_DIR = os.path.join(APPS_DIR, "instalasi_images")
+INSTALASI_NEW_DIR = os.path.join(SCREENSHOTS_DIR, "instalasi")
 LOGO_PATH = os.path.join(BASE_DIR, "logo_salut.png")
+LOGO_UNILA_PATH = os.path.join(INSTALASI_NEW_DIR, "logo_unila.png")
 
 OUTPUT_DOCX_MASTER = os.path.join(APPS_DIR, "Laporan_Lengkap_Sistem_SALUT_dan_Instalasi.docx")
 OUTPUT_DOCX_COMPILATION = os.path.join(APPS_DIR, "Laporan_Lengkap_3_4_5_6.docx")
@@ -128,12 +129,15 @@ def build_master_document():
     r2 = p_cov_sub.add_run("Disusun untuk Memenuhi Tugas Perkuliahan Mobile Programming & Web Terpadu\nProgram Studi Pendidikan Teknologi Informasi")
     format_run(r2, size_pt=12, italic=True, color=(70, 70, 70))
     
-    # Logo SALUT di Cover
+    # Logo UNILA & SALUT di Cover
+    p_logo = doc.add_paragraph()
+    p_logo.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_logo.paragraph_format.space_after = Pt(25)
+    if os.path.exists(LOGO_UNILA_PATH):
+        p_logo.add_run().add_picture(LOGO_UNILA_PATH, width=Inches(1.8))
+        p_logo.add_run("    ")
     if os.path.exists(LOGO_PATH):
-        p_logo = doc.add_paragraph()
-        p_logo.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_logo.paragraph_format.space_after = Pt(30)
-        p_logo.add_run().add_picture(LOGO_PATH, width=Inches(2.2))
+        p_logo.add_run().add_picture(LOGO_PATH, width=Inches(1.8))
         
     # Identitas Penyusun
     p_id = doc.add_paragraph()
@@ -195,51 +199,57 @@ def build_master_document():
     # Step 1
     add_heading_2(doc, "2.1 Akses Dokumentasi Resmi Flutter SDK")
     add_p(doc, "Pada bagian ini, saya mengakses situs web dokumentasi resmi Flutter (docs.flutter.dev) untuk mengikuti prosedur instalasi standar yang direkomendasikan bagi sistem operasi Windows 64-bit.")
-    add_image_with_caption(doc, os.path.join(INSTALASI_IMG_DIR, "img_00.png"), "Gambar 2.1: Halaman dokumentasi instalasi resmi Flutter SDK pada peramban web.")
+    add_image_with_caption(doc, os.path.join(INSTALASI_NEW_DIR, "step01_flutter_website.png"), "Gambar 2.1: Halaman dokumentasi instalasi resmi Flutter SDK pada peramban web (docs.flutter.dev).")
     
     # Step 2
     add_heading_2(doc, "2.2 Pengunduhan Paket Bundel Flutter SDK")
     add_p(doc, "Selanjutnya, saya mengunduh bundel instalasi Flutter SDK versi stabil terbaru (flutter_windows_3.47.6-stable.zip) melalui menu Install manually untuk sistem operasi Windows.")
-    add_image_with_caption(doc, os.path.join(INSTALASI_IMG_DIR, "img_01.png"), "Gambar 2.2: Proses pengunduhan berkas arsip Flutter SDK stable zip.")
+    add_image_with_caption(doc, os.path.join(INSTALASI_NEW_DIR, "step02_download_flutter_zip.png"), "Gambar 2.2: Tombol pengunduhan bundel Flutter SDK versi stabil (flutter_windows_3.47.6-stable.zip).")
     
     # Step 3
     add_heading_2(doc, "2.3 Konfigurasi System Environment Variables")
     add_p(doc, "Setelah mengekstrak file Flutter SDK, saya mendaftarkan direktori instalasinya, yaitu C:\\Fluttersetup\\flutter_windows_3.47.4-stable\\flutter\\bin, ke dalam System Environment Variables. Langkah ini dilakukan agar perintah-perintah eksekusi Flutter dapat diakses secara global melalui command line interface atau terminal di VS Code.")
-    add_image_with_caption(doc, os.path.join(INSTALASI_IMG_DIR, "img_02.png"), "Gambar 2.3: Pendaftaran path binary Flutter ke dalam System Environment Variables Windows.")
+    add_image_with_caption(doc, os.path.join(INSTALASI_NEW_DIR, "step03_environment_variables.png"), "Gambar 2.3: Jendela konfigurasi Environment Variables Windows pendaftaran path bin Flutter dan JDK.", width_in=4.2)
     
     # Step 4
     add_heading_2(doc, "2.4 Verifikasi Deteksi Flutter Melalui Command Prompt")
     add_p(doc, "Untuk memastikan instalasi Flutter SDK berhasil dan jalurnya terbaca oleh sistem, saya menjalankan perintah flutter --version melalui Command Prompt. Hasilnya menunjukkan bahwa sistem telah berhasil mendeteksi Flutter versi 3.47.6 beserta kelengkapannya, termasuk Dart versi 3.13.5.")
-    add_image_with_caption(doc, os.path.join(INSTALASI_IMG_DIR, "img_03.png"), "Gambar 2.4: Hasil eksekusi perintah flutter --version pada Command Prompt.")
+    add_image_with_caption(doc, os.path.join(INSTALASI_NEW_DIR, "step04_flutter_version_cmd.png"), "Gambar 2.4: Hasil eksekusi perintah flutter --version mendeteksi Flutter 3.47.6 dan Dart 3.13.5.")
     
     # Step 5
     add_heading_2(doc, "2.5 Pengunduhan Java Development Kit (JDK 21)")
     add_p(doc, "Pada tahap awal persiapan lingkungan kerja, saya mengunduh Java Development Kit (JDK) versi 21.0.2 berformat zip khusus untuk sistem operasi Windows 64-bit melalui situs resminya guna mendukung kompilasi proyek Android berbasis Gradle.")
-    add_image_with_caption(doc, os.path.join(INSTALASI_IMG_DIR, "img_04.png"), "Gambar 2.5: Pengunduhan paket Java Development Kit (JDK 21) Windows x64.")
+    add_image_with_caption(doc, os.path.join(INSTALASI_NEW_DIR, "step05_download_jdk21.png"), "Gambar 2.5: Halaman unduhan paket Java Development Kit (JDK 21.0.2) untuk Windows 64-bit.")
     
     # Step 6
     add_heading_2(doc, "2.6 Verifikasi Pendaftaran Jalur JDK")
     add_p(doc, "Setelah mengekstrak dan mendaftarkan jalur JDK ke dalam sistem (Environment Variables), saya memverifikasi instalasinya melalui terminal VS Code menggunakan perintah java -version. Hasilnya menunjukkan bahwa OpenJDK versi 21.0.2 telah berhasil terbaca oleh sistem.")
-    add_image_with_caption(doc, os.path.join(INSTALASI_IMG_DIR, "img_05.png"), "Gambar 2.6: Verifikasi eksekusi java -version di terminal lingkungan kerja.")
+    add_image_with_caption(doc, os.path.join(INSTALASI_NEW_DIR, "step06_java_version_terminal.png"), "Gambar 2.6: Verifikasi eksekusi java -version di terminal menampilkan OpenJDK 21.0.2.")
     
-    # Step 7 & 8
-    add_heading_2(doc, "2.7 Pemasangan Ekstensi Flutter & Dart pada Visual Studio Code")
+    # Step 7
+    add_heading_2(doc, "2.7 Pemasangan Ekstensi Flutter pada Visual Studio Code")
     add_p(doc, "Pada tahap persiapan teks editor, saya memasang ekstensi resmi Flutter di dalam Visual Studio Code agar editor memiliki dukungan penuh untuk menulis kode, navigasi widget, hot reload, dan proses debugging aplikasi secara interaktif.")
-    add_image_with_caption(doc, os.path.join(INSTALASI_IMG_DIR, "img_06.png"), "Gambar 2.7: Pemasangan ekstensi Flutter resmi di Visual Studio Code.")
-    add_p(doc, "Selain ekstensi Flutter, saya juga memastikan ekstensi Dart telah terinstal di Visual Studio Code, yang berfungsi sebagai penyedia dukungan sintaks dasar, penyorotan kode, dan analisis statis bahasa pemrograman Dart.")
-    add_image_with_caption(doc, os.path.join(INSTALASI_IMG_DIR, "img_07.png"), "Gambar 2.8: Pemasangan ekstensi Dart di Visual Studio Code.")
+    add_image_with_caption(doc, os.path.join(INSTALASI_NEW_DIR, "step07_vscode_flutter_extension.png"), "Gambar 2.7: Tampilan ekstensi resmi Flutter oleh Dart Code di Extensions Marketplace VS Code.")
     
-    # Step 9 & 10
-    add_heading_2(doc, "2.8 Konfigurasi Android SDK Build Tools, CMake, dan Android NDK")
+    # Step 8
+    add_heading_2(doc, "2.8 Pemasangan Ekstensi Dart pada Visual Studio Code")
+    add_p(doc, "Selain ekstensi Flutter, saya juga memastikan ekstensi Dart telah terinstal di Visual Studio Code, yang berfungsi sebagai penyedia dukungan sintaks dasar, penyorotan kode, dan analisis statis bahasa pemrograman Dart.")
+    add_image_with_caption(doc, os.path.join(INSTALASI_NEW_DIR, "step08_vscode_dart_extension.png"), "Gambar 2.8: Tampilan ekstensi Dart oleh Dart Code terinstal di Visual Studio Code.")
+    
+    # Step 9
+    add_heading_2(doc, "2.9 Konfigurasi Android SDK Build Tools dan CMake pada Android Studio")
     add_p(doc, "Pada tahap konfigurasi Android Studio, saya membuka menu SDK Manager dan masuk ke tab SDK Tools untuk memastikan bahwa komponen perakit dasar seperti Android SDK Command-line Tools dan CMake sudah berstatus terinstal (Installed).")
-    add_image_with_caption(doc, os.path.join(INSTALASI_IMG_DIR, "img_08.png"), "Gambar 2.9: Pengaturan Android SDK Command-line Tools dan CMake pada SDK Manager.")
+    add_image_with_caption(doc, os.path.join(INSTALASI_NEW_DIR, "step09_android_sdk_tools_cmake.png"), "Gambar 2.9: Pengaturan Android SDK Command-line Tools dan CMake terinstal pada SDK Manager.")
+    
+    # Step 10
+    add_heading_2(doc, "2.10 Pemasangan Android NDK (Side by side)")
     add_p(doc, "Pada tahap penyelesaian masalah (troubleshooting) akibat kegagalan build dari Gradle, saya menginstal komponen tambahan yaitu Android NDK (Side by side) versi 28.2.13676358 secara manual melalui SDK Manager.")
-    add_image_with_caption(doc, os.path.join(INSTALASI_IMG_DIR, "img_09.png"), "Gambar 2.10: Pemasangan Android NDK Side by side pada Android Studio.")
+    add_image_with_caption(doc, os.path.join(INSTALASI_NEW_DIR, "step10_android_ndk_installed.png"), "Gambar 2.10: Pemasangan Android NDK (Side by side) versi 28.2.13676358 pada SDK Tools.")
     
     # Step 11
-    add_heading_2(doc, "2.9 Validasi Kesiapan Sistem Menggunakan Flutter Doctor")
+    add_heading_2(doc, "2.11 Validasi Kesiapan Sistem Menggunakan Flutter Doctor")
     add_p(doc, "Sebagai tahap validasi akhir setelah seluruh proses instalasi selesai, saya menjalankan perintah flutter doctor pada Command Prompt. Hasilnya menunjukkan indikator centang hijau pada komponen utama pengembangan mobile seperti Flutter SDK dan Android toolchain, yang menandakan lingkungan pengembangan siap digunakan. Terdapat satu peringatan (tanda seru) pada bagian Visual Studio karena instalasi yang tidak lengkap. Namun, isu ini sengaja diabaikan karena fokus utama proyek pada mata kuliah ini ditujukan untuk pengembangan aplikasi mobile (Android), bukan aplikasi desktop berbasis Windows.")
-    add_image_with_caption(doc, os.path.join(INSTALASI_IMG_DIR, "img_10.png"), "Gambar 2.11: Hasil diagnosa lengkap flutter doctor pada Command Prompt.")
+    add_image_with_caption(doc, os.path.join(INSTALASI_NEW_DIR, "step11_flutter_doctor_output.png"), "Gambar 2.11: Hasil diagnosa lengkap flutter doctor pada Command Prompt.")
     
     doc.add_page_break()
     
@@ -399,16 +409,30 @@ def build_master_document():
     add_p(doc, "3. Analisis Prediktif Karir Berbasis Machine Learning: Penggunaan algoritma kecerdasan buatan untuk merekomendasikan jenjang karir atau program studi perguruan tinggi yang paling cocok bagi siswa berdasarkan rekam jejak nilai rapor dan sertifikasi keahlian yang dimiliki.", indent=0.5)
     
     # Simpan ke beberapa file tujuan
-    print(f"Menyimpan master docx ke {OUTPUT_DOCX_MASTER}...")
-    doc.save(OUTPUT_DOCX_MASTER)
+    targets = [
+        OUTPUT_DOCX_MASTER,
+        os.path.join(APPS_DIR, "Laporan_Lengkap_Sistem_SALUT_dan_Instalasi_Terbaru.docx"),
+        OUTPUT_DOCX_COMPILATION,
+        OUTPUT_DOCX_ROOT
+    ]
     
-    print(f"Menyimpan kompilasi docx ke {OUTPUT_DOCX_COMPILATION}...")
-    doc.save(OUTPUT_DOCX_COMPILATION)
-    
-    print(f"Menyimpan ke root repositori: {OUTPUT_DOCX_ROOT}...")
-    doc.save(OUTPUT_DOCX_ROOT)
-    
-    print("=== Seluruh Dokumen Laporan Master Berhasil Disusun & Disimpan ===")
+    for t in targets:
+        try:
+            print(f"Menyimpan docx ke {t}...")
+            doc.save(t)
+            print(f"[OK] Berhasil disimpan: {t}")
+        except PermissionError:
+            print(f"[TERKUNCI] File {t} sedang dibuka di Microsoft Word oleh pengguna.")
+            alt_path = t.replace(".docx", "_Baru.docx")
+            try:
+                doc.save(alt_path)
+                print(f"[OK] Disimpan sebagai cadangan ke: {alt_path}")
+            except Exception as e:
+                print(f"Gagal simpan cadangan: {e}")
+        except Exception as e:
+            print(f"Error menyimpan ke {t}: {e}")
+            
+    print("=== Proses Penyusunan Dokumen Selesai ===")
 
 if __name__ == "__main__":
     build_master_document()
