@@ -4,10 +4,13 @@
 abstract class AppRoutes {
   AppRoutes._();
 
-  static const login     = '/login';
+  static const splash   = '/splash';
+  static const login    = '/login';
   static const dashboard = '/dashboard';
   static const prestasi  = '/prestasi';
   static const tracer    = '/tracer';
   static const profile   = '/profile';
   static const arsip     = '/arsip';   // REQ-F-09: Arsip Dokumen Alumni
+  static const skills    = '/skills';  // Portofolio Keahlian SMK (SKPI)
+  static const changePassword = '/change-password';
 }

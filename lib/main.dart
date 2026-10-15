@@ -4,7 +4,22 @@ import 'package:get/get.dart';
 import 'routes/app_pages.dart';
 import 'routes/app_routes.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'services/fcm_service.dart';
+import 'services/theme_service.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Inisialisasi Firebase
+  await Firebase.initializeApp();
+  
+  // Inisialisasi Theme Service
+  Get.put(ThemeService());
+
+  // Inisialisasi FCM Service menggunakan GetX
+  await Get.putAsync(() => FcmService().init());
+
   runApp(const SalutApp());
 }
 
@@ -21,8 +36,8 @@ class SalutApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Roboto',
       ),
-      // ── Routing GetX ──────────────────────────────────────────────────
-      initialRoute: AppRoutes.login,
+      // ── Routing GetX: Dimulai dari Splash Screen 3 Detik ─────────────
+      initialRoute: AppRoutes.splash,
       getPages: AppPages.routes,
     );
   }

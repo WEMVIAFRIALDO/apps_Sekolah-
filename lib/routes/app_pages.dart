@@ -1,16 +1,20 @@
 import 'package:get/get.dart';
 
+import '../pages/splash_page.dart';
 import '../pages/login_page.dart';
 import '../pages/dashboard_page.dart';
 import '../pages/prestasi_page.dart';
 import '../pages/tracer_page.dart';
 import '../pages/profile_page.dart';
 import '../pages/arsip_page.dart';
+import '../pages/skills_page.dart';
+import '../pages/change_password_page.dart' as change_pw;
 
 import '../controllers/dashboard_controller.dart';
 import '../controllers/prestasi_controller.dart';
 import '../controllers/tracer_controller.dart';
 import '../controllers/profile_controller.dart';
+import '../controllers/skills_controller.dart';
 
 import 'app_routes.dart';
 
@@ -21,6 +25,11 @@ abstract class AppPages {
   AppPages._();
 
   static final routes = <GetPage>[
+    GetPage(
+      name: AppRoutes.splash,
+      page: () => const SplashPage(),
+      transition: Transition.fadeIn,
+    ),
     GetPage(
       name: AppRoutes.login,
       page: () => const LoginPage(),
@@ -62,6 +71,19 @@ abstract class AppPages {
     GetPage(
       name: AppRoutes.arsip,
       page: () => const ArsipPage(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.skills,
+      page: () => const SkillsPage(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<SkillsController>(() => SkillsController());
+      }),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.changePassword,
+      page: () => const change_pw.ChangePasswordPage(),
       transition: Transition.rightToLeft,
     ),
   ];

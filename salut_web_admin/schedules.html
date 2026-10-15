@@ -32,24 +32,33 @@
 
 <div class="layout">
   <aside class="sidebar">
-    <div class="sidebar-logo"><h1><span>SALUT</span></h1><p id="sidebar-role-label">Panel v1.0</p></div>
+    <div class="sidebar-logo">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <img src="img/logo_salut.png" alt="SALUT Logo" style="width:42px; height:42px; object-fit:contain; filter:drop-shadow(0 2px 8px rgba(6,182,212,0.4));">
+        <div>
+          <p id="sidebar-role-label" style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin:0;">Admin Panel</p>
+          <span style="font-size:10px; color:var(--cyan); font-weight:500;">v1.0 • SMK 1 Teladan</span>
+        </div>
+      </div>
+    </div>
     <nav class="nav-section" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-card"><div class="user-avatar" id="user-avatar">A</div><div><div class="user-name" id="nav-user-name">Loading...</div><div class="user-role" id="nav-user-role">role</div></div></div>
+      <button class="btn-logout" id="btn-logout">🚪 Keluar</button>
+    </div>
   </aside>
 
-  <main class="main-content">
-    <header class="header">
-      <div class="header-search"><h2>Jadwal Kelulusan (Cronjob)</h2></div>
-      <div class="header-actions">
+  <main class="main">
+    <div class="topbar">
+      <div><div class="page-title">Jadwal Kelulusan</div><div class="page-sub">Manajemen jadwal pengumuman otomatis (Cronjob)</div></div>
+      <div style="display:flex;gap:10px;">
         <button class="btn btn-primary" id="btn-add-schedule" onclick="document.getElementById('modal-add').classList.add('show')" style="display:none">
           + Set Jadwal Baru
         </button>
-        <div class="user-profile" onclick="Auth.logout()">
-          <img src="https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff" alt="Profile" id="header-avatar">
-        </div>
       </div>
-    </header>
-
-    <div style="padding: 24px;">
+    </div>
+    
+    <div class="content">
       <div class="card" style="padding: 0">
         <div style="overflow-x:auto;">
           <table class="data-table" id="schedules-table">
@@ -125,12 +134,13 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    Auth.init();
+    Auth.guard();
     Auth.buildNav('schedules');
     
-    const user = Auth.getUser();
+    const user = Auth.user();
     if(user && user.role === 'admin') {
-      document.getElementById('btn-add-schedule').style.display = 'block';
+      const btnAdd = document.getElementById('btn-add-schedule');
+      if (btnAdd) btnAdd.style.display = 'block';
     }
     loadSchedules();
   });

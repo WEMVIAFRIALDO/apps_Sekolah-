@@ -3,10 +3,7 @@ import 'package:get/get.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
-import 'dart:io';
-
 import '../services/api_service.dart';
-import '../services/auth_service.dart';
 
 /// REQ-F-09: Halaman Arsip Dokumen Digital untuk Alumni.
 /// Alumni dapat melihat dan mengunduh:
@@ -21,7 +18,6 @@ class ArsipPage extends StatefulWidget {
 
 class _ArsipPageState extends State<ArsipPage> {
   final _api  = ApiService();
-  final _auth = AuthService();
 
   List<Map<String, dynamic>> _dokumen = [];
   bool   _isLoading = true;

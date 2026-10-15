@@ -15,7 +15,7 @@ class User extends Authenticatable implements JWTSubject
 
     protected $fillable = [
         'name','email','password','nisn','role','phone',
-        'school','class_name','angkatan','graduation_date','is_active', 'fcm_token'
+        'school','class_name','jurusan','angkatan','graduation_date','is_active', 'fcm_token'
     ];
 
     protected $hidden = ['password','remember_token'];
@@ -38,8 +38,9 @@ class User extends Authenticatable implements JWTSubject
     public function isAdmin(): bool  { return $this->role === 'admin'; }
 
     // ─── Relationships ─────────────────────────────────────────────────────────
-    public function achievements()   { return $this->hasMany(Achievement::class); }
-    public function academicRecords(){ return $this->hasMany(AcademicRecord::class); }
-    public function graduationDocs() { return $this->hasMany(GraduationDoc::class); }
-    public function tracerStudy()    { return $this->hasOne(TracerStudy::class); }
+    public function achievements()      { return $this->hasMany(Achievement::class); }
+    public function academicRecords()   { return $this->hasMany(AcademicRecord::class); }
+    public function graduationDocs()    { return $this->hasMany(GraduationDoc::class); }
+    public function tracerStudy()       { return $this->hasOne(TracerStudy::class); }
+    public function skillCompetencies() { return $this->hasMany(\App\Models\SkillCompetency::class); }
 }

@@ -21,11 +21,7 @@ class ProfileController extends GetxController {
 
   /// Ganti password (placeholder – arahkan ke halaman terpisah nantinya)
   void handleChangePassword() {
-    Get.snackbar(
-      'Ubah Password',
-      'Fitur ini akan aktif saat backend Laravel terhubung.',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    Get.toNamed(AppRoutes.changePassword);
   }
 
   /// Logout: hapus token dan kembali ke halaman Login

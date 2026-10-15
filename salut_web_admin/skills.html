@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portofolio Keahlian SMK — SALUT Admin/Guru</title>
+<meta name="description" content="Manajemen Portofolio Keahlian Siswa SMK (SKPI) SALUT">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .badge-skill {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .badge-mahir { background: rgba(16,185,129,0.18); color: #34D399; border: 1px solid rgba(16,185,129,0.3); }
+  .badge-terampil { background: rgba(59,130,246,0.18); color: #60A5FA; border: 1px solid rgba(59,130,246,0.3); }
+  .badge-dasar { background: rgba(245,158,11,0.18); color: #FBBF24; border: 1px solid rgba(245,158,11,0.3); }
+  .skill-item {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+</style>
+</head>
+<body>
+<div id="toast-container"></div>
+
+<!-- Modal Detail & Input Portofolio Keahlian -->
+<div class="modal-overlay" id="modal-skills">
+  <div class="modal" style="max-width:680px;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <div class="modal-title" style="font-size:18px;">Portofolio Keahlian Siswa (SKPI)</div>
+        <div class="modal-sub" id="modal-student-info">Nama Siswa • NISN • Jurusan</div>
+      </div>
+      <button class="btn btn-ghost" style="padding:4px 8px;" onclick="closeModal()">✕</button>
+    </div>
+
+    <div id="skill-alert" class="alert alert-error" style="display:none;margin-top:12px;"></div>
+
+    <!-- Tab / Section: Daftar Kompetensi Saat Ini -->
+    <div style="margin-top:16px;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px;color:var(--text);display:flex;align-items:center;gap:6px;">
+        <span>📜</span> Daftar Kompetensi Tersertifikasi
+      </div>
+      <div id="skills-list-container" style="max-height:220px;overflow-y:auto;padding-right:4px;">
+        <div style="color:var(--muted);font-size:13px;text-align:center;padding:16px;">Memuat data kompetensi...</div>
+      </div>
+    </div>
+
+    <!-- Section: Form Tambah Kompetensi Baru -->
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);">
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px;color:#A5B4FC;display:flex;align-items:center;gap:6px;">
+        <span>➕</span> Input Sertifikasi Kompetensi Baru
+      </div>
+      <input type="hidden" id="inp-skill-user-id">
+      
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Nama Kompetensi Keahlian *</label>
+          <input id="inp-nama-kompetensi" type="text" class="form-input" placeholder="Misal: Konfigurasi Routing MikroTik (MTCNA)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Level Kompetensi *</label>
+          <select id="inp-level" class="form-input form-select">
+            <option value="Mahir">Mahir (Advanced)</option>
+            <option value="Terampil" selected>Terampil (Intermediate)</option>
+            <option value="Dasar">Dasar (Basic)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px;">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Kategori Bidang</label>
+          <input id="inp-kategori" type="text" class="form-input" placeholder="Misal: Jaringan Komputer">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Semester</label>
+          <select id="inp-semester" class="form-input form-select">
+            <option value="Ganjil">Semester Ganjil</option>
+            <option value="Genap">Semester Genap</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Tahun Pelajaran</label>
+          <input id="inp-tapel" type="text" class="form-input" placeholder="Misal: 2025/2026">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:10px;">
+        <label class="form-label">Uraian / Deskripsi Capaian</label>
+        <textarea id="inp-keterangan" class="form-input" style="height:60px;resize:vertical;" placeholder="Uraikan detail penguasaan materi, studi kasus, atau peralatan yang dikuasai siswa..."></textarea>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;">
+        <button class="btn btn-ghost" onclick="closeModal()">Tutup</button>
+        <button class="btn btn-primary" onclick="submitSkill()">💾 Simpan Kompetensi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <img src="img/logo_salut.png" alt="SALUT Logo" style="width:42px; height:42px; object-fit:contain; filter:drop-shadow(0 2px 8px rgba(6,182,212,0.4));">
+        <div>
+          <p id="sidebar-role-label" style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin:0;">Admin Panel</p>
+          <span style="font-size:10px; color:var(--cyan); font-weight:500;">v1.0 • SMK 1 Teladan</span>
+        </div>
+      </div>
+    </div>
+    <nav class="nav-section" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-card"><div class="user-avatar" id="user-avatar">A</div><div><div class="user-name" id="nav-user-name">Loading...</div><div class="user-role" id="nav-user-role">role</div></div></div>
+      <button class="btn-logout" id="btn-logout">🚪 Keluar</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Portofolio Keahlian Siswa SMK</div>
+        <div class="page-sub">Skill Raport & Surat Keterangan Pendamping Ijazah (SKPI) Kejuruan</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Toolbar Filter -->
+      <div class="card" style="padding: 16px; margin-bottom: 20px;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+          <div>
+            <select class="form-input form-select" id="filter-jurusan" style="width:180px;" onchange="loadStudents()">
+              <option value="">-- Semua Jurusan --</option>
+              <option value="TKJ">TKJ (Teknik Komputer & Jaringan)</option>
+              <option value="RPL">RPL (Rekayasa Perangkat Lunak)</option>
+              <option value="Multimedia">Multimedia / DMM</option>
+              <option value="Akuntansi">Akuntansi</option>
+              <option value="Pemasaran">Pemasaran</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:200px;">
+            <input type="text" id="search-input" class="form-input" placeholder="🔍 Cari nama siswa atau NISN..." oninput="debounceSearch()">
+          </div>
+          <button class="btn btn-ghost" onclick="resetFilter()">Reset</button>
+        </div>
+      </div>
+
+      <!-- Tabel Siswa -->
+      <div class="card" style="padding: 0">
+        <div style="overflow-x:auto;">
+          <table class="data-table" id="students-table">
+            <thead>
+              <tr>
+                <th>Nama Siswa</th>
+                <th>NISN</th>
+                <th>Jurusan</th>
+                <th>Kelas</th>
+                <th>Angkatan</th>
+                <th>Status</th>
+                <th style="text-align:center;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="table-body">
+              <tr><td colspan="7" style="text-align:center;padding:24px;">Memuat data siswa...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+Auth.guard();
+Auth.buildNav('skills');
+
+let currentStudentId = null;
+let searchTimer = null;
+
+function debounceSearch() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(loadStudents, 350);
+}
+
+function resetFilter() {
+    document.getElementById('filter-jurusan').value = '';
+    document.getElementById('search-input').value = '';
+    loadStudents();
+}
+
+async function loadStudents() {
+    const tbody = document.getElementById('table-body');
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;">Memuat data siswa...</td></tr>';
+
+    try {
+        const jurusan = document.getElementById('filter-jurusan').value;
+        const search  = document.getElementById('search-input').value;
+
+        let url = '/guru/skills/students';
+        const params = [];
+        if (jurusan) params.push(`jurusan=${encodeURIComponent(jurusan)}`);
+        if (search)  params.push(`search=${encodeURIComponent(search)}`);
+        if (params.length > 0) url += '?' + params.join('&');
+
+        const res = await Api.get(url);
+        const students = res.data;
+
+        if (!students || students.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted);">Tidak ada data siswa ditemukan.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = students.map(s => {
+            const roleBadge = s.role === 'alumni' 
+                ? '<span style="background:rgba(6,182,212,0.15);color:#06B6D4;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700">Alumni</span>'
+                : '<span style="background:rgba(99,102,241,0.15);color:#818CF8;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700">Siswa</span>';
+
+            const jurBadge = `<span style="background:rgba(168,85,247,0.15);color:#C084FC;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700">${s.jurusan || '-'}</span>`;
+
+            return `
+                <tr>
+                    <td style="font-weight:700;color:var(--text);font-size:14px;">${s.name}</td>
+                    <td>${s.nisn}</td>
+                    <td>${jurBadge}</td>
+                    <td>${s.class_name || '-'}</td>
+                    <td>${s.angkatan || '-'}</td>
+                    <td>${roleBadge}</td>
+                    <td style="text-align:center;">
+                        <button class="btn btn-sm btn-primary" onclick="openStudentSkills(${s.id}, '${escapeQuotes(s.name)}', '${s.nisn}', '${s.jurusan || ''}')">
+                            🛠️ Kelola Skill
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--red);">Gagal memuat data: ${e.message}</td></tr>`;
+    }
+}
+
+function escapeQuotes(str) {
+    return (str || '').replace(/'/g, "\\'");
+}
+
+async function openStudentSkills(studentId, name, nisn, jurusan) {
+    currentStudentId = studentId;
+    document.getElementById('inp-skill-user-id').value = studentId;
+    document.getElementById('modal-student-info').textContent = `${name} • NISN: ${nisn} • Jurusan: ${jurusan || 'SMK'}`;
+    document.getElementById('skill-alert').style.display = 'none';
+
+    // Reset input fields
+    document.getElementById('inp-nama-kompetensi').value = '';
+    document.getElementById('inp-kategori').value = jurusan === 'TKJ' ? 'Jaringan Komputer' : jurusan === 'RPL' ? 'Software Engineering' : 'Multimedia';
+    document.getElementById('inp-keterangan').value = '';
+    document.getElementById('inp-tapel').value = '2025/2026';
+
+    document.getElementById('modal-skills').classList.add('show');
+    await loadStudentSkillList(studentId);
+}
+
+async function loadStudentSkillList(studentId) {
+    const container = document.getElementById('skills-list-container');
+    container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:12px;">Memuat data...</div>';
+
+    try {
+        const res = await Api.get(`/guru/skills/${studentId}`);
+        const skills = res.data;
+
+        if (!skills || skills.length === 0) {
+            container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:16px;background:rgba(255,255,255,0.02);border-radius:8px;">Belum ada sertifikasi kompetensi untuk siswa ini. Tambahkan di bawah.</div>';
+            return;
+        }
+
+        container.innerHTML = skills.map(sk => {
+            const lvl = sk.level || 'Terampil';
+            const badgeClass = lvl === 'Mahir' ? 'badge-mahir' : lvl === 'Terampil' ? 'badge-terampil' : 'badge-dasar';
+
+            return `
+                <div class="skill-item">
+                    <div style="flex:1;">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                            <span style="font-weight:700;color:#F8FAFC;font-size:13px;">${sk.nama_kompetensi}</span>
+                            <span class="badge-skill ${badgeClass}">${lvl}</span>
+                        </div>
+                        <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">
+                            Kategori: <span style="color:#CBD5E1;">${sk.kategori || '-'}</span> • Semester: ${sk.semester || '-'} (${sk.tahun_pelajaran || '-'})
+                        </div>
+                        ${sk.keterangan ? `<div style="font-size:12px;color:#94A3B8;background:rgba(0,0,0,0.2);padding:6px 10px;border-radius:6px;margin-top:4px;">${sk.keterangan}</div>` : ''}
+                        <div style="font-size:11px;color:#64748B;margin-top:4px;">
+                            Penguji: ${sk.guru ? sk.guru.name : 'Guru Produktif'}
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-ghost" style="color:var(--red);margin-left:12px;" onclick="deleteSkill(${sk.id})">
+                        🗑️
+                    </button>
+                </div>
+            `;
+        }).join('');
+    } catch (e) {
+        container.innerHTML = `<div style="color:var(--red);font-size:13px;padding:12px;">Gagal memuat: ${e.message}</div>`;
+    }
+}
+
+async function submitSkill() {
+    const alertEl = document.getElementById('skill-alert');
+    alertEl.style.display = 'none';
+
+    const userId         = document.getElementById('inp-skill-user-id').value;
+    const namaKompetensi = document.getElementById('inp-nama-kompetensi').value.trim();
+    const kategori       = document.getElementById('inp-kategori').value.trim();
+    const level          = document.getElementById('inp-level').value;
+    const semester       = document.getElementById('inp-semester').value;
+    const tahunPelajaran = document.getElementById('inp-tapel').value.trim();
+    const keterangan     = document.getElementById('inp-keterangan').value.trim();
+
+    if (!namaKompetensi) {
+        alertEl.textContent = 'Nama Kompetensi Keahlian wajib diisi!';
+        alertEl.style.display = 'block';
+        return;
+    }
+
+    try {
+        const payload = {
+            user_id: parseInt(userId),
+            nama_kompetensi: namaKompetensi,
+            kategori: kategori,
+            level: level,
+            semester: semester,
+            tahun_pelajaran: tahunPelajaran,
+            keterangan: keterangan,
+        };
+
+        await Api.post('/guru/skills', payload);
+        alert('Kompetensi berhasil ditambahkan!');
+
+        // Reset nama & keterangan
+        document.getElementById('inp-nama-kompetensi').value = '';
+        document.getElementById('inp-keterangan').value = '';
+
+        // Reload list
+        await loadStudentSkillList(userId);
+    } catch (e) {
+        alertEl.textContent = 'Gagal menyimpan: ' + (e.message || 'Terjadi kesalahan');
+        alertEl.style.display = 'block';
+    }
+}
+
+async function deleteSkill(skillId) {
+    if (!confirm('Yakin ingin menghapus kompetensi ini dari portofolio siswa?')) return;
+
+    try {
+        await Api.delete(`/guru/skills/${skillId}`);
+        await loadStudentSkillList(currentStudentId);
+    } catch (e) {
+        alert('Gagal menghapus kompetensi: ' + e.message);
+    }
+}
+
+function closeModal() {
+    document.getElementById('modal-skills').classList.remove('show');
+}
+
+loadStudents();
+</script>
+</body>
+</html>

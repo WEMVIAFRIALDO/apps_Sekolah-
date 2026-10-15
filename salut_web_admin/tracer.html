@@ -5,13 +5,21 @@
 <title>Tracer Study — SALUT Admin</title>
 <meta name="description" content="Rekapitulasi data Tracer Study alumni SALUT">
 <link rel="stylesheet" href="css/style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="js/chart.umd.min.js"></script>
 </head>
 <body>
 <div id="toast-container"></div>
 <div class="layout">
   <aside class="sidebar">
-    <div class="sidebar-logo"><h1><span>SALUT</span></h1><p id="sidebar-role-label">Panel v1.0</p></div>
+    <div class="sidebar-logo">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <img src="img/logo_salut.png" alt="SALUT Logo" style="width:42px; height:42px; object-fit:contain; filter:drop-shadow(0 2px 8px rgba(6,182,212,0.4));">
+        <div>
+          <p id="sidebar-role-label" style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin:0;">Admin Panel</p>
+          <span style="font-size:10px; color:var(--cyan); font-weight:500;">v1.0 • SMK 1 Teladan</span>
+        </div>
+      </div>
+    </div>
     <nav class="nav-section" id="sidebar-nav"></nav>
     <div class="sidebar-footer">
       <div class="user-card"><div class="user-avatar" id="user-avatar">A</div><div><div class="user-name" id="nav-user-name">Loading...</div><div class="user-role" id="nav-user-role">role</div></div></div>

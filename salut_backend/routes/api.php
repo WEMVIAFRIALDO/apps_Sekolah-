@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PrestasiController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\TracerStudyController;
+use App\Http\Controllers\Api\SkillController;
 use Illuminate\Support\Facades\Route;
 
 // ─── Public Routes (tidak perlu JWT) ─────────────────────────────────────────
@@ -60,6 +61,7 @@ Route::middleware('jwt.auth')->group(function () {
         Route::get('/schedules',                               [AdminController::class, 'listSchedules']);
         Route::post('/schedules',                              [AdminController::class, 'createSchedule']);
         // Arsip Siswa (REQ-F-09)
+        Route::get('/arsip-alumni',                            [AdminController::class, 'listAlumniArsip']);
         Route::get('/arsip/{id}',                              [AdminController::class, 'getStudentArsip']);
     });
 
@@ -68,5 +70,18 @@ Route::middleware('jwt.auth')->group(function () {
         Route::get('/rapor/students',                          [\App\Http\Controllers\Api\RaporController::class, 'getSiswaList']);
         Route::get('/rapor/students/{id}',                     [\App\Http\Controllers\Api\RaporController::class, 'getStudentRapor']);
         Route::post('/rapor/students/{id}',                    [\App\Http\Controllers\Api\RaporController::class, 'storeRapor']);
+        // Skill Raport Guru
+        Route::get('/skills/students',                         [SkillController::class, 'getStudents']);
+        Route::get('/skills/{userId}',                         [SkillController::class, 'getByStudent']);
+        Route::post('/skills',                                 [SkillController::class, 'store']);
+        Route::delete('/skills/{id}',                          [SkillController::class, 'destroy']);
     });
+
+    // Skill Raport Siswa & Alumni (Portofolio Mandiri / SKPI)
+    Route::prefix('skills')->group(function () {
+        Route::get('/my',                                      [SkillController::class, 'mySkills']);
+    });
+
+    // Admin Skill Stats
+    Route::get('/admin/skills/stats',                          [SkillController::class, 'stats']);
 });

@@ -60,6 +60,12 @@ class AuthService {
   Future<String?> getName()   async => _storage.read(key: _keyName);
   Future<String?> getUserId() async => _storage.read(key: _keyUserId);
 
+  // ─── Theme Mode ────────────────────────────────────────────────────────────
+  static const _keyTheme = 'app_theme_mode';
+  Future<void> saveTheme(String theme) async =>
+      _storage.write(key: _keyTheme, value: theme);
+  Future<String?> getTheme() async => _storage.read(key: _keyTheme);
+
   // ─── Clear All ─────────────────────────────────────────────────────────────
 
   /// Hapus semua data sesi (dipanggil saat logout).

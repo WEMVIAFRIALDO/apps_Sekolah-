@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controllers/dashboard_controller.dart';
+import '../routes/app_routes.dart';
+import '../services/theme_service.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -10,49 +12,44 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Controller sudah di-inject via AppPages binding (Get.lazyPut)
     final DashboardController controller = Get.find<DashboardController>();
+    final theme = ThemeService.to;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0.5,
-        titleSpacing: 20,
-        title: Row(
-          children: [
+    return Obx(() {
+      final isDark = theme.isDarkMode.value;
+
+      return Scaffold(
+        backgroundColor: theme.bg,
+        appBar: AppBar(
+          backgroundColor: theme.appBar,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Container(color: theme.border, height: 1),
+          ),
+          titleSpacing: 20,
+          title: Row(
+            children: [
+              Image.asset(
+                'assets/images/logo_salut.png',
+                height: 38,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => Icon(
+                  Icons.school_rounded,
+                  color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF2563EB),
+                  size: 26,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            // Switch Role Toggle (Untuk mempermudah simulasi/testing Dynamic UI)
             Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                Icons.school_rounded,
-                color: Colors.blue.shade700,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              'SALUT',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.1,
-                color: Colors.blue.shade900,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          // Switch Role Toggle (Untuk mempermudah simulasi/testing Dynamic UI)
-          Obx(
-            () => Container(
               margin: const EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: theme.cardSubtle,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(color: theme.borderGlow),
               ),
               child: InkWell(
                 borderRadius: BorderRadius.circular(20),
@@ -67,15 +64,15 @@ class DashboardPage extends StatelessWidget {
                       Icon(
                         Icons.swap_horiz_rounded,
                         size: 16,
-                        color: Colors.blue.shade700,
+                        color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF2563EB),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         'Role: ${controller.currentRole.value}',
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.blue.shade800,
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? const Color(0xFF93C5FD) : const Color(0xFF1D4ED8),
                         ),
                       ),
                     ],
@@ -83,23 +80,36 @@ class DashboardPage extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-          IconButton(
-            onPressed: () {
-              Get.snackbar(
-                'Notifikasi',
-                'Tidak ada pengumuman baru saat ini.',
-                snackPosition: SnackPosition.TOP,
-              );
-            },
-            icon: const Icon(Icons.notifications_none_rounded),
-            color: Colors.grey.shade800,
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: Obx(
-        () => RefreshIndicator(
+            const SizedBox(width: 6),
+
+            // Tombol Switch Theme (Mode Gelap / Terang)
+            IconButton(
+              onPressed: theme.toggleTheme,
+              tooltip: isDark ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap',
+              icon: Icon(
+                isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+                color: isDark ? const Color(0xFFFBBF24) : const Color(0xFF4F46E5),
+                size: 20,
+              ),
+            ),
+
+            IconButton(
+              onPressed: () {
+                Get.snackbar(
+                  'Notifikasi',
+                  'Tidak ada pengumuman baru saat ini.',
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: theme.card,
+                  colorText: theme.textPrimary,
+                );
+              },
+              icon: const Icon(Icons.notifications_none_rounded),
+              color: theme.textMuted,
+            ),
+            const SizedBox(width: 8),
+          ],
+        ),
+        body: RefreshIndicator(
           onRefresh: () async {
             await Future.delayed(const Duration(milliseconds: 600));
           },
@@ -110,7 +120,7 @@ class DashboardPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 1. Kartu Profil Siswa / Alumni dengan Lencana Dinamis
-                _buildProfileCard(context, controller),
+                _buildProfileCard(context, controller, theme),
                 const SizedBox(height: 20),
 
                 // 2. Menu Aksi Utama Dinamis (Input Prestasi vs Tracer Study)
@@ -123,9 +133,9 @@ class DashboardPage extends StatelessWidget {
 
                 // 3. Konten Utama Dinamis Berdasarkan Peran
                 if (controller.isSiswa) ...[
-                  _buildSiswaDashboardContent(context, controller),
+                  _buildSiswaDashboardContent(context, controller, theme),
                 ] else ...[
-                  _buildAlumniDashboardContent(context, controller),
+                  _buildAlumniDashboardContent(context, controller, theme),
                 ],
 
                 const SizedBox(height: 24),
@@ -133,59 +143,50 @@ class DashboardPage extends StatelessWidget {
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: Obx(
-        () => NavigationBar(
+        bottomNavigationBar: NavigationBar(
           selectedIndex: controller.selectedNavIndex.value,
           onDestinationSelected: controller.handleNavTap,
-          elevation: 3,
-          backgroundColor: Colors.white,
-          indicatorColor: Colors.blue.shade100,
+          elevation: 4,
+          backgroundColor: theme.navBar,
+          indicatorColor: theme.primary.withValues(alpha: 0.15),
           destinations: [
-            const NavigationDestination(
-              icon: Icon(Icons.dashboard_outlined),
-              selectedIcon: Icon(Icons.dashboard_rounded, color: Colors.blue),
+            NavigationDestination(
+              icon: Icon(Icons.dashboard_outlined, color: theme.textMuted),
+              selectedIcon: Icon(Icons.dashboard_rounded, color: theme.primary),
               label: 'Beranda',
             ),
             NavigationDestination(
-              icon: const Icon(Icons.folder_outlined),
-              selectedIcon: const Icon(
-                Icons.folder_rounded,
-                color: Colors.blue,
-              ),
+              icon: Icon(Icons.folder_outlined, color: theme.textMuted),
+              selectedIcon: Icon(Icons.folder_rounded, color: theme.primary),
               label: controller.isSiswa ? 'Prestasi' : 'Arsip Digital',
             ),
-            const NavigationDestination(
-              icon: Icon(Icons.person_outline_rounded),
-              selectedIcon: Icon(Icons.person_rounded, color: Colors.blue),
+            NavigationDestination(
+              icon: Icon(Icons.person_outline_rounded, color: theme.textMuted),
+              selectedIcon: Icon(Icons.person_rounded, color: theme.primary),
               label: 'Profil',
             ),
           ],
         ),
-      ),
-    );
+      );
+    });
   }
 
   // --- WIDGET PROFIL DENGAN LENCANA ROLE DINAMIS ---
   Widget _buildProfileCard(
     BuildContext context,
     DashboardController controller,
+    ThemeService theme,
   ) {
     final isSiswa = controller.isSiswa;
+    final isDark = theme.isDarkMode.value;
 
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: theme.card,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: theme.border),
+        boxShadow: theme.cardShadow,
       ),
       child: Row(
         children: [
@@ -193,12 +194,14 @@ class DashboardPage extends StatelessWidget {
           CircleAvatar(
             radius: 30,
             backgroundColor: isSiswa
-                ? Colors.blue.shade100
-                : Colors.indigo.shade100,
+                ? (isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.5) : const Color(0xFFDBEAFE))
+                : (isDark ? const Color(0xFF065F46).withValues(alpha: 0.5) : const Color(0xFFD1FAE5)),
             child: Icon(
               Icons.person_rounded,
               size: 34,
-              color: isSiswa ? Colors.blue.shade700 : Colors.indigo.shade700,
+              color: isSiswa
+                  ? (isDark ? const Color(0xFF60A5FA) : const Color(0xFF2563EB))
+                  : (isDark ? const Color(0xFF34D399) : const Color(0xFF059669)),
             ),
           ),
           const SizedBox(width: 16),
@@ -209,16 +212,16 @@ class DashboardPage extends StatelessWidget {
               children: [
                 Text(
                   controller.userName.value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
+                    color: theme.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'NISN: ${controller.userNisn.value}',
-                  style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                  style: TextStyle(fontSize: 13, color: theme.textMuted),
                 ),
                 const SizedBox(height: 8),
                 // Lencana Peran Dinamis (Dynamic Role Badge)
@@ -232,13 +235,13 @@ class DashboardPage extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: isSiswa
-                          ? const Color(0xFFE8F5E9)
-                          : const Color(0xFFE0E7FF),
+                          ? (isDark ? const Color(0xFF064E3B).withValues(alpha: 0.5) : const Color(0xFFE8F5E9))
+                          : (isDark ? const Color(0xFF312E81).withValues(alpha: 0.5) : const Color(0xFFE0E7FF)),
                       borderRadius: BorderRadius.circular(30),
                       border: Border.all(
                         color: isSiswa
-                            ? Colors.green.shade400
-                            : Colors.indigo.shade300,
+                            ? (isDark ? const Color(0xFF059669) : Colors.green.shade400)
+                            : (isDark ? const Color(0xFF6366F1) : Colors.indigo.shade300),
                       ),
                     ),
                     child: Row(
@@ -250,8 +253,8 @@ class DashboardPage extends StatelessWidget {
                               : Icons.verified_user_rounded,
                           size: 14,
                           color: isSiswa
-                              ? Colors.green.shade800
-                              : Colors.indigo.shade800,
+                              ? (isDark ? const Color(0xFF6EE7B7) : Colors.green.shade800)
+                              : (isDark ? const Color(0xFFA5B4FC) : Colors.indigo.shade800),
                         ),
                         const SizedBox(width: 6),
                         Text(
@@ -260,8 +263,8 @@ class DashboardPage extends StatelessWidget {
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                             color: isSiswa
-                                ? Colors.green.shade800
-                                : Colors.indigo.shade800,
+                                ? (isDark ? const Color(0xFF6EE7B7) : Colors.green.shade800)
+                                : (isDark ? const Color(0xFFA5B4FC) : Colors.indigo.shade800),
                           ),
                         ),
                       ],
@@ -468,23 +471,31 @@ class DashboardPage extends StatelessWidget {
   Widget _buildSiswaDashboardContent(
     BuildContext context,
     DashboardController controller,
+    ThemeService theme,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // 0. Banner Portofolio Keahlian SMK (SKPI)
+        _buildSkillPortfolioBanner(context, theme),
+        const SizedBox(height: 18),
+
         // Bagian Tabungan Nilai Rapor
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Tabungan Nilai Rapor',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: theme.textPrimary,
               ),
             ),
-            TextButton(onPressed: () {}, child: const Text('Detail Nilai')),
+            TextButton(
+              onPressed: () {},
+              child: Text('Detail Nilai', style: TextStyle(color: theme.primary, fontWeight: FontWeight.w600)),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -500,9 +511,10 @@ class DashboardPage extends StatelessWidget {
                 width: 140,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.card,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.grey.shade200),
+                  border: Border.all(color: theme.border),
+                  boxShadow: theme.cardShadow,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -513,7 +525,7 @@ class DashboardPage extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade600,
+                        color: theme.textMuted,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -522,7 +534,7 @@ class DashboardPage extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Colors.blue.shade900,
+                        color: theme.primary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -530,7 +542,7 @@ class DashboardPage extends StatelessWidget {
                       'Peringkat #${grade['rank']}',
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.green.shade700,
+                        color: Colors.green.shade600,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -547,17 +559,17 @@ class DashboardPage extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Prestasi Diajukan',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: theme.textPrimary,
               ),
             ),
             Text(
               '${controller.achievements.length} Prestasi',
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              style: TextStyle(fontSize: 12, color: theme.textMuted),
             ),
           ],
         ),
@@ -574,9 +586,10 @@ class DashboardPage extends StatelessWidget {
             return Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: theme.card,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(color: theme.border),
+                boxShadow: theme.cardShadow,
               ),
               child: Row(
                 children: [
@@ -584,15 +597,15 @@ class DashboardPage extends StatelessWidget {
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: isApproved
-                          ? Colors.green.shade50
-                          : Colors.amber.shade50,
+                          ? Colors.green.withValues(alpha: 0.15)
+                          : Colors.amber.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(
                       Icons.military_tech_rounded,
                       color: isApproved
-                          ? Colors.green.shade700
-                          : Colors.amber.shade800,
+                          ? Colors.green.shade500
+                          : Colors.amber.shade600,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -602,10 +615,10 @@ class DashboardPage extends StatelessWidget {
                       children: [
                         Text(
                           item['title']!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF1E293B),
+                            color: theme.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -613,7 +626,7 @@ class DashboardPage extends StatelessWidget {
                           '${item['category']} • Tahun ${item['year']}',
                           style: TextStyle(
                             fontSize: 11,
-                            color: Colors.grey.shade600,
+                            color: theme.textMuted,
                           ),
                         ),
                       ],
@@ -626,13 +639,13 @@ class DashboardPage extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: isApproved
-                          ? Colors.green.shade50
-                          : Colors.amber.shade50,
+                          ? Colors.green.withValues(alpha: 0.12)
+                          : Colors.amber.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: isApproved
-                            ? Colors.green.shade200
-                            : Colors.amber.shade200,
+                            ? Colors.green.withValues(alpha: 0.3)
+                            : Colors.amber.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Text(
@@ -641,8 +654,8 @@ class DashboardPage extends StatelessWidget {
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         color: isApproved
-                            ? Colors.green.shade800
-                            : Colors.amber.shade900,
+                            ? Colors.green.shade500
+                            : Colors.amber.shade500,
                       ),
                     ),
                   ),
@@ -659,34 +672,40 @@ class DashboardPage extends StatelessWidget {
   Widget _buildAlumniDashboardContent(
     BuildContext context,
     DashboardController controller,
+    ThemeService theme,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // 0. Banner Portofolio Keahlian SMK (SKPI)
+        _buildSkillPortfolioBanner(context, theme),
+        const SizedBox(height: 18),
+
         // Judul Bagian Arsip Digital
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Riwayat Arsip Digital Pribadi',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: theme.textPrimary,
               ),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: Colors.blue.shade50,
+                color: theme.primary.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: theme.primary.withValues(alpha: 0.3)),
               ),
               child: Text(
                 'JWT Secured',
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: Colors.blue.shade800,
+                  color: theme.primary,
                 ),
               ),
             ),
@@ -695,7 +714,7 @@ class DashboardPage extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           'Seluruh dokumen kelulusan final yang telah tervalidasi sekolah:',
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          style: TextStyle(fontSize: 12, color: theme.textMuted),
         ),
         const SizedBox(height: 12),
 
@@ -711,21 +730,22 @@ class DashboardPage extends StatelessWidget {
             return Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: theme.card,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(color: theme.border),
+                boxShadow: theme.cardShadow,
               ),
               child: Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.red.shade50,
+                      color: Colors.red.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(
                       Icons.picture_as_pdf_rounded,
-                      color: Colors.red.shade700,
+                      color: Colors.red.shade400,
                       size: 24,
                     ),
                   ),
@@ -736,10 +756,10 @@ class DashboardPage extends StatelessWidget {
                       children: [
                         Text(
                           doc['title']!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF1E293B),
+                            color: theme.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -747,13 +767,17 @@ class DashboardPage extends StatelessWidget {
                           '${doc['type']} • ${doc['size']}',
                           style: TextStyle(
                             fontSize: 11,
-                            color: Colors.grey.shade600,
+                            color: theme.textMuted,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  IconButton.filledTonal(
+                  IconButton(
+                    style: IconButton.styleFrom(
+                      backgroundColor: theme.cardSubtle,
+                      foregroundColor: theme.primary,
+                    ),
                     onPressed: () =>
                         controller.handleDownloadDocument(doc['title']!),
                     icon: const Icon(Icons.download_rounded, size: 20),
@@ -765,6 +789,64 @@ class DashboardPage extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+
+  // --- WIDGET BANNER PORTOFOLIO KEAHLIAN SMK (SKPI) ---
+  Widget _buildSkillPortfolioBanner(BuildContext context, ThemeService theme) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.border),
+        boxShadow: theme.cardShadow,
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.purple.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(Icons.workspace_premium_rounded, color: Colors.purple.shade400, size: 28),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Portofolio Keahlian SMK',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: theme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Sertifikasi & SKPI Kejuruan',
+                  style: TextStyle(fontSize: 12, color: theme.textMuted),
+                ),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Get.toNamed(AppRoutes.skills),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.purple.shade600,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              elevation: 0,
+            ),
+            child: const Text('Buka SKPI', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
     );
   }
 }
