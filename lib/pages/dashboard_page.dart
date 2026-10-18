@@ -102,8 +102,13 @@ class DashboardPage extends StatelessWidget {
           ],
         ),
         body: RefreshIndicator(
+          color: theme.primary,
+          backgroundColor: theme.card,
           onRefresh: () async {
-            await Future.delayed(const Duration(milliseconds: 600));
+            await Future.wait([
+              controller.fetchAchievements(),
+              Future.delayed(const Duration(milliseconds: 400)),
+            ]);
           },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -559,103 +564,236 @@ class DashboardPage extends StatelessWidget {
                 color: theme.textPrimary,
               ),
             ),
-            Text(
-              '${controller.achievements.length} Prestasi',
-              style: TextStyle(fontSize: 12, color: theme.textMuted),
+            Row(
+              children: [
+                if (controller.isLoadingAchievements.value) ...[
+                  SizedBox(
+                    width: 12,
+                    height: 12,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: theme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                ],
+                Text(
+                  '${controller.achievements.length} Prestasi',
+                  style: TextStyle(fontSize: 12, color: theme.textMuted),
+                ),
+              ],
             ),
           ],
         ),
         const SizedBox(height: 10),
-        ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: controller.achievements.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 10),
-          itemBuilder: (context, index) {
-            final item = controller.achievements[index];
-            final isApproved = item['status'] == 'Approved';
 
-            return Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: theme.card,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: theme.border),
-                boxShadow: theme.cardShadow,
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: isApproved
-                          ? Colors.green.withValues(alpha: 0.15)
-                          : Colors.amber.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      Icons.military_tech_rounded,
-                      color: isApproved
-                          ? Colors.green.shade500
-                          : Colors.amber.shade600,
-                    ),
+        if (controller.achievements.isEmpty && !controller.isLoadingAchievements.value)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+            decoration: BoxDecoration(
+              color: theme.card,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: theme.border),
+              boxShadow: theme.cardShadow,
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.emoji_events_outlined,
+                  size: 38,
+                  color: theme.textMuted.withValues(alpha: 0.4),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Belum Ada Prestasi Diajukan',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: theme.textPrimary,
+                    fontSize: 14,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Tekan "Ajukan Prestasi" di atas untuk menambahkan portofolio Anda.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.textMuted,
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: controller.achievements.length,
+            separatorBuilder: (_, _) => const SizedBox(height: 10),
+            itemBuilder: (context, index) {
+              final item = controller.achievements[index];
+              final status = (item['status'] ?? 'Pending').toString();
+              final isApproved = status == 'Approved';
+              final isRejected = status == 'Rejected';
+
+              final Color statusColor = isApproved
+                  ? Colors.green.shade500
+                  : (isRejected ? Colors.red.shade500 : Colors.amber.shade500);
+
+              final Color statusBg = isApproved
+                  ? Colors.green.withValues(alpha: 0.12)
+                  : (isRejected
+                      ? Colors.red.withValues(alpha: 0.12)
+                      : Colors.amber.withValues(alpha: 0.12));
+
+              final Color statusBorder = isApproved
+                  ? Colors.green.withValues(alpha: 0.3)
+                  : (isRejected
+                      ? Colors.red.withValues(alpha: 0.3)
+                      : Colors.amber.withValues(alpha: 0.3));
+
+              final catatan = (item['catatan'] ?? '').toString();
+
+              return Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: theme.card,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: theme.border),
+                  boxShadow: theme.cardShadow,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          item['title']!,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: theme.textPrimary,
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: statusBg,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            isApproved
+                                ? Icons.military_tech_rounded
+                                : (isRejected
+                                    ? Icons.cancel_outlined
+                                    : Icons.access_time_rounded),
+                            color: statusColor,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${item['category']} • Tahun ${item['year']}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: theme.textMuted,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item['title'] ?? '',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: theme.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${item['category'] ?? ''} • Tahun ${item['year'] ?? ''}',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: theme.textMuted,
+                                ),
+                              ),
+                              if (item['penyelenggara'] != null &&
+                                  item['penyelenggara'].toString().isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Penyelenggara: ${item['penyelenggara']}',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: theme.textMuted.withValues(alpha: 0.8),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: statusBg,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: statusBorder),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                isApproved
+                                    ? Icons.check_circle_outline_rounded
+                                    : (isRejected
+                                        ? Icons.close_rounded
+                                        : Icons.schedule_rounded),
+                                size: 12,
+                                color: statusColor,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                status,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: statusColor,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isApproved
-                          ? Colors.green.withValues(alpha: 0.12)
-                          : Colors.amber.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: isApproved
-                            ? Colors.green.withValues(alpha: 0.3)
-                            : Colors.amber.withValues(alpha: 0.3),
+                    if (catatan.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: theme.cardSubtle,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: theme.border),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.feedback_outlined,
+                              size: 13,
+                              color: isRejected ? Colors.red.shade400 : theme.textMuted,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                'Catatan Validator: $catatan',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontStyle: FontStyle.italic,
+                                  color: isRejected ? Colors.red.shade400 : theme.textMuted,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      item['status']!,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: isApproved
-                            ? Colors.green.shade500
-                            : Colors.amber.shade500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+                    ],
+                  ],
+                ),
+              );
+            },
+          ),
       ],
     );
   }
