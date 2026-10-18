@@ -7,7 +7,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import '../routes/app_routes.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
-import '../services/theme_service.dart';
 import '../widgets/theme_segmented_switch.dart';
 
 /// Halaman Login Mobile - Konsep Cyber-Crystal Glassmorphism
@@ -136,11 +135,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size  = MediaQuery.of(context).size;
-    final theme = ThemeService.to;
+    final size = MediaQuery.of(context).size;
 
-    return Obx(() {
-      return Scaffold(
+    return Scaffold(
         backgroundColor: const Color(0xFF050811),
         body: Stack(
           children: [
@@ -163,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Icon(
                           Icons.auto_awesome_rounded,
                           size: 80,
-                          color: theme.primary.withValues(alpha: 0.5),
+                          color: const Color(0xFF6366F1).withValues(alpha: 0.5),
                         ),
                       ),
                     ),
@@ -547,6 +544,5 @@ class _LoginPageState extends State<LoginPage> {
           ],
         ),
       );
-    });
   }
 }
