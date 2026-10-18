@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
     },
     {
       'title': 'Alumni',
-      'nisn': '0043219876',
+      'nisn': '0067890123',
       'pass': 'alumni123',
     },
     {
