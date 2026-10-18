@@ -1,36 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
+import '../services/theme_service.dart';
 
-/// Halaman Profil: menampilkan biodata pengguna dan tombol Logout.
+/// Halaman Profil: menampilkan biodata pengguna dan tombol Logout secara adaptif terhadap tema.
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final c = Get.find<ProfileController>();
-    const primary = Color(0xFF1E3A5F);
+    final theme = ThemeService.to;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0.5,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-          onPressed: () => Get.back(),
-        ),
-        title: const Text(
-          'Profil Saya',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        centerTitle: true,
-      ),
-      body: Obx(() {
-        final isSiswa = c.userRole.value == 'Siswa';
+    return Obx(() {
+      final isDark = theme.isDarkMode.value;
+      final isSiswa = c.userRole.value == 'Siswa';
 
-        return SingleChildScrollView(
+      return Scaffold(
+        backgroundColor: theme.bg,
+        appBar: AppBar(
+          backgroundColor: theme.appBar,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Container(color: theme.border, height: 1),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: theme.textPrimary),
+            onPressed: () => Get.back(),
+          ),
+          title: Text(
+            'Profil Saya',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: theme.textPrimary,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: SingleChildScrollView(
           child: Column(
             children: [
               // ── Hero Header ──────────────────────────────────────────
@@ -38,14 +48,9 @@ class ProfilePage extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  color: theme.card,
+                  border: Border(bottom: BorderSide(color: theme.border)),
+                  boxShadow: theme.cardShadow,
                 ),
                 child: Column(
                   children: [
@@ -53,14 +58,14 @@ class ProfilePage extends StatelessWidget {
                     CircleAvatar(
                       radius: 46,
                       backgroundColor: isSiswa
-                          ? Colors.blue.shade100
-                          : Colors.indigo.shade100,
+                          ? (isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.5) : const Color(0xFFDBEAFE))
+                          : (isDark ? const Color(0xFF065F46).withValues(alpha: 0.5) : const Color(0xFFD1FAE5)),
                       child: Icon(
                         Icons.person_rounded,
                         size: 52,
                         color: isSiswa
-                            ? Colors.blue.shade700
-                            : Colors.indigo.shade700,
+                            ? (isDark ? const Color(0xFF60A5FA) : const Color(0xFF2563EB))
+                            : (isDark ? const Color(0xFF34D399) : const Color(0xFF059669)),
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -68,10 +73,10 @@ class ProfilePage extends StatelessWidget {
                     // Nama
                     Text(
                       c.userName.value,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E293B),
+                        color: theme.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -80,36 +85,35 @@ class ProfilePage extends StatelessWidget {
                     Text(
                       'NISN: ${c.userNisn.value}',
                       style: TextStyle(
-                          fontSize: 14, color: Colors.grey.shade600),
+                        fontSize: 14,
+                        color: theme.textMuted,
+                      ),
                     ),
                     const SizedBox(height: 12),
 
                     // Lencana Peran
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                       decoration: BoxDecoration(
                         color: isSiswa
-                            ? const Color(0xFFE8F5E9)
-                            : const Color(0xFFE0E7FF),
+                            ? (isDark ? const Color(0xFF064E3B).withValues(alpha: 0.5) : const Color(0xFFE8F5E9))
+                            : (isDark ? const Color(0xFF312E81).withValues(alpha: 0.5) : const Color(0xFFE0E7FF)),
                         borderRadius: BorderRadius.circular(30),
                         border: Border.all(
                           color: isSiswa
-                              ? Colors.green.shade400
-                              : Colors.indigo.shade300,
+                              ? (isDark ? const Color(0xFF059669) : Colors.green.shade400)
+                              : (isDark ? const Color(0xFF6366F1) : Colors.indigo.shade300),
                         ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            isSiswa
-                                ? Icons.school_outlined
-                                : Icons.verified_user_rounded,
+                            isSiswa ? Icons.school_outlined : Icons.verified_user_rounded,
                             size: 14,
                             color: isSiswa
-                                ? Colors.green.shade800
-                                : Colors.indigo.shade800,
+                                ? (isDark ? const Color(0xFF6EE7B7) : Colors.green.shade800)
+                                : (isDark ? const Color(0xFFA5B4FC) : Colors.indigo.shade800),
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -118,8 +122,8 @@ class ProfilePage extends StatelessWidget {
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: isSiswa
-                                  ? Colors.green.shade800
-                                  : Colors.indigo.shade800,
+                                  ? (isDark ? const Color(0xFF6EE7B7) : Colors.green.shade800)
+                                  : (isDark ? const Color(0xFFA5B4FC) : Colors.indigo.shade800),
                             ),
                           ),
                         ],
@@ -130,22 +134,19 @@ class ProfilePage extends StatelessWidget {
                     // Tombol Ubah Password
                     OutlinedButton.icon(
                       onPressed: c.handleChangePassword,
-                      icon: const Icon(Icons.lock_outline_rounded, size: 18),
-                      label: const Text('Ubah Password'),
+                      icon: Icon(Icons.lock_outline_rounded, size: 18, color: theme.primary),
+                      label: Text('Ubah Password', style: TextStyle(color: theme.primary, fontWeight: FontWeight.w600)),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: primary,
-                        side: const BorderSide(color: Color(0xFF1E3A5F)),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30)),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
+                        side: BorderSide(color: theme.primary.withValues(alpha: 0.6)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       ),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
               // ── Biodata ──────────────────────────────────────────────
               Padding(
@@ -153,124 +154,131 @@ class ProfilePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 8),
-                    _sectionTitle('Informasi Akun'),
-                    const SizedBox(height: 12),
-                    _buildInfoCard(children: [
-                      _infoRow(Icons.email_outlined, 'Email', c.userEmail.value),
-                      _divider(),
-                      _infoRow(Icons.phone_outlined, 'No. Telepon', c.userPhone.value),
-                    ]),
+                    _sectionTitle('Informasi Akun', theme),
+                    const SizedBox(height: 10),
+                    _buildInfoCard(
+                      theme: theme,
+                      children: [
+                        _infoRow(Icons.email_outlined, 'Email', c.userEmail.value, theme),
+                        _divider(theme),
+                        _infoRow(Icons.phone_outlined, 'No. Telepon', c.userPhone.value, theme),
+                      ],
+                    ),
 
                     const SizedBox(height: 20),
-                    _sectionTitle('Informasi Sekolah'),
-                    const SizedBox(height: 12),
-                    _buildInfoCard(children: [
-                      _infoRow(Icons.school_outlined, 'Sekolah', c.userSchool.value),
-                      _divider(),
-                      if (isSiswa) ...[
-                        _infoRow(Icons.class_outlined, 'Kelas', c.userClass.value),
-                        _divider(),
+                    _sectionTitle('Informasi Sekolah', theme),
+                    const SizedBox(height: 10),
+                    _buildInfoCard(
+                      theme: theme,
+                      children: [
+                        _infoRow(Icons.school_outlined, 'Sekolah', c.userSchool.value, theme),
+                        _divider(theme),
+                        if (isSiswa) ...[
+                          _infoRow(Icons.class_outlined, 'Kelas', c.userClass.value, theme),
+                          _divider(theme),
+                        ],
+                        _infoRow(Icons.calendar_today_outlined, 'Angkatan', c.userAngkatan.value, theme),
+                        _divider(theme),
+                        _infoRow(Icons.access_time_rounded, 'Bergabung Sejak', c.userJoinDate.value, theme),
                       ],
-                      _infoRow(Icons.calendar_today_outlined, 'Angkatan', c.userAngkatan.value),
-                      _divider(),
-                      _infoRow(Icons.access_time_rounded, 'Bergabung Sejak', c.userJoinDate.value),
-                    ]),
+                    ),
 
                     const SizedBox(height: 28),
 
                     // ── Tombol Logout ────────────────────────────────────
                     SizedBox(
                       width: double.infinity,
-                      height: 52,
+                      height: 50,
                       child: OutlinedButton.icon(
                         onPressed: c.handleLogout,
-                        icon: const Icon(Icons.logout_rounded, color: Colors.red),
+                        icon: const Icon(Icons.logout_rounded, color: Color(0xFFEF4444)),
                         label: const Text(
                           'Keluar dari Akun',
                           style: TextStyle(
-                            color: Colors.red,
+                            color: Color(0xFFEF4444),
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.red, width: 1.5),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14)),
+                          side: const BorderSide(color: Color(0xFFEF4444), width: 1.4),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 14),
                     Center(
                       child: Text(
-                        'SALUT v1.0.0 • SMA Negeri 1 Teladan',
-                        style: TextStyle(
-                            fontSize: 11, color: Colors.grey.shade400),
+                        'SALUT v1.0.0 • SMK Negeri 1 Teladan',
+                        style: TextStyle(fontSize: 11, color: theme.textMuted),
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 32),
                   ],
                 ),
               ),
             ],
           ),
-        );
-      }),
-    );
+        ),
+      );
+    });
   }
 
   // ─── Helper Widgets ─────────────────────────────────────────────────────────
 
-  Widget _sectionTitle(String text) => Text(
+  Widget _sectionTitle(String text, ThemeService theme) => Text(
         text,
-        style: const TextStyle(
-          fontSize: 15,
+        style: TextStyle(
+          fontSize: 14,
           fontWeight: FontWeight.w700,
-          color: Color(0xFF1E293B),
+          color: theme.textPrimary,
         ),
       );
 
-  Widget _buildInfoCard({required List<Widget> children}) {
+  Widget _buildInfoCard({required List<Widget> children, required ThemeService theme}) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: theme.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.border),
+        boxShadow: theme.cardShadow,
       ),
       child: Column(children: children),
     );
   }
 
-  Widget _infoRow(IconData icon, String label, String value) {
+  Widget _infoRow(IconData icon, String label, String value, ThemeService theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: const Color(0xFF1E3A5F)),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: theme.cardSubtle,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, size: 18, color: theme.primary),
+          ),
           const SizedBox(width: 14),
-          Expanded(                                    // ← fix overflow
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                  style: TextStyle(fontSize: 11, color: theme.textMuted),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w600),
-                  overflow: TextOverflow.ellipsis,     // ← teks panjang dipotong
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: theme.textPrimary,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
               ],
@@ -281,10 +289,10 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _divider() => Divider(
+  Widget _divider(ThemeService theme) => Divider(
         height: 1,
         thickness: 1,
-        color: Colors.grey.shade100,
+        color: theme.border,
         indent: 16,
         endIndent: 16,
       );

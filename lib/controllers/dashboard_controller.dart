@@ -18,7 +18,7 @@ class DashboardController extends GetxController {
   // Data profil dummy pengguna
   var userName = 'Budi Santoso'.obs;
   var userNisn = '0054321987'.obs;
-  var userSchool = 'SMA Negeri 1 Teladan'.obs;
+  var userSchool = 'SMK Negeri 1 Teladan'.obs;
   var graduationYear = '2024'.obs;
 
   // Tab yang aktif jika menggunakan bottom navigation

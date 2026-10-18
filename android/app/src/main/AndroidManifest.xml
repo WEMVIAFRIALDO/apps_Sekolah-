@@ -17,6 +17,7 @@
         android:label="SALUT"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:usesCleartextTraffic="true">
         <!-- usesCleartextTraffic=true untuk development (localhost HTTP).
              Ganti ke false dan gunakan HTTPS saat production! -->
