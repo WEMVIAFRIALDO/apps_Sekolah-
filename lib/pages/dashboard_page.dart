@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../controllers/dashboard_controller.dart';
 import '../routes/app_routes.dart';
 import '../services/theme_service.dart';
+import '../widgets/theme_segmented_switch.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -80,18 +81,9 @@ class DashboardPage extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 6),
-
-            // Tombol Switch Theme (Mode Gelap / Terang)
-            IconButton(
-              onPressed: theme.toggleTheme,
-              tooltip: isDark ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap',
-              icon: Icon(
-                isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
-                color: isDark ? const Color(0xFFFBBF24) : const Color(0xFF4F46E5),
-                size: 20,
-              ),
-            ),
+            // Saklar Switch Theme Segmented (Konsisten dengan Web Admin)
+            const ThemeSegmentedSwitch(),
+            const SizedBox(width: 4),
 
             IconButton(
               onPressed: () {
