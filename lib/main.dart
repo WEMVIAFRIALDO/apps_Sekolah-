@@ -11,16 +11,23 @@ import 'services/theme_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Inisialisasi Firebase
-  await Firebase.initializeApp();
-  
   // Inisialisasi Theme Service
   Get.put(ThemeService());
 
-  // Inisialisasi FCM Service menggunakan GetX
-  await Get.putAsync(() => FcmService().init());
-
+  // Jalankan UI aplikasi langsung agar tidak macet/freeze di logo!
   runApp(const SalutApp());
+
+  // Inisialisasi Firebase & FCM secara non-blocking di background
+  _initServicesAsync();
+}
+
+Future<void> _initServicesAsync() async {
+  try {
+    await Firebase.initializeApp().timeout(const Duration(seconds: 3));
+    Get.putAsync(() => FcmService().init());
+  } catch (e) {
+    debugPrint("Firebase background info: $e");
+  }
 }
 
 class SalutApp extends StatelessWidget {
