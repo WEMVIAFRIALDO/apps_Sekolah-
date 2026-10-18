@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 
 import '../services/api_service.dart';
+import '../services/theme_service.dart';
+import 'dashboard_controller.dart';
 
 /// REQ-F-03: Controller untuk halaman Input Prestasi Siswa.
 /// Data prestasi dikirim ke API Laravel dengan multipart/form-data.
@@ -155,17 +157,18 @@ class PrestasiController extends GetxController {
       // POST /api/prestasi (JWT otomatis disertakan oleh interceptor)
       await _api.postMultipart('/prestasi', formData: formData);
 
-      Get.snackbar(
-        '🎉 Prestasi Terkirim!',
-        '"${namaKegiatanController.text}" berhasil dikirim.\nMenunggu validasi Guru Pembina.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.blue.shade900,
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        duration: const Duration(seconds: 4),
+      final namaKegiatan = namaKegiatanController.text.trim();
+      final tingkat = selectedTingkat.value;
+      final peringkat = selectedPeringkat.value;
+      final tahun = tahunController.text.trim();
+
+      // Tampilkan Pop-Up Dialog Konfirmasi yang Jelas & Elegan
+      _showSuccessDialog(
+        namaKegiatan: namaKegiatan,
+        tingkat: tingkat,
+        peringkat: peringkat,
+        tahun: tahun,
       );
-      Get.back();
     } on DioException catch (e) {
       Get.snackbar(
         'Gagal Mengirim',
@@ -178,6 +181,204 @@ class PrestasiController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  /// Menampilkan Pop-Up Modal Konfirmasi Pengajuan Prestasi Berhasil
+  void _showSuccessDialog({
+    required String namaKegiatan,
+    required String tingkat,
+    required String peringkat,
+    required String tahun,
+  }) {
+    final theme = Get.find<ThemeService>();
+
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: theme.card,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: theme.border),
+            boxShadow: theme.cardShadow,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Ikon Trofi / Centang Sukses dengan Glow
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF10B981), Color(0xFF059669)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.35),
+                      blurRadius: 18,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.check_rounded,
+                  size: 40,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 18),
+
+              // Judul Dialog
+              Text(
+                'Prestasi Berhasil Dikirim!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                  color: theme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Penjelasan Status Pending
+              Text(
+                'Pengajuan prestasi Anda telah berhasil diunggah ke server dan sedang menunggu validasi oleh Guru Pembina.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: theme.textMuted,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Kartu Ringkasan Pengajuan
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: theme.cardSubtle,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: theme.border),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      namaKegiatan,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: theme.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(Icons.emoji_events_outlined, size: 14, color: theme.primary),
+                        const SizedBox(width: 5),
+                        Text(
+                          '$peringkat • $tingkat',
+                          style: TextStyle(fontSize: 12, color: theme.textMuted),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.calendar_today_outlined, size: 14, color: theme.primary),
+                        const SizedBox(width: 5),
+                        Text(
+                          'Tahun $tahun',
+                          style: TextStyle(fontSize: 12, color: theme.textMuted),
+                        ),
+                        const Spacer(),
+                        // Status Badge Pending
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: Colors.amber.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: Colors.amber.withValues(alpha: 0.4)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.access_time_rounded, size: 11, color: Colors.amber.shade500),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Pending',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.amber.shade500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 22),
+
+              // Tombol Konfirmasi "Kembali ke Beranda"
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // 1. Tutup modal dialog
+                    Get.back();
+                    // 2. Tutup form prestasi (kembali ke dashboard)
+                    Get.back();
+                    // 3. Reset form
+                    clearForm();
+                    // 4. Trigger pembaruan data riwayat prestasi di dashboard
+                    if (Get.isRegistered<DashboardController>()) {
+                      Get.find<DashboardController>().fetchAchievements();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    elevation: 3,
+                  ),
+                  child: const Text(
+                    'Lihat di Beranda',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+  /// Reset seluruh input pada form pengajuan prestasi
+  void clearForm() {
+    namaKegiatanController.clear();
+    penyelenggaraController.clear();
+    tahunController.clear();
+    deskripsiController.clear();
+    selectedTingkat.value = '';
+    selectedPeringkat.value = '';
+    selectedFileName.value = '';
+    selectedFilePath.value = '';
   }
 
   @override

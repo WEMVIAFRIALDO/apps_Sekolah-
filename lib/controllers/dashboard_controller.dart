@@ -24,27 +24,9 @@ class DashboardController extends GetxController {
   // Tab yang aktif jika menggunakan bottom navigation
   var selectedNavIndex = 0.obs;
 
-  // Dummy data: Prestasi Siswa Aktif
-  var achievements = <Map<String, dynamic>>[
-    {
-      'title': 'Juara 1 FLS2N Tingkat Provinsi',
-      'year': '2023',
-      'category': 'Seni & Budaya',
-      'status': 'Approved',
-    },
-    {
-      'title': 'Juara 2 Olimpiade Sains Nasional (OSN) Matematika',
-      'year': '2023',
-      'category': 'Akademik',
-      'status': 'Pending',
-    },
-    {
-      'title': 'Finalis Lomba Karya Tulis Ilmiah Nasional',
-      'year': '2022',
-      'category': 'Riset',
-      'status': 'Approved',
-    },
-  ].obs;
+  // Data Prestasi Siswa Aktif (Dinamis dari Backend Laravel)
+  var achievements = <Map<String, dynamic>>[].obs;
+  var isLoadingAchievements = false.obs;
 
   // Dummy data: Nilai Rapor Semester Siswa
   var semesterGrades = <Map<String, dynamic>>[
@@ -112,6 +94,42 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     _loadUserProfile();
+    fetchAchievements();
+  }
+
+  /// Mengambil riwayat prestasi siswa dari backend Laravel (GET /api/prestasi)
+  Future<void> fetchAchievements() async {
+    try {
+      isLoadingAchievements.value = true;
+      final response = await _api.get('/prestasi');
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        final List data = response.data['data'] ?? [];
+        final mapped = data.map<Map<String, dynamic>>((a) {
+          final tingkat = (a['tingkat'] ?? '').toString();
+          final peringkat = (a['peringkat'] ?? '').toString();
+          return {
+            'id': a['id'],
+            'title': (a['nama_kegiatan'] ?? '').toString(),
+            'year': (a['tahun'] ?? '').toString(),
+            'category': tingkat.isNotEmpty && peringkat.isNotEmpty
+                ? '$tingkat • $peringkat'
+                : (tingkat.isNotEmpty ? tingkat : peringkat),
+            'tingkat': tingkat,
+            'peringkat': peringkat,
+            'status': (a['status_validasi'] ?? 'Pending').toString(),
+            'penyelenggara': (a['penyelenggara'] ?? '').toString(),
+            'deskripsi': (a['deskripsi'] ?? '').toString(),
+            'catatan': (a['catatan'] ?? '').toString(),
+            'created_at': (a['created_at'] ?? '').toString(),
+          };
+        }).toList();
+        achievements.assignAll(mapped);
+      }
+    } catch (e) {
+      debugPrint('Error fetchAchievements: $e');
+    } finally {
+      isLoadingAchievements.value = false;
+    }
   }
 
   /// Load nama & NISN dari secure storage (sudah disimpan saat login)
