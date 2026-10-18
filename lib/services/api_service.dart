@@ -45,7 +45,12 @@ class ApiService {
         },
         onError: (DioException err, handler) async {
           // Token kadaluarsa / tidak valid → paksa logout ke Login
-          if (err.response?.statusCode == 401) {
+          // Catatan: JANGAN intercept jika request berasal dari endpoint /login atau /auth
+          // karena 401 saat login berarti kredensial salah, bukan token kadaluarsa.
+          final requestPath = err.requestOptions.path;
+          final isLoginEndpoint = requestPath.contains('/login') || requestPath.contains('/auth');
+
+          if (err.response?.statusCode == 401 && !isLoginEndpoint) {
             await AuthService().deleteToken();
             Get.offAllNamed('/login');
             Get.snackbar(
