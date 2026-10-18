@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart';
@@ -7,9 +8,10 @@ import '../routes/app_routes.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import '../services/theme_service.dart';
+import '../widgets/theme_segmented_switch.dart';
 
-/// Halaman Login Mobile - Konsep Dual Theme (Dark / Light)
-/// Antarmuka fleksibel dan modern untuk seluruh peran (Siswa & Alumni).
+/// Halaman Login Mobile - Konsep Cyber-Crystal Glassmorphism
+/// Terinspirasi dari layout referensi: Hero 3D Crystal di atas + Floating Glassmorphism Card di bawah.
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -24,9 +26,48 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _obscurePassword = true;
   bool _isLoading       = false;
+  int _activeDotIndex   = 0;
 
   final _api  = ApiService();
   final _auth = AuthService();
+
+  // Kredensial demo untuk 3 dot indicator
+  final List<Map<String, String>> _rolePresets = [
+    {
+      'title': 'Siswa Aktif',
+      'nisn': '0054321987',
+      'pass': 'siswa123',
+    },
+    {
+      'title': 'Alumni',
+      'nisn': '0043219876',
+      'pass': 'alumni123',
+    },
+    {
+      'title': 'Manual / Kustom',
+      'nisn': '',
+      'pass': '',
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _applyPreset(0);
+  }
+
+  void _applyPreset(int index) {
+    setState(() {
+      _activeDotIndex = index;
+      if (index < 2) {
+        _nisnController.text     = _rolePresets[index]['nisn']!;
+        _passwordController.text = _rolePresets[index]['pass']!;
+      } else {
+        _nisnController.clear();
+        _passwordController.clear();
+      }
+    });
+  }
 
   // ── Logic: Login dengan JWT & Android Keystore ────────────────────────────
   Future<void> _handleLogin() async {
@@ -66,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
         userId: user['id'].toString(),
       );
 
-      // Navigasi ke Dashboard (replace stack agar tidak bisa back ke login)
+      // Navigasi ke Dashboard
       Get.offAllNamed(AppRoutes.dashboard);
 
     } on DioException catch (e) {
@@ -99,384 +140,405 @@ class _LoginPageState extends State<LoginPage> {
     final theme = ThemeService.to;
 
     return Obx(() {
-      final isDark = theme.isDarkMode.value;
-
       return Scaffold(
-        backgroundColor: theme.bg,
+        backgroundColor: const Color(0xFF050811),
         body: Stack(
           children: [
-            // ── Ambient Glow Aurora (Biru Sapphire & Amber Gold) ───────────────
+            // ── 1. Hero Background 3D Crystal & Sci-Fi Pedestal ─────────────
             Positioned(
-              top: -size.width * 0.45,
-              right: -size.width * 0.35,
-              child: Container(
-                width: size.width * 1.2,
-                height: size.width * 1.2,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      isDark
-                          ? const Color(0xFF2563EB).withValues(alpha: 0.22)
-                          : const Color(0xFF3B82F6).withValues(alpha: 0.08),
-                      Colors.transparent,
-                    ],
+              top: 0,
+              left: 0,
+              right: 0,
+              height: size.height * 0.52,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    'assets/images/crystal_hero_mobile.jpg',
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: const Color(0xFF0A0F1D),
+                      child: Center(
+                        child: Icon(
+                          Icons.auto_awesome_rounded,
+                          size: 80,
+                          color: theme.primary.withValues(alpha: 0.5),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: -size.width * 0.5,
-              left: -size.width * 0.4,
-              child: Container(
-                width: size.width * 1.2,
-                height: size.width * 1.2,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      isDark
-                          ? const Color(0xFF06B6D4).withValues(alpha: 0.14)
-                          : const Color(0xFF06B6D4).withValues(alpha: 0.06),
-                      Colors.transparent,
-                    ],
+                  // Gradasi bayangan halus menuju kartu bawah
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          const Color(0xFF050811).withValues(alpha: 0.35),
+                          Colors.transparent,
+                          const Color(0xFF050811).withValues(alpha: 0.85),
+                          const Color(0xFF050811),
+                        ],
+                        stops: const [0.0, 0.4, 0.85, 1.0],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
 
-            // ── Tombol Switch Theme di Pojok Kanan Atas ───────────────────────
+            // ── 2. Top Header Bar (Brand Logo + Theme Switcher) ──────────────
             SafeArea(
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 12, right: 16),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(20),
-                    onTap: theme.toggleTheme,
-                    child: Container(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Brand Badge
+                    Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: theme.card,
+                        color: const Color(0xFF0F172A).withValues(alpha: 0.65),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: theme.border),
-                        boxShadow: theme.cardShadow,
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF6366F1).withValues(alpha: 0.25),
+                            blurRadius: 12,
+                          ),
+                        ],
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
-                            size: 16,
-                            color: isDark ? const Color(0xFFFBBF24) : const Color(0xFF4F46E5),
+                          Image.asset(
+                            'assets/images/logo_salut.png',
+                            width: 20,
+                            height: 20,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) => const Icon(
+                              Icons.diamond_outlined,
+                              size: 16,
+                              color: Color(0xFF818CF8),
+                            ),
                           ),
-                          const SizedBox(width: 6),
-                          Text(
-                            isDark ? 'Mode Terang' : 'Mode Gelap',
+                          const SizedBox(width: 8),
+                          const Text(
+                            'SALUT',
                             style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: theme.textPrimary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.2,
+                              color: Colors.white,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
+
+                    // Segmented Theme Switcher (Konsisten dengan Web Admin)
+                    const ThemeSegmentedSwitch(),
+                  ],
                 ),
               ),
             ),
 
-            // ── Form Login Utama ───────────────────────────────────────────────
-            SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Badge Resmi Institusi (Glass-Pill Neon)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: theme.cardSubtle,
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(
-                              color: theme.borderGlow,
-                              width: 1.2,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: theme.primary.withValues(alpha: 0.15),
-                                blurRadius: 10,
-                              ),
-                            ],
+            // ── 3. Floating Frosted Glass Card (Exact to Reference Mockup) ────
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(28),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0F172A).withValues(alpha: 0.68),
+                          borderRadius: BorderRadius.circular(28),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.14),
+                            width: 1.2,
                           ),
-                          child: Row(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.6),
+                              blurRadius: 35,
+                              offset: const Offset(0, 15),
+                            ),
+                            BoxShadow(
+                              color: const Color(0xFF6366F1).withValues(alpha: 0.12),
+                              blurRadius: 25,
+                            ),
+                          ],
+                        ),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              // Mini Emblem di Atas Form
                               Container(
-                                width: 7,
-                                height: 7,
+                                width: 44,
+                                height: 44,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF00F2FE),
-                                  shape: BoxShape.circle,
+                                  color: const Color(0xFF6366F1).withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.2),
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF00F2FE).withValues(alpha: 0.8),
-                                      blurRadius: 6,
+                                      color: const Color(0xFF6366F1).withValues(alpha: 0.35),
+                                      blurRadius: 16,
                                     ),
                                   ],
                                 ),
+                                child: Center(
+                                  child: Image.asset(
+                                    'assets/images/logo_salut.png',
+                                    width: 26,
+                                    height: 26,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) => const Icon(
+                                      Icons.school_rounded,
+                                      size: 22,
+                                      color: Color(0xFF818CF8),
+                                    ),
+                                  ),
+                                ),
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'PORTAL RESMI AKADEMIK & ALUMNI',
+                              const SizedBox(height: 10),
+
+                              const Text(
+                                'SALUT PORTAL',
                                 style: TextStyle(
-                                  fontSize: 10.5,
-                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
                                   letterSpacing: 1.2,
-                                  color: isDark ? const Color(0xFF93C5FD) : const Color(0xFF1D4ED8),
+                                  color: Colors.white,
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Logo Transparan SALUT (Bebas Kotak)
-                        Container(
-                          width: 110,
-                          height: 110,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF00F2FE).withValues(alpha: isDark ? 0.25 : 0.15),
-                                blurRadius: 28,
-                                spreadRadius: 2,
-                              ),
-                              BoxShadow(
-                                color: const Color(0xFF2563EB).withValues(alpha: isDark ? 0.35 : 0.15),
-                                blurRadius: 36,
-                              ),
-                            ],
-                          ),
-                          child: Image.asset(
-                            'assets/images/logo_salut.png',
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) => Icon(
-                              Icons.school_rounded,
-                              size: 64,
-                              color: theme.primary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        Text(
-                          'SMK NEGERI 1 TELADAN',
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 2.0,
-                            color: theme.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Masuk menggunakan NISN & kata sandi Anda',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: theme.textMuted,
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-
-                        // ── Kartu Input Form Frosted Glass ────────────────
-                        Container(
-                          padding: const EdgeInsets.all(26),
-                          decoration: BoxDecoration(
-                            color: theme.card,
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(
-                              color: theme.border,
-                              width: 1.2,
-                            ),
-                            boxShadow: theme.cardShadow,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                              const SizedBox(height: 2),
                               Text(
-                                'NISN / ID Pengguna',
+                                'SMK NEGERI 1 TELADAN',
                                 style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  color: theme.textSecondary,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.6,
+                                  color: Colors.white.withValues(alpha: 0.55),
                                 ),
                               ),
-                              const SizedBox(height: 8),
-                              TextFormField(
-                                controller: _nisnController,
-                                keyboardType: TextInputType.number,
-                                maxLength: 10,
-                                validator: (v) {
-                                  if (v == null || v.isEmpty) return 'NISN wajib diisi';
-                                  if (v.length < 10) return 'NISN harus 10 digit';
-                                  return null;
-                                },
-                                style: TextStyle(
-                                  fontSize: 14.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: theme.textPrimary,
+                              const SizedBox(height: 22),
+
+                              // Pill Input 1: User Icon + NISN Field
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.06),
+                                  borderRadius: BorderRadius.circular(30),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.12),
+                                  ),
                                 ),
-                                decoration: InputDecoration(
-                                  hintText: 'Contoh: 0054321987',
-                                  hintStyle: TextStyle(color: theme.textMuted, fontSize: 14),
-                                  prefixIcon: Icon(Icons.badge_outlined, color: theme.primary, size: 20),
-                                  counterText: '',
-                                  filled: true,
-                                  fillColor: theme.cardSubtle,
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    borderSide: BorderSide(color: theme.border),
+                                child: TextFormField(
+                                  controller: _nisnController,
+                                  keyboardType: TextInputType.number,
+                                  maxLength: 10,
+                                  validator: (v) {
+                                    if (v == null || v.isEmpty) return 'NISN wajib diisi';
+                                    if (v.length < 10) return 'NISN harus 10 digit';
+                                    return null;
+                                  },
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    borderSide: BorderSide(color: theme.border),
+                                  decoration: InputDecoration(
+                                    hintText: 'NISN / ID Pengguna',
+                                    hintStyle: TextStyle(
+                                      color: Colors.white.withValues(alpha: 0.4),
+                                      fontSize: 13.5,
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.person_outline_rounded,
+                                      color: Colors.white.withValues(alpha: 0.7),
+                                      size: 20,
+                                    ),
+                                    counterText: '',
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 18,
+                                      vertical: 14,
+                                    ),
                                   ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    borderSide: BorderSide(color: theme.primary, width: 1.8),
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+
+                              // Pill Input 2: Lock Icon + Password Field + Eye Toggle
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.06),
+                                  borderRadius: BorderRadius.circular(30),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.12),
+                                  ),
+                                ),
+                                child: TextFormField(
+                                  controller: _passwordController,
+                                  obscureText: _obscurePassword,
+                                  validator: (v) {
+                                    if (v == null || v.isEmpty) return 'Kata sandi wajib diisi';
+                                    return null;
+                                  },
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: 'Kata Sandi Akun',
+                                    hintStyle: TextStyle(
+                                      color: Colors.white.withValues(alpha: 0.4),
+                                      fontSize: 13.5,
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.lock_outline_rounded,
+                                      color: Colors.white.withValues(alpha: 0.7),
+                                      size: 20,
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _obscurePassword
+                                            ? Icons.visibility_off_outlined
+                                            : Icons.visibility_outlined,
+                                        color: Colors.white.withValues(alpha: 0.6),
+                                        size: 19,
+                                      ),
+                                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 18,
+                                      vertical: 14,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+
+                              // Gradient Action Button with Right Arrow
+                              Container(
+                                width: double.infinity,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFF6366F1),
+                                      Color(0xFF8B5CF6),
+                                      Color(0xFF3B82F6),
+                                    ],
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF6366F1).withValues(alpha: 0.45),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(30),
+                                    onTap: _isLoading ? null : _handleLogin,
+                                    child: Center(
+                                      child: _isLoading
+                                          ? const SizedBox(
+                                              width: 22,
+                                              height: 22,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2.5,
+                                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                              ),
+                                            )
+                                          : const Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  'Masuk',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14.5,
+                                                    fontWeight: FontWeight.w700,
+                                                    letterSpacing: 0.5,
+                                                  ),
+                                                ),
+                                                SizedBox(width: 8),
+                                                Icon(
+                                                  Icons.arrow_forward_rounded,
+                                                  color: Colors.white,
+                                                  size: 18,
+                                                ),
+                                              ],
+                                            ),
+                                    ),
                                   ),
                                 ),
                               ),
                               const SizedBox(height: 18),
 
-                              Text(
-                                'Kata Sandi',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  color: theme.textSecondary,
-                                ),
+                              // Bottom 3-Dot Indicator Row (Exact to Reference Image)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: List.generate(3, (index) {
+                                  final isActive = _activeDotIndex == index;
+                                  return GestureDetector(
+                                    onTap: () => _applyPreset(index),
+                                    child: AnimatedContainer(
+                                      duration: const Duration(milliseconds: 250),
+                                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                                      height: 7,
+                                      width: isActive ? 24 : 7,
+                                      decoration: BoxDecoration(
+                                        color: isActive
+                                            ? const Color(0xFF818CF8)
+                                            : Colors.white.withValues(alpha: 0.22),
+                                        borderRadius: BorderRadius.circular(4),
+                                        boxShadow: isActive
+                                            ? [
+                                                BoxShadow(
+                                                  color: const Color(0xFF818CF8).withValues(alpha: 0.8),
+                                                  blurRadius: 8,
+                                                ),
+                                              ]
+                                            : null,
+                                      ),
+                                    ),
+                                  );
+                                }),
                               ),
                               const SizedBox(height: 8),
-                              TextFormField(
-                                controller: _passwordController,
-                                obscureText: _obscurePassword,
-                                validator: (v) {
-                                  if (v == null || v.isEmpty) return 'Password wajib diisi';
-                                  return null;
-                                },
-                                style: TextStyle(
-                                  fontSize: 14.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: theme.textPrimary,
-                                ),
-                                decoration: InputDecoration(
-                                  hintText: 'Masukkan kata sandi',
-                                  hintStyle: TextStyle(color: theme.textMuted, fontSize: 14),
-                                  prefixIcon: Icon(Icons.lock_outline_rounded, color: theme.primary, size: 20),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                                      color: theme.textMuted,
-                                      size: 20,
-                                    ),
-                                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                                  ),
-                                  filled: true,
-                                  fillColor: theme.cardSubtle,
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    borderSide: BorderSide(color: theme.border),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    borderSide: BorderSide(color: theme.border),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    borderSide: BorderSide(color: theme.primary, width: 1.8),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 24),
 
-                              // Tombol Masuk Royal Blue dengan Neon Glow
-                              SizedBox(
-                                width: double.infinity,
-                                height: 52,
-                                child: ElevatedButton(
-                                  onPressed: _isLoading ? null : _handleLogin,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: theme.primary,
-                                    foregroundColor: Colors.white,
-                                    elevation: 4,
-                                    shadowColor: theme.primary.withValues(alpha: 0.5),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                  ),
-                                  child: _isLoading
-                                      ? const SizedBox(
-                                          width: 22,
-                                          height: 22,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2.5,
-                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                          ),
-                                        )
-                                      : const Text(
-                                          'Masuk ke Akun',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w700,
-                                            letterSpacing: 0.3,
-                                          ),
-                                        ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Footer Keamanan Resmi
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: theme.cardSubtle,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: theme.border,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.lock_outline_rounded, size: 12, color: theme.textMuted),
-                              const SizedBox(width: 6),
+                              // Indikator Label Role Terpilih
                               Text(
-                                'Terenkripsi Aman • SALUT v1.0.0',
+                                'Mode Akses: ${_rolePresets[_activeDotIndex]['title']}',
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
-                                  color: theme.textMuted,
+                                  color: Colors.white.withValues(alpha: 0.5),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),

@@ -1,10 +1,10 @@
-﻿================================================================
+================================================================
    SALUT - DATA LOGIN AKUN
    Sistem Arsip Lulusan & Tracer Study
 ================================================================
 
 --- WEB ADMIN PANEL ---
-URL: http://127.0.0.1:5500/index.html
+URL: http://localhost:8080 (atau http://127.0.0.1:5500)
 
 [ADMIN]
   Nama     : Administrator SALUT
@@ -16,14 +16,14 @@ URL: http://127.0.0.1:5500/index.html
   NISN     : 0000000002
   Password : guru123
 
---- APLIKASI ANDROID (Flutter / Chrome) ---
-URL: http://localhost:3000
+--- APLIKASI ANDROID (Flutter Mobile) ---
+File APK : build/app/outputs/flutter-apk/app-release.apk
 
 [SISWA AKTIF]
   Nama     : Budi Santoso
   NISN     : 0054321987
   Password : siswa123
-  Kelas    : XII IPA 3
+  Kelas    : XII TKJ 1
 
 [ALUMNI]
   Nama     : Siti Rahayu
@@ -33,11 +33,8 @@ URL: http://localhost:3000
 
 --- CARA MENJALANKAN SERVER ---
 1. Buka XAMPP -> Start MySQL
-2. Terminal 1: cd d:\proyek_applikasi\salut_backend
-              php artisan serve
-3. Terminal 2: cd d:\proyek_applikasi\apps_sekolah\salut_web_admin
-              php -S 127.0.0.1:5500
-4. Terminal 3: cd d:\proyek_applikasi\apps_sekolah
-              flutter run -d chrome --web-port=3000
+2. Backend API: cd salut_backend && php artisan serve --port=8000
+3. Web Admin  : cd salut_web_admin && php -S localhost:8080
+4. Mobile App : flutter run (atau build APK: flutter build apk --release)
 
 ================================================================

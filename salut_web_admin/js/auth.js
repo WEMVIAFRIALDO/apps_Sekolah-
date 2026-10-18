@@ -151,7 +151,8 @@ const Auth = {
 
 /**
  * Theme Engine — Pengatur Mode Gelap / Terang (Dark / Light)
- * Menyimpan preferensi di localStorage dan otomatis menyuntikkan toggle ke Topbar.
+ * Menyimpan preferensi di localStorage dan otomatis menyuntikkan switch interaktif
+ * dengan posisi tetap dan tidak mengganggu elemen aksi halaman lainnya.
  */
 const Theme = {
     get() {
@@ -178,29 +179,82 @@ const Theme = {
     init() {
         const current = this.get();
         document.documentElement.setAttribute('data-theme', current);
-        this.injectHeaderButton();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.injectHeaderButton());
+        } else {
+            this.injectHeaderButton();
+        }
     },
     injectHeaderButton() {
+        // Hapus toggle lama jika ada
+        const oldSwitcher = document.getElementById('global-theme-switcher');
+        if (oldSwitcher) oldSwitcher.remove();
+
+        const toggleEl = document.createElement('div');
+        toggleEl.id = 'global-theme-switcher';
+        toggleEl.className = 'theme-switch-control';
+        toggleEl.setAttribute('role', 'button');
+        toggleEl.setAttribute('tabindex', '0');
+        toggleEl.setAttribute('title', 'Klik untuk beralih antara Mode Terang dan Mode Gelap');
+        toggleEl.onclick = () => Theme.toggle();
+        toggleEl.innerHTML = `
+            <div class="theme-switch-slider"></div>
+            <div class="theme-switch-opt opt-dark">
+                <span class="theme-opt-icon">🌙</span>
+                <span class="theme-opt-text">Gelap</span>
+            </div>
+            <div class="theme-switch-opt opt-light">
+                <span class="theme-opt-icon">☀️</span>
+                <span class="theme-opt-text">Terang</span>
+            </div>
+        `;
+
         const topbar = document.querySelector('.topbar');
-        if (!topbar) return;
+        if (topbar) {
+            // Halaman internal dengan .topbar (Dashboard, Siswa, Rapor, dll.)
+            let rightSlot = topbar.querySelector('.topbar-right-slot');
+            if (!rightSlot) {
+                rightSlot = document.createElement('div');
+                rightSlot.className = 'topbar-right-slot';
 
-        let rightContainer = topbar.querySelector('div:last-child');
-        if (!rightContainer || rightContainer === topbar.querySelector('div:first-child')) {
-            rightContainer = document.createElement('div');
-            rightContainer.style.display = 'flex';
-            rightContainer.style.alignItems = 'center';
-            rightContainer.style.gap = '12px';
-            topbar.appendChild(rightContainer);
+                // Pindahkan elemen bawaan (selain judul halaman) ke actions group
+                const children = Array.from(topbar.children);
+                const otherChildren = children.slice(1);
+
+                if (otherChildren.length > 0) {
+                    const actionsGroup = document.createElement('div');
+                    actionsGroup.className = 'topbar-actions-group';
+                    otherChildren.forEach(child => actionsGroup.appendChild(child));
+                    rightSlot.appendChild(actionsGroup);
+
+                    const divider = document.createElement('div');
+                    divider.className = 'topbar-divider';
+                    rightSlot.appendChild(divider);
+                }
+                topbar.appendChild(rightSlot);
+            }
+
+            let themeSlot = document.getElementById('topbar-theme-slot');
+            if (!themeSlot) {
+                themeSlot = document.createElement('div');
+                themeSlot.id = 'topbar-theme-slot';
+                rightSlot.appendChild(themeSlot);
+            }
+            themeSlot.innerHTML = '';
+            themeSlot.appendChild(toggleEl);
+        } else {
+            // Halaman tanpa topbar (seperti index.html Login)
+            let floatWrap = document.getElementById('floating-theme-container');
+            if (!floatWrap) {
+                floatWrap = document.createElement('div');
+                floatWrap.id = 'floating-theme-container';
+                floatWrap.className = 'floating-theme-wrapper';
+                document.body.appendChild(floatWrap);
+            }
+            floatWrap.innerHTML = '';
+            floatWrap.appendChild(toggleEl);
         }
 
-        if (!document.getElementById('header-theme-toggle')) {
-            const btn = document.createElement('button');
-            btn.id = 'header-theme-toggle';
-            btn.className = 'btn btn-ghost btn-sm theme-toggle-btn';
-            btn.style.cssText = 'font-weight:700;display:inline-flex;align-items:center;gap:6px;border-radius:10px;cursor:pointer;';
-            btn.onclick = () => Theme.toggle();
-            rightContainer.insertBefore(btn, rightContainer.firstChild);
-        }
         this.updateButtons(this.get());
     }
 };
