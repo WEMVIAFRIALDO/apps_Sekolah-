@@ -1,108 +1,132 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/skills_controller.dart';
+import '../services/theme_service.dart';
 
+/// Halaman Portofolio Keahlian SMK (SKPI) untuk Siswa & Alumni.
+/// Terintegrasi ThemeService (Mode Gelap & Mode Terang).
 class SkillsPage extends StatelessWidget {
   const SkillsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(SkillsController());
+    final theme = ThemeService.to;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        title: const Text(
-          'Portofolio Keahlian SMK',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+    return Obx(() {
+      return Scaffold(
+        backgroundColor: theme.bg,
+        appBar: AppBar(
+          title: Text(
+            'Portofolio Keahlian SMK',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: theme.textPrimary,
+            ),
+          ),
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: theme.appBar,
+          surfaceTintColor: Colors.transparent,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Container(color: theme.border, height: 1),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: theme.textPrimary),
+            onPressed: () => Get.back(),
+          ),
         ),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF0F172A),
-      ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        body: Obx(() {
+          if (controller.isLoading.value) {
+            return Center(
+              child: CircularProgressIndicator(color: theme.primary),
+            );
+          }
 
-        if (controller.errorMessage.isNotEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
+          if (controller.errorMessage.isNotEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline_rounded, size: 56, color: Colors.red),
+                    const SizedBox(height: 16),
+                    Text(
+                      controller.errorMessage.value,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 14, color: theme.textMuted),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: controller.fetchMySkills,
+                      icon: const Icon(Icons.refresh_rounded),
+                      label: const Text('Coba Lagi'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.primary,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: controller.fetchMySkills,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.error_outline_rounded, size: 56, color: Colors.red),
+                  // 1. Header Card: Jurusan & SKPI Info
+                  _buildHeaderCard(context, controller),
                   const SizedBox(height: 16),
-                  Text(
-                    controller.errorMessage.value,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)),
-                  ),
+
+                  // 2. Ringkasan Tingkat Kemahiran
+                  _buildSummaryRow(controller, theme),
+                  const SizedBox(height: 20),
+
+                  // 3. Filter Chips
+                  _buildFilterChips(controller, theme),
                   const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: controller.fetchMySkills,
-                    icon: const Icon(Icons.refresh_rounded),
-                    label: const Text('Coba Lagi'),
-                  ),
+
+                  // 4. Daftar Kartu Kompetensi
+                  if (controller.filteredSkills.isEmpty)
+                    Container(
+                      padding: const EdgeInsets.all(32),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: theme.card,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: theme.border),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(Icons.workspace_premium_outlined, size: 48, color: theme.textMuted),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Belum ada kompetensi pada kategori ini.',
+                            style: TextStyle(color: theme.textMuted, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    ...controller.filteredSkills.map((skill) => _buildSkillCard(skill, theme)),
+
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
           );
-        }
-
-        return RefreshIndicator(
-          onRefresh: controller.fetchMySkills,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 1. Header Card: Jurusan & SKPI Info
-                _buildHeaderCard(context, controller),
-                const SizedBox(height: 16),
-
-                // 2. Ringkasan Tingkat Kemahiran
-                _buildSummaryRow(controller),
-                const SizedBox(height: 20),
-
-                // 3. Filter Chips
-                _buildFilterChips(controller),
-                const SizedBox(height: 16),
-
-                // 4. Daftar Kartu Kompetensi
-                if (controller.filteredSkills.isEmpty)
-                  Container(
-                    padding: const EdgeInsets.all(32),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: Column(
-                      children: [
-                        Icon(Icons.workspace_premium_outlined, size: 48, color: Colors.grey.shade400),
-                        const SizedBox(height: 12),
-                        const Text(
-                          'Belum ada kompetensi pada kategori ini.',
-                          style: TextStyle(color: Color(0xFF64748B), fontSize: 14),
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  ...controller.filteredSkills.map((skill) => _buildSkillCard(skill)),
-
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-        );
-      }),
-    );
+        }),
+      );
+    });
   }
 
   Widget _buildHeaderCard(BuildContext context, SkillsController controller) {
@@ -167,28 +191,29 @@ class SkillsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryRow(SkillsController controller) {
+  Widget _buildSummaryRow(SkillsController controller, ThemeService theme) {
     return Row(
       children: [
-        _buildStatBox('Total Unit', '${controller.allSkills.length}', Colors.blue),
-        const SizedBox(width: 10),
-        _buildStatBox('Mahir', '${controller.countByLevel('Mahir')}', Colors.green),
-        const SizedBox(width: 10),
-        _buildStatBox('Terampil', '${controller.countByLevel('Terampil')}', Colors.purple),
-        const SizedBox(width: 10),
-        _buildStatBox('Dasar', '${controller.countByLevel('Dasar')}', Colors.amber),
+        _buildStatBox('Total Unit', '${controller.allSkills.length}', const Color(0xFF38BDF8), theme),
+        const SizedBox(width: 8),
+        _buildStatBox('Mahir', '${controller.countByLevel('Mahir')}', const Color(0xFF10B981), theme),
+        const SizedBox(width: 8),
+        _buildStatBox('Terampil', '${controller.countByLevel('Terampil')}', const Color(0xFFA855F7), theme),
+        const SizedBox(width: 8),
+        _buildStatBox('Dasar', '${controller.countByLevel('Dasar')}', const Color(0xFFF59E0B), theme),
       ],
     );
   }
 
-  Widget _buildStatBox(String label, String count, MaterialColor color) {
+  Widget _buildStatBox(String label, String count, Color color, ThemeService theme) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.card,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          border: Border.all(color: theme.border),
+          boxShadow: theme.cardShadow,
         ),
         child: Column(
           children: [
@@ -197,13 +222,13 @@ class SkillsPage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: color.shade700,
+                color: color,
               ),
             ),
             const SizedBox(height: 2),
             Text(
               label,
-              style: const TextStyle(fontSize: 11, color: Color(0xFF64748B), fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 11, color: theme.textMuted, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -211,8 +236,10 @@ class SkillsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFilterChips(SkillsController controller) {
+  Widget _buildFilterChips(SkillsController controller, ThemeService theme) {
     final filters = ['Semua', 'Mahir', 'Terampil', 'Dasar'];
+    final isDark = theme.isDarkMode.value;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -224,17 +251,17 @@ class SkillsPage extends StatelessWidget {
               label: Text(f),
               selected: isSelected,
               onSelected: (_) => controller.applyFilter(f),
-              selectedColor: Colors.indigo.shade600,
+              selectedColor: isDark ? const Color(0xFF6366F1) : const Color(0xFF4F46E5),
               labelStyle: TextStyle(
-                color: isSelected ? Colors.white : const Color(0xFF475569),
+                color: isSelected ? Colors.white : theme.textPrimary,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 fontSize: 12,
               ),
-              backgroundColor: Colors.white,
+              backgroundColor: theme.card,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
-                  color: isSelected ? Colors.indigo.shade600 : const Color(0xFFE2E8F0),
+                  color: isSelected ? (isDark ? const Color(0xFF818CF8) : const Color(0xFF4F46E5)) : theme.border,
                 ),
               ),
             ),
@@ -244,20 +271,21 @@ class SkillsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSkillCard(Map<String, dynamic> skill) {
+  Widget _buildSkillCard(Map<String, dynamic> skill, ThemeService theme) {
     final level = skill['level']?.toString() ?? 'Terampil';
+    final isDark = theme.isDarkMode.value;
     final Color badgeColor;
     final Color badgeBg;
 
     if (level == 'Mahir') {
-      badgeColor = const Color(0xFF059669);
-      badgeBg = const Color(0xFFECFDF5);
+      badgeColor = const Color(0xFF10B981);
+      badgeBg = isDark ? const Color(0xFF064E3B).withValues(alpha: 0.4) : const Color(0xFFECFDF5);
     } else if (level == 'Terampil') {
-      badgeColor = const Color(0xFF2563EB);
-      badgeBg = const Color(0xFFEFF6FF);
+      badgeColor = const Color(0xFF38BDF8);
+      badgeBg = isDark ? const Color(0xFF0369A1).withValues(alpha: 0.3) : const Color(0xFFEFF6FF);
     } else {
-      badgeColor = const Color(0xFFD97706);
-      badgeBg = const Color(0xFFFFFBEB);
+      badgeColor = const Color(0xFFF59E0B);
+      badgeBg = isDark ? const Color(0xFF78350F).withValues(alpha: 0.3) : const Color(0xFFFFFBEB);
     }
 
     final guru = skill['guru'] is Map ? skill['guru']['name'] : 'Guru Pembimbing';
@@ -266,16 +294,10 @@ class SkillsPage extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.card,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(color: theme.border),
+        boxShadow: theme.cardShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,10 +308,10 @@ class SkillsPage extends StatelessWidget {
               Expanded(
                 child: Text(
                   skill['nama_kompetensi'] ?? 'Kompetensi',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F172A),
+                    color: theme.textPrimary,
                   ),
                 ),
               ),
@@ -299,7 +321,7 @@ class SkillsPage extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: badgeBg,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: badgeColor.withValues(alpha: 0.3)),
+                  border: Border.all(color: badgeColor.withValues(alpha: 0.4)),
                 ),
                 child: Text(
                   level,
@@ -315,18 +337,18 @@ class SkillsPage extends StatelessWidget {
           const SizedBox(height: 6),
           Row(
             children: [
-              Icon(Icons.category_outlined, size: 13, color: Colors.grey.shade500),
+              Icon(Icons.category_outlined, size: 13, color: theme.textMuted),
               const SizedBox(width: 4),
               Text(
                 skill['kategori'] ?? 'Kategori Kejuruan',
-                style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                style: TextStyle(fontSize: 12, color: theme.textMuted),
               ),
               const SizedBox(width: 12),
-              Icon(Icons.calendar_today_outlined, size: 13, color: Colors.grey.shade500),
+              Icon(Icons.calendar_today_outlined, size: 13, color: theme.textMuted),
               const SizedBox(width: 4),
               Text(
                 '${skill['semester'] ?? ''} ${skill['tahun_pelajaran'] ?? ''}',
-                style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                style: TextStyle(fontSize: 12, color: theme.textMuted),
               ),
             ],
           ),
@@ -336,23 +358,24 @@ class SkillsPage extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: theme.cardSubtle,
                 borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: theme.border),
               ),
               child: Text(
                 skill['keterangan'],
-                style: const TextStyle(fontSize: 12, color: Color(0xFF334155), height: 1.3),
+                style: TextStyle(fontSize: 12, color: theme.textPrimary, height: 1.3),
               ),
             ),
           ],
           const SizedBox(height: 10),
           Row(
             children: [
-              const Icon(Icons.school_outlined, size: 14, color: Color(0xFF94A3B8)),
+              Icon(Icons.school_outlined, size: 14, color: theme.textMuted),
               const SizedBox(width: 4),
               Text(
                 'Penguji: $guru',
-                style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
+                style: TextStyle(fontSize: 11, color: theme.textMuted),
               ),
             ],
           ),
