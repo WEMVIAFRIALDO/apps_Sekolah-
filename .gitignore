@@ -56,18 +56,3 @@ salut_backend/storage/logs/*.log
 ~$*.docx
 ~$*.doc
 
-
-# Bahan & script pembuat laporan (tidak diunggah ke repositori)
-Laporan_*.docx
-Laporan_*.html
-Laporan_*.txt
-build_*.py
-generate_laporan*.py
-generate_prototype_assets.py
-generate_updated_realistic_assets.py
-merge_and_format_all_reports.py
-laporan_screenshots/
-instalasi_images/
-instalasi_images_exact/
-srs_mockup_images/
-/android/build/
