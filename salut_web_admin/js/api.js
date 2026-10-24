@@ -22,6 +22,7 @@ const Api = {
     get:    (path)        => Api.request('GET',   path),
     post:   (path, body)  => Api.request('POST',  path, body),
     patch:  (path, body)  => Api.request('PATCH', path, body),
+    delete: (path)        => Api.request('DELETE', path),
 
     async upload(path, formData) {
         const headers = { 'Accept': 'application/json' };

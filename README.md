@@ -2,16 +2,17 @@
 
   <img src="./assets/images/logo_salut.png" alt="Logo SALUT" width="160" />
 
-  # 🎓 SALUT (Sistem Arsip Kelulusan & Tracer Study Terpadu)
-  ### *Integrated Academic Graduation Archive, SKPI Portfolio & Alumni Tracer Study System*
+# 🎓 SALUT (Sistem Arsip Kelulusan & Tracer Study Terpadu)
 
-  [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
-  [![Laravel](https://img.shields.io/badge/Laravel-11.x-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
-  [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)](https://php.net)
-  [![MySQL](https://img.shields.io/badge/MySQL-8.0%2B-4479A1?logo=mysql&logoColor=white)](https://mysql.com)
-  [![Firebase](https://img.shields.io/badge/Firebase-FCM%20Push-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com)
-  [![JWT](https://img.shields.io/badge/Auth-JWT%20Keystore-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io)
-  [![License](https://img.shields.io/badge/License-Academic%20Project-success)](#)
+### _Integrated Academic Graduation Archive, SKPI Portfolio & Alumni Tracer Study System_
+
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
+[![Laravel](https://img.shields.io/badge/Laravel-11.x-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)](https://php.net)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0%2B-4479A1?logo=mysql&logoColor=white)](https://mysql.com)
+[![Firebase](https://img.shields.io/badge/Firebase-FCM%20Push-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com)
+[![JWT](https://img.shields.io/badge/Auth-JWT%20Keystore-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io)
+[![License](https://img.shields.io/badge/License-Academic%20Project-success)](#)
 
   <p align="center">
     <b>Aplikasi Ekosistem Terpadu Berbasis Mobile (Flutter) dan Web Administrator (Laravel API & Modern Web)</b><br>
@@ -32,16 +33,17 @@
 
 Seluruh naskah laporan akademik, dokumentasi instalasi, pengujian API, dan integrasi mobile tersimpan dalam format dokumen **Microsoft Word (`.docx`)** dan **Web Preview (`.html`)**:
 
-| Nama Dokumen Laporan | Format | Deskripsi Isi Dokumen | Tautan Langsung |
-| :--- | :---: | :--- | :---: |
+| Nama Dokumen Laporan                               | Format  | Deskripsi Isi Dokumen                                                                                                                                                                                          |                           Tautan Langsung                            |
+| :------------------------------------------------- | :-----: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------: |
 | **Laporan Lengkap Master (Bab 1 - 6 + Instalasi)** | `.docx` | Dokumen akademik komprehensif 35-40 halaman, mencakup Laporan 1 & 2 (Instalasi), Laporan 3 (Backend API), Laporan 4 (Frontend Mobile), Laporan 5 (SKPI & Portofolio), dan Laporan 6 (Automasi & Tracer Study). | [📂 Buka Dokumen](./Laporan_Lengkap_Sistem_SALUT_dan_Instalasi.docx) |
-| **Laporan Kemajuan Sistem 3, 4, 5, 6** | `.docx` | Naskah laporan kompilasi teknis implementasi backend, mobile Flutter, portofolio SKPI, cron automasi, dan analitik web SMK beserta 32 tangkapan layar. | [📂 Buka Dokumen](./Laporan_Lengkap_3_4_5_6.docx) |
-| **Pratinjau Laporan Web Interaktif** | `.html` | Versi web yang dapat langsung dibuka dan dibaca di Google Chrome / browser tanpa perlu Microsoft Word. | [🌐 Buka di Browser](./Laporan_Lengkap_3_4_5_6.html) |
-| **Panduan Instalasi & Setup Awal (Laporan 1 & 2)** | `.docx` | Dokumen panduan instalasi Flutter SDK, Android Studio, XAMPP, Git, dan arsitektur database awal. | [📂 Buka Dokumen](../instalasi.docx) |
+| **Laporan Kemajuan Sistem 3, 4, 5, 6**             | `.docx` | Naskah laporan kompilasi teknis implementasi backend, mobile Flutter, portofolio SKPI, cron automasi, dan analitik web SMK beserta 32 tangkapan layar.                                                         |          [📂 Buka Dokumen](./Laporan_Lengkap_3_4_5_6.docx)           |
+| **Pratinjau Laporan Web Interaktif**               | `.html` | Versi web yang dapat langsung dibuka dan dibaca di Google Chrome / browser tanpa perlu Microsoft Word.                                                                                                         |         [🌐 Buka di Browser](./Laporan_Lengkap_3_4_5_6.html)         |
+| **Panduan Instalasi & Setup Awal (Laporan 1 & 2)** | `.docx` | Dokumen panduan instalasi Flutter SDK, Android Studio, XAMPP, Git, dan arsitektur database awal.                                                                                                               |                 [📂 Buka Dokumen](../instalasi.docx)                 |
 
 ---
 
 ## 📑 Daftar Isi
+
 1. [Berkas Dokumen Laporan Resmi Proyek](#-berkas-dokumen-laporan-resmi-proyek)
 2. [Latar Belakang & Gambaran Umum Proyek](#-1-latar-belakang--gambaran-umum-proyek)
 3. [Arsitektur Ekosistem Sistem](#-2-arsitektur-ekosistem-sistem)
@@ -63,17 +65,18 @@ Seluruh naskah laporan akademik, dokumentasi instalasi, pengujian API, dan integ
 ## 🌟 1. Latar Belakang & Gambaran Umum Proyek
 
 Pengelolaan administrasi kelulusan pada institusi pendidikan kejuruan (SMK) sering kali menghadapi berbagai kendala operasional, seperti:
+
 - **Penyimpanan Berkas Konvensional**: Arsip fisik dokumen ijazah, SKL, dan sertifikasi rentan rusak atau hilang.
-- **Kesulitan Pendataan Jejak Karir (Tracer Study)**: Sulitnya memantau apakah alumni telah bekerja di industri mitra (*DUDI*), melanjutkan ke perguruan tinggi, atau berwirausaha.
+- **Kesulitan Pendataan Jejak Karir (Tracer Study)**: Sulitnya memantau apakah alumni telah bekerja di industri mitra (_DUDI_), melanjutkan ke perguruan tinggi, atau berwirausaha.
 - **Portofolio Kejuruan yang Terfragmentasi**: Siswa SMK memiliki banyak keahlian teknis dan sertifikat uji kompetensi yang belum terakomodasi secara resmi dalam format **SKPI (Surat Keterangan Pendamping Ijazah)**.
 
-**SALUT (Sistem Arsip Kelulusan & Tracer Study Terpadu)** hadir sebagai solusi komprehensif berbasis teknologi digital mutakhir. Sistem ini menghubungkan sekolah, siswa aktif, dan alumni dalam satu ekosistem *omnichannel* yang aman, cepat, dan transparan.
+**SALUT (Sistem Arsip Kelulusan & Tracer Study Terpadu)** hadir sebagai solusi komprehensif berbasis teknologi digital mutakhir. Sistem ini menghubungkan sekolah, siswa aktif, dan alumni dalam satu ekosistem _omnichannel_ yang aman, cepat, dan transparan.
 
 ---
 
 ## 🏛️ 2. Arsitektur Ekosistem Sistem
 
-Ekosistem SALUT dibangun dengan pola pemisahan modular (*Separation of Concerns*) berstandar industri:
+Ekosistem SALUT dibangun dengan pola pemisahan modular (_Separation of Concerns_) berstandar industri:
 
 ```mermaid
 graph TD
@@ -116,12 +119,12 @@ graph TD
 
 ## 👥 3. Matriks Peran & Hak Akses Pengguna
 
-| Peran (*Role*) | Platform | Fitur Utama & Batas Wewenang |
-| :--- | :---: | :--- |
-| **Administrator Sekolah** | Web Admin | Manajemen seluruh master data siswa/guru, validasi berkas ijazah, monitoring analitik grafik SMK, approval kelulusan, dan pengiriman notifikasi broadcast massal. |
-| **Guru / Validator** | Web Admin | Verifikasi sertifikat uji kompetensi (SKPI), input penilaian kelulusan, dan pengawasan profil kejuruan siswa. |
-| **Siswa Aktif (Kelas X-XII)** | Mobile App | Memantau status kelulusan berkala, mengunggah bukti sertifikasi/keahlian untuk SKPI, mengunduh transkrip/rapor nilai, dan update profil. |
-| **Alumni** | Mobile App | Mengisi kuesioner Tracer Study berkala, mengakses & mengunduh arsip digital Ijazah/SKL terverifikasi, serta memperbarui portofolio karir. |
+| Peran (_Role_)                |  Platform  | Fitur Utama & Batas Wewenang                                                                                                                                      |
+| :---------------------------- | :--------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Administrator Sekolah**     | Web Admin  | Manajemen seluruh master data siswa/guru, validasi berkas ijazah, monitoring analitik grafik SMK, approval kelulusan, dan pengiriman notifikasi broadcast massal. |
+| **Guru / Validator**          | Web Admin  | Verifikasi sertifikat uji kompetensi (SKPI), input penilaian kelulusan, dan pengawasan profil kejuruan siswa.                                                     |
+| **Siswa Aktif (Kelas X-XII)** | Mobile App | Memantau status kelulusan berkala, mengunggah bukti sertifikasi/keahlian untuk SKPI, mengunduh transkrip/rapor nilai, dan update profil.                          |
+| **Alumni**                    | Mobile App | Mengisi kuesioner Tracer Study berkala, mengakses & mengunduh arsip digital Ijazah/SKL terverifikasi, serta memperbarui portofolio karir.                         |
 
 ---
 
@@ -130,87 +133,92 @@ graph TD
 Dokumentasi ini diselaraskan secara detail dengan seluruh rangkaian pengujian dan laporan kemajuan sistem (Laporan 1 s.d. 6):
 
 ### A. Backend RESTful API & Basis Data (Laporan 3)
-Backend SALUT dibangun di atas **Laravel 11** dengan arsitektur REST API murni, menggunakan protokol autentikasi aman berbasis JWT (*JSON Web Tokens*).
 
-| Parameter Konfigurasi `.env` | Migrasi & Model Eloquent |
-| :---: | :---: |
+Backend SALUT dibangun di atas **Laravel 11** dengan arsitektur REST API murni, menggunakan protokol autentikasi aman berbasis JWT (_JSON Web Tokens_).
+
+|                                Parameter Konfigurasi `.env`                                |                                       Migrasi & Model Eloquent                                        |
+| :----------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan3_01_env.png" width="400" alt="Konfigurasi .env" /> | <img src="./laporan_screenshots/laporan3_02_migration_model.png" width="400" alt="Model & Migrasi" /> |
-| *Konfigurasi database MySQL, JWT Secret Key, dan port server API.* | *Relasi data relasional antar entitas user, siswa, dan kelulusan.* |
+|             _Konfigurasi database MySQL, JWT Secret Key, dan port server API._             |                  _Relasi data relasional antar entitas user, siswa, dan kelulusan._                   |
 
-| Struktur Relasional phpMyAdmin | Routing Endpoint API (`routes/api.php`) |
-| :---: | :---: |
+|                               Struktur Relasional phpMyAdmin                                |                           Routing Endpoint API (`routes/api.php`)                            |
+| :-----------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan3_03_phpmyadmin.png" width="400" alt="phpMyAdmin" /> | <img src="./laporan_screenshots/laporan3_04_routes_api.png" width="400" alt="Routing API" /> |
-| *Visualisasi tabel users, graduation_schedules, dan token auth.* | *Definisi rute public, auth, serta route group berproteksi middleware.* |
+|              _Visualisasi tabel users, graduation_schedules, dan token auth._               |           _Definisi rute public, auth, serta route group berproteksi middleware._            |
 
-| Hasil Pengujian Endpoint API Login (200 OK) | Manajemen Versi Git & GitHub |
-| :---: | :---: |
+|                           Hasil Pengujian Endpoint API Login (200 OK)                           |                                    Manajemen Versi Git & GitHub                                     |
+| :---------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan3_05_api_testing.png" width="400" alt="Pengujian API" /> | <img src="./laporan_screenshots/laporan3_07_github_backend.png" width="400" alt="GitHub Backend" /> |
-| *Respons JSON valid dengan JWT Bearer Token dan detail user.* | *Repositori kode backend terkelola rapi pada remote GitHub.* |
+|                  _Respons JSON valid dengan JWT Bearer Token dan detail user._                  |                    _Repositori kode backend terkelola rapi pada remote GitHub._                     |
 
 ---
 
 ### B. Frontend Mobile & Dynamic Role Logic (Laporan 4)
-Antarmuka mobile dikembangkan menggunakan **Flutter 3.x** dengan konsep *Cyber-Academic Elite* (Deep Obsidian `#0A0F1D` dengan efek Frosted Glass & Neon Accent). Aplikasi menerapkan *Role-Based Access Control* (RBAC) dinamis saat sesi login terbentuk.
 
-| Kode Halaman Login Mobile | Integrasi Dio HTTP Client & JWT Interceptor |
-| :---: | :---: |
+Antarmuka mobile dikembangkan menggunakan **Flutter 3.x** dengan konsep _Cyber-Academic Elite_ (Deep Obsidian `#0A0F1D` dengan efek Frosted Glass & Neon Accent). Aplikasi menerapkan _Role-Based Access Control_ (RBAC) dinamis saat sesi login terbentuk.
+
+|                                        Kode Halaman Login Mobile                                         |                               Integrasi Dio HTTP Client & JWT Interceptor                               |
+| :------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan4_01_login_page_code.png" width="400" alt="Kode Login Flutter" /> | <img src="./laporan_screenshots/laporan4_02_api_service_code.png" width="400" alt="Dio HTTP Service" /> |
-| *Penerapan form validasi reactive dan transisi visual modern.* | *Injeksi otomatis header `Authorization: Bearer <token>` pada setiap request.* |
+|                      _Penerapan form validasi reactive dan transisi visual modern._                      |             _Injeksi otomatis header `Authorization: Bearer <token>` pada setiap request._              |
 
-| Antarmuka Login Mobile Terenkripsi | Logika Pembeda Role Siswa vs Alumni |
-| :---: | :---: |
+|                                      Antarmuka Login Mobile Terenkripsi                                      |                                  Logika Pembeda Role Siswa vs Alumni                                  |
+| :----------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan4_03_login_mobile_app.png" width="400" alt="Tampilan Login Mobile" /> | <img src="./laporan_screenshots/laporan4_06_role_logic_code.png" width="400" alt="Role Logic Code" /> |
-| *Tampilan logo transparan dengan input NISN/Email dan sandi.* | *Kondisional rendering menu berdasarkan nilai kolom `role` pada token.* |
+|                        _Tampilan logo transparan dengan input NISN/Email dan sandi._                         |                _Kondisional rendering menu berdasarkan nilai kolom `role` pada token._                |
 
-| Dashboard Siswa Aktif (Kelas X-XII) | Dashboard Alumni (Kelulusan Terbit) |
-| :---: | :---: |
+|                                       Dashboard Siswa Aktif (Kelas X-XII)                                       |                                     Dashboard Alumni (Kelulusan Terbit)                                     |
+| :-------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan4_04_dashboard_siswa_app.png" width="400" alt="Dashboard Siswa Aktif" /> | <img src="./laporan_screenshots/laporan4_05_dashboard_alumni_app.png" width="400" alt="Dashboard Alumni" /> |
-| *Fokus pada pengajuan SKPI, jadwal ujian, dan status kelulusan.* | *Fokus pada pengambilan arsip ijazah digital dan kuesioner tracer study.* |
+|                        _Fokus pada pengajuan SKPI, jadwal ujian, dan status kelulusan._                         |                  _Fokus pada pengambilan arsip ijazah digital dan kuesioner tracer study._                  |
 
 ---
 
 ### C. Portofolio SKPI & Pengarsipan Dokumen Digital (Laporan 5)
+
 Mengakomodasi kebutuhan verifikasi kompetensi kejuruan siswa SMK sesuai standar BNSP dan Kemendikbudristek:
 
-| Migrasi Tabel SKPI (`student_skills`) | Validasi Controller Portofolio |
-| :---: | :---: |
+|                               Migrasi Tabel SKPI (`student_skills`)                               |                                     Validasi Controller Portofolio                                      |
+| :-----------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan5_01_migration_skpi.png" width="400" alt="Migrasi SKPI" /> | <img src="./laporan_screenshots/laporan5_03_skill_controller.png" width="400" alt="Skill Controller" /> |
-| *Struktur field: nama keahlian, nomor sertifikat, instrumen penerbit, dan bukti berkas.* | *Metode CRUD portofolio beserta validasi status `pending`, `approved`, atau `rejected`.* |
+|     _Struktur field: nama keahlian, nomor sertifikat, instrumen penerbit, dan bukti berkas._      |        _Metode CRUD portofolio beserta validasi status `pending`, `approved`, atau `rejected`._         |
 
-| Pengujian API Portofolio & SKPI | Tampilan Mobile Manajemen SKPI Siswa |
-| :---: | :---: |
+|                                    Pengujian API Portofolio & SKPI                                     |                                     Tampilan Mobile Manajemen SKPI Siswa                                     |
+| :----------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan5_04_api_skills_test.png" width="400" alt="Testing API SKPI" /> | <img src="./laporan_screenshots/laporan5_06_skills_mobile_app.png" width="400" alt="Aplikasi Mobile SKPI" /> |
-| *Verifikasi respons endpoint pengajuan dan filtering data portofolio.* | *Antarmuka siswa untuk mengunggah sertifikat uji kejuruan secara mandiri.* |
+|                 _Verifikasi respons endpoint pengajuan dan filtering data portofolio._                 |                  _Antarmuka siswa untuk mengunggah sertifikat uji kejuruan secara mandiri._                  |
 
-| Pengarsipan Digital Ijazah & SKL | Sinkronisasi Repositori Git |
-| :---: | :---: |
+|                                  Pengarsipan Digital Ijazah & SKL                                   |                                    Sinkronisasi Repositori Git                                    |
+| :-------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan5_07_arsip_mobile_app.png" width="400" alt="Arsip Mobile" /> | <img src="./laporan_screenshots/laporan5_08_git_push.png" width="400" alt="Git Push Laporan 5" /> |
-| *Pusat pengunduhan berkas legalisir digital (Ijazah, SKHUN, dan Transkrip Nilai).* | *Pencatatan riwayat commit dan push fitur pengarsipan ke GitHub.* |
+|         _Pusat pengunduhan berkas legalisir digital (Ijazah, SKHUN, dan Transkrip Nilai)._          |                 _Pencatatan riwayat commit dan push fitur pengarsipan ke GitHub._                 |
 
 ---
 
 ### D. Otomatisasi Kelulusan, Push Notification FCM & Tracer Study (Laporan 6)
+
 Fitur automasi enterprise untuk meniadakan proses manual administrasi tahunan:
 
-| Implementasi FCM Service Client | Tampilan Notifikasi Broadcast Kelulusan |
-| :---: | :---: |
+|                                     Implementasi FCM Service Client                                     |                                      Tampilan Notifikasi Broadcast Kelulusan                                       |
+| :-----------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan6_01_fcm_service_code.png" width="400" alt="Kode FCM Service" /> | <img src="./laporan_screenshots/laporan6_02_fcm_notification_app.png" width="400" alt="Tampilan Notifikasi FCM" /> |
-| *Penanganan token registrasi FCM di Android Keystore dan message listener.* | *Push notifikasi resmi pengumuman kelulusan langsung ke bilah notifikasi HP.* |
+|               _Penanganan token registrasi FCM di Android Keystore dan message listener._               |                   _Push notifikasi resmi pengumuman kelulusan langsung ke bilah notifikasi HP._                    |
 
-| Engine Otomatisasi Kelulusan (Artisan Command) | Eksekusi Penjadwalan di Terminal |
-| :---: | :---: |
+|                              Engine Otomatisasi Kelulusan (Artisan Command)                               |                                           Eksekusi Penjadwalan di Terminal                                           |
+| :-------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan6_03_cron_promote_code.png" width="400" alt="Kode Cron Promote" /> | <img src="./laporan_screenshots/laporan6_04_cron_execution_terminal.png" width="400" alt="Eksekusi Terminal Cron" /> |
-| *Logika otomatis pengubahan status siswa kelas XII menjadi alumni tepat saat waktu kelulusan tiba.* | *Hasil log eksekusi `php artisan students:promote-alumni` sukses tanpa error.* |
+|    _Logika otomatis pengubahan status siswa kelas XII menjadi alumni tepat saat waktu kelulusan tiba._    |                    _Hasil log eksekusi `php artisan students:promote-alumni` sukses tanpa error._                    |
 
-| Manajemen Keamanan & Ganti Sandi Mandiri | Antarmuka Kuesioner Tracer Study Alumni |
-| :---: | :---: |
+|                                  Manajemen Keamanan & Ganti Sandi Mandiri                                   |                                    Antarmuka Kuesioner Tracer Study Alumni                                    |
+| :---------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan6_06_change_password_app.png" width="400" alt="Ubah Sandi Mobile" /> | <img src="./laporan_screenshots/laporan6_07_tracer_study_app.png" width="400" alt="Kuesioner Tracer Study" /> |
-| *Fitur pengubahan kata sandi mandiri berenkripsi Bcrypt langsung dari HP.* | *Form pelacakan alumni: Bekerja (DUDI), Kuliah (PTN/PTS), Wirausaha, atau Mencari Kerja.* |
+|                 _Fitur pengubahan kata sandi mandiri berenkripsi Bcrypt langsung dari HP._                  |           _Form pelacakan alumni: Bekerja (DUDI), Kuliah (PTN/PTS), Wirausaha, atau Mencari Kerja._           |
 
 ---
 
 ### E. Dashboard Web Admin & Analitik Kejuruan SMK
-Dashboard berbasis Web responsif yang dirancang untuk pihak manajemen sekolah dengan analitik grafik **Chart.js** (berjalan 100% *offline-ready* tanpa dependensi CDN):
+
+Dashboard berbasis Web responsif yang dirancang untuk pihak manajemen sekolah dengan analitik grafik **Chart.js** (berjalan 100% _offline-ready_ tanpa dependensi CDN):
 
 <div align="center">
   <img src="./laporan_screenshots/laporan6_08_webadmin_smk_analytics.png" width="850" alt="Dashboard Web Admin Analitik SMK" />
@@ -260,7 +268,8 @@ apps_sekolah/
 
 ## 🚀 6. Panduan Instalasi & Menjalankan Sistem
 
-### Kebutuhan Perangkat Lunak (*Prerequisites*)
+### Kebutuhan Perangkat Lunak (_Prerequisites_)
+
 - **PHP** &ge; 8.2 & **Composer** &ge; 2.6
 - **MySQL / MariaDB** (via XAMPP atau standalone)
 - **Node.js** &ge; 18.x (opsional untuk tools frontend)
@@ -270,7 +279,8 @@ apps_sekolah/
 ---
 
 ### Langkah 1: Setup Basis Data & Backend Laravel
-1. Buka XAMPP Control Panel dan pastikan layanan **Apache** dan **MySQL** aktif (*Running*).
+
+1. Buka XAMPP Control Panel dan pastikan layanan **Apache** dan **MySQL** aktif (_Running_).
 2. Buat database baru bernama `salut_db` melalui phpMyAdmin (`http://localhost/phpmyadmin`).
 3. Masuk ke direktori backend:
    ```bash
@@ -293,7 +303,7 @@ apps_sekolah/
    ```bash
    composer install
    ```
-6. Generate aplikasi key & jalankan migrasi database beserta data awal (*seeder*):
+6. Generate aplikasi key & jalankan migrasi database beserta data awal (_seeder_):
    ```bash
    php artisan key:generate
    php artisan migrate:fresh --seed
@@ -307,6 +317,7 @@ apps_sekolah/
 ---
 
 ### Langkah 2: Menjalankan Web Administrator
+
 1. Navigasikan ke direktori web admin:
    ```bash
    cd salut_web_admin
@@ -321,7 +332,8 @@ apps_sekolah/
 ---
 
 ### Langkah 3: Menjalankan Aplikasi Mobile (Flutter)
-1. Hubungkan perangkat smartphone Android melalui kabel data (dengan mode *USB Debugging* aktif) atau nyalakan Android Emulator.
+
+1. Hubungkan perangkat smartphone Android melalui kabel data (dengan mode _USB Debugging_ aktif) atau nyalakan Android Emulator.
 2. Buka terminal baru pada root folder `apps_sekolah`:
    ```bash
    flutter pub get
@@ -339,43 +351,44 @@ apps_sekolah/
 
 ## 🔑 7. Daftar Kredensial Akun Pengujian (Testing Accounts)
 
-Untuk mempermudah demonstrasi dan evaluasi seluruh peran pengguna, sistem telah dilengkapi dengan akun bawaan (*seeders*):
+Untuk mempermudah demonstrasi dan evaluasi seluruh peran pengguna, sistem telah dilengkapi dengan akun bawaan (_seeders_):
 
-| Peran (*Role*) | Identitas / Username | Kata Sandi Default | Hak Akses Utama |
-| :--- | :--- | :--- | :--- |
-| **Super Admin** | `admin@salut.sch.id` | `password` | Master administrator (Web Admin) |
-| **Guru / Validator** | `guru@salut.sch.id` | `password` | Verifikator SKPI & Data Rapor |
-| **Siswa Aktif** | `siswa@salut.sch.id` *(NISN: 1001)* | `password` | Portal Siswa Aktif (Mobile Flutter) |
-| **Alumni** | `alumni@salut.sch.id` *(NISN: 2001)* | `password` | Portal Alumni & Tracer Study (Mobile) |
+| Peran (_Role_)       | Identitas / Username                 | Kata Sandi Default | Hak Akses Utama                       |
+| :------------------- | :----------------------------------- | :----------------- | :------------------------------------ |
+| **Super Admin**      | `admin@salut.sch.id`                 | `password`         | Master administrator (Web Admin)      |
+| **Guru / Validator** | `guru@salut.sch.id`                  | `password`         | Verifikator SKPI & Data Rapor         |
+| **Siswa Aktif**      | `siswa@salut.sch.id` _(NISN: 1001)_  | `password`         | Portal Siswa Aktif (Mobile Flutter)   |
+| **Alumni**           | `alumni@salut.sch.id` _(NISN: 2001)_ | `password`         | Portal Alumni & Tracer Study (Mobile) |
 
 ---
 
 ## 🌐 8. Dokumentasi Ringkas Endpoint REST API
 
-| HTTP Method | URL Endpoint | Proteksi Auth | Deskripsi Fungsi |
-| :---: | :--- | :---: | :--- |
-| `POST` | `/api/login` | Publik | Otentikasi pengguna & pembuatan JWT Bearer Token |
-| `GET` | `/api/me` | JWT Token | Mendapatkan detail profil dan peran pengguna aktif |
-| `POST` | `/api/change-password` | JWT Token | Mengubah kata sandi pengguna secara mandiri |
-| `GET` | `/api/skills` | JWT Token | Mengambil daftar portofolio keahlian siswa / SKPI |
-| `POST` | `/api/skills` | JWT Token | Mengajukan bukti sertifikasi/keahlian baru |
-| `GET` | `/api/arsip` | JWT Token | Mengambil tautan berkas arsip digital resmi siswa/alumni |
-| `POST` | `/api/tracer-study` | JWT Token | Mengirimkan jawaban kuesioner pelacakan alumni |
-| `GET` | `/api/admin/dashboard` | Admin Only | Mengambil data agregasi analitik jurusan & tracer SMK |
-| `GET` | `/api/admin/arsip-alumni` | Admin Only | Master rekapitulasi kelengkapan berkas seluruh alumni |
-| `POST` | `/api/admin/skills/{id}/verify`| Guru/Admin | Memberikan status persetujuan (*Approve/Reject*) SKPI |
+| HTTP Method | URL Endpoint                    | Proteksi Auth | Deskripsi Fungsi                                         |
+| :---------: | :------------------------------ | :-----------: | :------------------------------------------------------- |
+|   `POST`    | `/api/login`                    |    Publik     | Otentikasi pengguna & pembuatan JWT Bearer Token         |
+|    `GET`    | `/api/me`                       |   JWT Token   | Mendapatkan detail profil dan peran pengguna aktif       |
+|   `POST`    | `/api/change-password`          |   JWT Token   | Mengubah kata sandi pengguna secara mandiri              |
+|    `GET`    | `/api/skills`                   |   JWT Token   | Mengambil daftar portofolio keahlian siswa / SKPI        |
+|   `POST`    | `/api/skills`                   |   JWT Token   | Mengajukan bukti sertifikasi/keahlian baru               |
+|    `GET`    | `/api/arsip`                    |   JWT Token   | Mengambil tautan berkas arsip digital resmi siswa/alumni |
+|   `POST`    | `/api/tracer-study`             |   JWT Token   | Mengirimkan jawaban kuesioner pelacakan alumni           |
+|    `GET`    | `/api/admin/dashboard`          |  Admin Only   | Mengambil data agregasi analitik jurusan & tracer SMK    |
+|    `GET`    | `/api/admin/arsip-alumni`       |  Admin Only   | Master rekapitulasi kelengkapan berkas seluruh alumni    |
+|   `POST`    | `/api/admin/skills/{id}/verify` |  Guru/Admin   | Memberikan status persetujuan (_Approve/Reject_) SKPI    |
 
 ---
 
 ## 📈 9. Milestone & Log Progres Pengembangan
 
 Pengerjaan sistem SALUT terbagi ke dalam fase-fase pencapaian sistematis yang terdokumentasi penuh pada `GEMINI.md`:
+
 - **Milestone 1**: Instalasi environment, perancangan basis data relasional 8 tabel, dan arsitektur repositori.
 - **Milestone 2**: Pembangunan backend API Laravel 11, otentikasi JWT, proteksi CORS, dan model data Eloquent.
 - **Milestone 3**: Pengembangan antarmuka mobile Flutter, Dio Client, Keystore Token Storage, dan Dynamic Role Logic.
 - **Milestone 4**: Modul SKPI (Surat Keterangan Pendamping Ijazah), upload portofolio, dan pengarsipan digital.
-- **Milestone 5**: Penjadwalan otomatis kelulusan (*Cron Scheduler*), integrasi Firebase Cloud Messaging (FCM), kuesioner Tracer Study, dan proteksi ganti sandi.
-- **Milestone 6**: Redesign total antarmuka web dan mobile mengusung filosofi *Cyber-Academic Elite*, analitik grafik Chart.js offline SMK, dan integrasi logo resmi resolusi tinggi.
+- **Milestone 5**: Penjadwalan otomatis kelulusan (_Cron Scheduler_), integrasi Firebase Cloud Messaging (FCM), kuesioner Tracer Study, dan proteksi ganti sandi.
+- **Milestone 6**: Redesign total antarmuka web dan mobile mengusung filosofi _Cyber-Academic Elite_, analitik grafik Chart.js offline SMK, dan integrasi logo resmi resolusi tinggi.
 
 ---
 

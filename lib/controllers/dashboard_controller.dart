@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../routes/app_routes.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
+import '../services/file_saver.dart';
 import '../services/theme_service.dart';
 
 class DashboardController extends GetxController {
@@ -28,53 +26,11 @@ class DashboardController extends GetxController {
   var achievements = <Map<String, dynamic>>[].obs;
   var isLoadingAchievements = false.obs;
 
-  // Dummy data: Nilai Rapor Semester Siswa
-  var semesterGrades = <Map<String, dynamic>>[
-    {'semester': 'Semester 1', 'average': '88.5', 'rank': '3', 'status': 'Tervalidasi'},
-    {'semester': 'Semester 2', 'average': '90.2', 'rank': '2', 'status': 'Tervalidasi'},
-    {'semester': 'Semester 3', 'average': '89.8', 'rank': '2', 'status': 'Tervalidasi'},
-    {'semester': 'Semester 4', 'average': '91.4', 'rank': '1', 'status': 'Tervalidasi'},
-    {'semester': 'Semester 5', 'average': '92.0', 'rank': '1', 'status': 'Tervalidasi'},
-  ].obs;
+  // Nilai Rapor Semester Siswa (Dinamis dari GET /api/rapor/my, diinput Guru)
+  var semesterGrades = <Map<String, dynamic>>[].obs;
 
-  // Dummy data: Arsip Digital Kelulusan Alumni
-  var alumniArchives = <Map<String, dynamic>>[
-    {
-      'title': 'Ijazah Asli Digital',
-      'type': 'PDF',
-      'size': '2.4 MB',
-      'status': 'Tersedia',
-      'verified': true,
-    },
-    {
-      'title': 'Surat Keterangan Hasil Ujian Nasional (SKHUN)',
-      'type': 'PDF',
-      'size': '1.8 MB',
-      'status': 'Tersedia',
-      'verified': true,
-    },
-    {
-      'title': 'Surat Keterangan Lulus (SKL)',
-      'type': 'PDF',
-      'size': '1.1 MB',
-      'status': 'Tersedia',
-      'verified': true,
-    },
-    {
-      'title': 'Transkrip Nilai Rapor Komprehensif (Sem 1 - 6)',
-      'type': 'PDF',
-      'size': '3.2 MB',
-      'status': 'Tersedia',
-      'verified': true,
-    },
-    {
-      'title': 'Portofolio Prestasi Terverifikasi',
-      'type': 'PDF',
-      'size': '4.5 MB',
-      'status': 'Tersedia',
-      'verified': true,
-    },
-  ].obs;
+  // Arsip Digital Kelulusan Alumni (Dinamis dari GET /api/arsip, diunggah Admin)
+  var alumniArchives = <Map<String, dynamic>>[].obs;
 
   // Status pengisian Tracer Study bagi Alumni
   var hasCompletedTracerStudy = false.obs;
@@ -95,6 +51,42 @@ class DashboardController extends GetxController {
     super.onInit();
     _loadUserProfile();
     fetchAchievements();
+    fetchSemesterGrades();
+    fetchAlumniArchives();
+  }
+
+  /// Mengambil nilai rapor per semester milik user login (GET /api/rapor/my)
+  Future<void> fetchSemesterGrades() async {
+    try {
+      final response = await _api.get('/rapor/my');
+      final List data = response.data['data'] ?? [];
+      semesterGrades.assignAll(data.map<Map<String, dynamic>>((r) => {
+            'semester': 'Semester ${r['semester']}',
+            'average': (r['average_score'] ?? '-').toString(),
+            'rank': (r['rank'] ?? '-').toString(),
+            'status': (r['status'] ?? 'Draft').toString(),
+          }));
+    } catch (e) {
+      debugPrint('Error fetchSemesterGrades: $e');
+    }
+  }
+
+  /// Mengambil daftar arsip kelulusan milik alumni login (GET /api/arsip)
+  Future<void> fetchAlumniArchives() async {
+    try {
+      final response = await _api.get('/arsip');
+      final List data = response.data['data'] ?? [];
+      alumniArchives.assignAll(data.map<Map<String, dynamic>>((d) => {
+            'id': d['id'],
+            'title': (d['title'] ?? '').toString(),
+            'doc_type': (d['doc_type'] ?? 'dokumen').toString(),
+            'type': (d['type'] ?? 'PDF').toString(),
+            'size': (d['file_size'] ?? '-').toString(),
+            'verified': d['is_verified'] == true || d['is_verified'] == 1,
+          }));
+    } catch (e) {
+      debugPrint('Error fetchAlumniArchives: $e');
+    }
   }
 
   /// Mengambil riwayat prestasi siswa dari backend Laravel (GET /api/prestasi)
@@ -147,14 +139,6 @@ class DashboardController extends GetxController {
     }
   }
 
-  // Fungsi untuk mengganti role secara dinamis (memudahkan pengujian)
-  void switchRole(String role) => currentRole.value = role;
-
-  void toggleRole() {
-    currentRole.value =
-        currentRole.value == 'Siswa' ? 'Alumni' : 'Siswa';
-  }
-
   // Aksi interaktif Siswa → navigasi ke halaman Input Prestasi
   void handleInputPrestasi() => Get.toNamed(AppRoutes.prestasi);
 
@@ -164,30 +148,13 @@ class DashboardController extends GetxController {
   // ─── Download Arsip Alumni dengan JWT Bearer Token ─────────────────────────
   /// REQ-NF-01: File bersifat private, HARUS menggunakan Bearer Token JWT.
   /// Proses:
-  ///  1. Minta izin storage (Android 10+ pakai scoped storage).
-  ///  2. Download via Dio dengan header `Authorization: Bearer <token>`.
-  ///  3. Simpan ke folder Download lokal HP.
-  ///  4. Buka file dengan open_filex.
+  ///  1. Download via Dio dengan header `Authorization: Bearer <token>`.
+  ///  2. Simpan ke folder dokumen aplikasi (tanpa izin storage) / unduhan browser.
+  ///  3. Buka file dengan open_filex.
   Future<void> handleDownloadDocument(String title) async {
-    // 1. Cek & minta izin storage
-    final status = await Permission.storage.request();
-    if (!status.isGranted) {
-      Get.snackbar(
-        'Izin Ditolak',
-        'Akses penyimpanan diperlukan untuk mengunduh dokumen.',
-        backgroundColor: Colors.orange.shade800,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
-      );
-      return;
-    }
-
-    // 2. Cari URL dokumen dari daftar arsip alumni
     final doc = alumniArchives.firstWhereOrNull((d) => d['title'] == title);
-    // Gunakan URL dari data atau fallback ke endpoint API
-    final fileUrl = doc?['file_url'] as String? ??
-        '${ApiService().toString()}/arsip/$title';
+    if (doc == null) return;
+    final id = doc['id'];
 
     // Tandai sedang mengunduh
     downloadProgress[title] = 0.0;
@@ -204,15 +171,9 @@ class DashboardController extends GetxController {
     );
 
     try {
-      // 3. Tentukan lokasi simpan file
-      final dir = await getApplicationDocumentsDirectory();
-      final safeTitle = title.replaceAll(RegExp(r'[^\w\s]'), '_');
-      final savePath  = '${dir.path}/$safeTitle.pdf';
-
-      // 4. Download dengan progress tracking
-      await _api.downloadFile(
-        url: fileUrl,
-        savePath: savePath,
+      // Download dengan progress tracking
+      final bytes = await _api.downloadBytes(
+        '/arsip/$id/download',
         onProgress: (progress) {
           downloadProgress[title] = progress;
         },
@@ -221,9 +182,10 @@ class DashboardController extends GetxController {
       downloadProgress.remove(title);
       Get.closeAllSnackbars();
 
-      // 5. Buka file setelah download selesai
-      final result = await OpenFilex.open(savePath);
-      if (result.type != ResultType.done) {
+      // Simpan lalu buka file setelah download selesai
+      final safeTitle = title.replaceAll(RegExp(r'[^\w\s]'), '_');
+      final savedPath = await saveAndOpenFile(bytes, '$safeTitle.pdf');
+      if (savedPath != null) {
         Get.snackbar(
           '✅ Tersimpan',
           '"$title" berhasil diunduh ke penyimpanan lokal.',
@@ -250,16 +212,14 @@ class DashboardController extends GetxController {
 
   // Navigasi bottom nav
   void handleNavTap(int index) {
-    selectedNavIndex.value = index;
+    // Tab 1 & 2 membuka halaman baru, jadi sorotan tetap di Beranda
     switch (index) {
       case 0:
         // Sudah di dashboard, tidak perlu navigasi
         break;
       case 1:
-        // Prestasi (Siswa) atau Arsip Digital (Alumni) – tetap di halaman ini untuk sekarang
-        if (isSiswa) {
-          Get.toNamed(AppRoutes.prestasi);
-        }
+        // Prestasi (Siswa) atau Arsip Digital (Alumni)
+        Get.toNamed(isSiswa ? AppRoutes.prestasi : AppRoutes.arsip);
         break;
       case 2:
         Get.toNamed(AppRoutes.profile);

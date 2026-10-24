@@ -1,12 +1,21 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response, FormData;
 
 import 'auth_service.dart';
 
 /// Konfigurasi base URL Backend Laravel.
-/// Ganti dengan URL server production saat deploy.
-const String kBaseUrl = 'http://localhost:8000/api';
+/// - Web / Windows      : http://localhost:8000/api
+/// - Emulator Android   : http://10.0.2.2:8000/api (alias localhost laptop)
+/// - HP Android asli    : jalankan `php artisan serve --host=0.0.0.0` lalu
+///   `flutter run --dart-define=API_BASE_URL=http://<IP-laptop>:8000/api`
+const String _kBaseUrlOverride = String.fromEnvironment('API_BASE_URL');
+final String kBaseUrl = _kBaseUrlOverride.isNotEmpty
+    ? _kBaseUrlOverride
+    : (!kIsWeb && defaultTargetPlatform == TargetPlatform.android)
+        ? 'http://10.0.2.2:8000/api'
+        : 'http://localhost:8000/api';
 
 /// Singleton HTTP client berbasis Dio.
 /// Fitur:
@@ -109,29 +118,23 @@ class ApiService {
     );
   }
 
-  /// Download file dengan JWT Bearer Token ke path lokal.
-  /// [url]      : URL lengkap file di server (bisa S3/Cloudinary).
-  /// [savePath] : Path absolut di device untuk menyimpan file.
+  /// Download file dengan JWT Bearer Token sebagai bytes (jalan di Android & Web).
+  /// [path]      : Path endpoint relatif terhadap [kBaseUrl], mis. '/arsip/3/download'.
   /// [onProgress]: Callback progress (0.0 – 1.0).
-  Future<void> downloadFile({
-    required String url,
-    required String savePath,
+  Future<Uint8List> downloadBytes(
+    String path, {
     void Function(double progress)? onProgress,
   }) async {
-    final token = await AuthService().getToken();
-    await _dio.download(
-      url,
-      savePath,
-      options: Options(
-        headers: token != null ? {'Authorization': 'Bearer $token'} : null,
-        responseType: ResponseType.bytes,
-      ),
+    final res = await _dio.get<List<int>>(
+      path,
+      options: Options(responseType: ResponseType.bytes),
       onReceiveProgress: (received, total) {
         if (total > 0 && onProgress != null) {
           onProgress(received / total);
         }
       },
     );
+    return Uint8List.fromList(res.data ?? const []);
   }
 
   /// Parsing error dari DioException menjadi pesan yang ramah pengguna.

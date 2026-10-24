@@ -53,6 +53,9 @@ dependencies:
   # ── Open File (buka PDF setelah didownload) ───────────────────────────────
   open_filex: ^4.4.0
 
+  # ── Web (unduh file arsip saat aplikasi dijalankan di Chrome) ─────────────
+  web: ^1.1.1
+
   # ── Permission Handler (izin storage Android 10+) ─────────────────────────
   permission_handler: ^13.0.2
   firebase_core: ^4.15.0

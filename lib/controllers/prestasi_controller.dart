@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 
@@ -45,6 +46,7 @@ class PrestasiController extends GetxController {
   /// File sertifikat yang dipilih dari perangkat
   var selectedFileName = ''.obs;
   var selectedFilePath = ''.obs; // Path absolut file di device
+  Uint8List? _selectedFileBytes;  // Isi file (Web tidak punya path)
   var isLoading = false.obs;
 
   final _api = ApiService();
@@ -83,6 +85,7 @@ class PrestasiController extends GetxController {
 
       selectedFileName.value = file.name;
       selectedFilePath.value = file.path ?? '';
+      _selectedFileBytes = kIsWeb ? await file.readAsBytes() : null;
 
       Get.snackbar(
         '✅ File Dipilih',
@@ -127,7 +130,7 @@ class PrestasiController extends GetxController {
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
-    if (selectedFilePath.value.isEmpty) {
+    if (selectedFileName.value.isEmpty) {
       Get.snackbar('Perhatian', 'Unggah sertifikat terlebih dahulu.',
           backgroundColor: Colors.orange.shade800,
           colorText: Colors.white,
@@ -148,10 +151,15 @@ class PrestasiController extends GetxController {
         'deskripsi':      deskripsiController.text.trim(),
         'status_validasi': 'Pending',
         // File sertifikat dikirim sebagai multipart
-        'sertifikat': await MultipartFile.fromFile(
-          selectedFilePath.value,
-          filename: selectedFileName.value,
-        ),
+        'sertifikat': _selectedFileBytes != null
+            ? MultipartFile.fromBytes(
+                _selectedFileBytes!,
+                filename: selectedFileName.value,
+              )
+            : await MultipartFile.fromFile(
+                selectedFilePath.value,
+                filename: selectedFileName.value,
+              ),
       });
 
       // POST /api/prestasi (JWT otomatis disertakan oleh interceptor)
@@ -379,6 +387,7 @@ class PrestasiController extends GetxController {
     selectedPeringkat.value = '';
     selectedFileName.value = '';
     selectedFilePath.value = '';
+    _selectedFileBytes = null;
   }
 
   @override

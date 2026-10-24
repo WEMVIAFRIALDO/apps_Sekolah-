@@ -152,6 +152,41 @@ class AdminController extends Controller
         ]);
     }
 
+    /**
+     * GET /api/admin/alumni/export — Export CSV data seluruh alumni
+     * Digunakan oleh tombol "Export Alumni CSV" di students.html
+     */
+    public function exportAlumni(): Response
+    {
+        $caller = JWTAuth::user();
+        if (!$caller->isAdmin()) {
+            abort(403, 'Hanya Admin.');
+        }
+
+        $rows = User::where('role', 'alumni')->orderBy('angkatan', 'desc')->orderBy('name')->get();
+        $csv  = "No,Nama,NISN,Email,No. HP,Kelas,Jurusan,Angkatan,Tanggal Lulus\n";
+
+        foreach ($rows as $i => $u) {
+            $csv .= implode(',', [
+                $i + 1,
+                '"' . $u->name . '"',
+                $u->nisn,
+                $u->email ?? '-',
+                $u->phone ?? '-',
+                '"' . ($u->class_name ?? '-') . '"',
+                '"' . ($u->jurusan ?? '-') . '"',
+                $u->angkatan ?? '-',
+                $u->graduation_date?->format('Y-m-d') ?? '-',
+            ]) . "\n";
+        }
+
+        $filename = 'Data_Alumni_SALUT_' . date('Y-m-d') . '.csv';
+        return response($csv, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename={$filename}",
+        ]);
+    }
+
     /** GET /api/admin/achievements — Semua prestasi (untuk validasi Guru) */
     public function listAchievements(Request $request): JsonResponse
     {
@@ -445,6 +480,8 @@ class AdminController extends Controller
             'summary' => [
                 'total_alumni' => User::where('role', 'alumni')->count(),
                 'total_docs'   => \App\Models\GraduationDoc::count(),
+                'total_ijazah' => \App\Models\GraduationDoc::where('doc_type', 'ijazah')->count(),
+                'total_skl'    => \App\Models\GraduationDoc::where('doc_type', 'skl')->count(),
             ]
         ]);
     }

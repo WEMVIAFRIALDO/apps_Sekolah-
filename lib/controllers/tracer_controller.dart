@@ -43,6 +43,34 @@ class TracerController extends GetxController {
   bool get isBekerja   => selectedStatus.value == 'Bekerja' || selectedStatus.value == 'Wirausaha';
   bool get isKuliah    => selectedStatus.value == 'Kuliah / Melanjutkan Studi';
 
+  @override
+  void onInit() {
+    super.onInit();
+    loadExistingTracer();
+  }
+
+  /// Isi ulang form dengan jawaban yang sudah pernah dikirim (GET /api/tracer-study)
+  Future<void> loadExistingTracer() async {
+    try {
+      final res = await _api.get('/tracer-study');
+      if (res.data['has_filled'] != true || res.data['data'] == null) return;
+
+      final data = TracerStudyModel.fromJson(Map<String, dynamic>.from(res.data['data']));
+      // Data lama bisa berisi "Kuliah" saja → samakan dengan label opsi
+      final status = data.status.startsWith('Kuliah') ? 'Kuliah / Melanjutkan Studi' : data.status;
+      if (statusOptions.contains(status)) selectedStatus.value = status;
+
+      namaInstansiController.text = data.namaInstansi;
+      kotaController.text         = data.kota;
+      tahunMasukController.text   = data.tahunMasuk;
+      jabatanController.text      = data.jabatan;
+      prodiController.text        = data.prodi;
+      keteranganController.text   = data.keterangan;
+    } catch (e) {
+      debugPrint('Error loadExistingTracer: $e');
+    }
+  }
+
   // ─── Aksi ──────────────────────────────────────────────────────────────────
   Future<void> submitTracerStudy() async {
     if (!formKey.currentState!.validate()) return;

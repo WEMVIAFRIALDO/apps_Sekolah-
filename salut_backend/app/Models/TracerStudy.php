@@ -10,6 +10,7 @@ class TracerStudy extends Model
     protected $fillable = [
         'user_id','status','nama_instansi','kota',
         'tahun_masuk','jabatan','prodi','keterangan',
+        'bidang_industri','nama_kampus','nama_prodi','rentang_gaji',
     ];
     public function user() { return $this->belongsTo(User::class); }
 }

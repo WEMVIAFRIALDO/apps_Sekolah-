@@ -22,7 +22,9 @@ class SkillController extends Controller
      */
     public function getStudents(Request $request): JsonResponse
     {
-        $query = User::where('role', 'siswa')->orWhere('role', 'alumni');
+        if ($denied = $this->denyNonGuru()) return $denied;
+
+        $query = User::whereIn('role', ['siswa', 'alumni']);
 
         if ($request->has('jurusan')) {
             $query->where('jurusan', $request->jurusan);
@@ -47,6 +49,8 @@ class SkillController extends Controller
      */
     public function getByStudent(int $userId): JsonResponse
     {
+        if ($denied = $this->denyNonGuru()) return $denied;
+
         $siswa = User::findOrFail($userId);
         $skills = SkillCompetency::where('user_id', $userId)
             ->with('guru:id,name')
@@ -91,6 +95,8 @@ class SkillController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        if ($denied = $this->denyNonGuru()) return $denied;
+
         $validated = $request->validate([
             'user_id'         => 'required|exists:users,id',
             'nama_kompetensi' => 'required|string|max:255',
@@ -119,6 +125,8 @@ class SkillController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
+        if ($denied = $this->denyNonGuru()) return $denied;
+
         $skill = SkillCompetency::findOrFail($id);
         $skill->delete();
 
@@ -150,5 +158,15 @@ class SkillController extends Controller
             'per_jurusan' => $perJurusan,
             'top_skills'  => $topSkills,
         ]);
+    }
+
+    /** Endpoint /guru/skills/* hanya untuk Guru dan Admin */
+    private function denyNonGuru(): ?JsonResponse
+    {
+        $user = Auth::user();
+        if ($user->role !== 'guru' && $user->role !== 'admin') {
+            return response()->json(['message' => 'Akses ditolak.'], 403);
+        }
+        return null;
     }
 }

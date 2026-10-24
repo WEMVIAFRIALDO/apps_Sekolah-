@@ -1,497 +1,400 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\Achievement;
-use App\Models\GraduationDoc;
-use App\Models\TracerStudy;
-use App\Models\SkillCompetency;
-use App\Models\AcademicRecord;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Seeder SALUT v2.0
- * Total data: 210 pengguna
- *   - 1  Admin
- *   - 1  Guru (+ 3 guru tambahan = 4 guru)
- *   - 63 Siswa Kelas X   (32 L + 31 P)
- *   - 63 Siswa Kelas XI  (32 L + 31 P)
- *   - 64 Siswa Kelas XII (33 L + 31 P)  → total siswa = 190
- *   - 10 Alumni (5 L + 5 P)
- *   = 205 + 5 (admin+guru) = 210 total
+ * Seeder SALUT v3.0 — 200 pengguna dummy untuk statistik dashboard.
+ *   - 2   Admin
+ *   - 8   Guru (wali/penguji per jurusan)
+ *   - 130 Siswa aktif, 3 jurusan (TKJ, RPL, Multimedia), kelas X–XII
+ *   - 60  Alumni angkatan 2024–2026, lengkap dengan tracer study
+ *         (kuliah di mana, kerja di mana, wirausaha apa)
+ *
+ * Akun demo tetap sama dengan LOGIN_SALUT.txt:
+ *   Admin 0000000001 / admin123 · Guru 0000000002 / guru123
+ *   Siswa 0054321987 / siswa123 · Alumni 0067890123 / alumni123
+ *
+ * Insert memakai DB::table (bulk) supaya cepat.
  */
 class UserSeeder extends Seeder
 {
-    // ── Nama depan & belakang pool ─────────────────────────────────────────────
-    private array $namaDepanL = [
-        'Ahmad','Budi','Dani','Eko','Fajar','Galih','Hendra','Irfan','Joko','Kurniawan',
-        'Lukman','Maulana','Nanda','Omar','Pandu','Rama','Sandi','Teguh','Umar','Vino',
-        'Wahyu','Xander','Yusuf','Zaki','Andri','Bagas','Cahyo','Dimas','Erwin','Faisal',
-        'Gilang','Hafiz','Ivan','Julyan','Krisna',
+    private const SEKOLAH = 'SMK Negeri 1 Teladan';
+    private const JURUSAN = ['TKJ', 'RPL', 'Multimedia'];
+
+    // ── Pool nama ────────────────────────────────────────────────────────────
+    private array $depanL = [
+        'Ahmad','Budi','Dani','Eko','Fajar','Galih','Hendra','Irfan','Joko','Lukman',
+        'Maulana','Nanda','Pandu','Rama','Sandi','Teguh','Umar','Vino','Wahyu','Yusuf',
+        'Zaki','Andri','Bagas','Cahyo','Dimas','Erwin','Faisal','Gilang','Hafiz','Ivan',
+        'Krisna','Rizky','Arya','Bayu','Reza','Aldi','Fikri','Yoga','Ilham','Agung',
     ];
-    private array $namaDepanP = [
+    private array $depanP = [
         'Ayu','Bella','Citra','Dewi','Eka','Fitri','Gita','Hani','Indah','Julia',
         'Karina','Lina','Maya','Nila','Okta','Putri','Ratna','Sari','Tika','Umi',
-        'Vera','Wulan','Xena','Yuni','Zahra','Anis','Bunga','Cahyani','Desi','Elsa',
-        'Farah','Grace','Hesti','Intan','Jasmine',
+        'Vera','Wulan','Yuni','Zahra','Anis','Bunga','Desi','Elsa','Farah','Hesti',
+        'Intan','Jasmine','Nadia','Salsa','Tiara','Aulia','Dinda','Kirana','Laras','Nabila',
     ];
-    private array $namaBelakang = [
+    private array $belakang = [
         'Santoso','Rahayu','Susanto','Wibowo','Pratama','Kurniawan','Hidayat','Nugroho',
-        'Saputra','Lestari','Wijaya','Purnama','Setiawan','Ardian','Firmansyah',
-        'Mulyadi','Cahyani','Permatasari','Handayani','Kusuma','Maulana','Febrianti',
-        'Prasetyo','Anggraeni','Yulianto','Safitri','Ramadhan','Khoirunnisa','Utama',
-        'Hakim','Septiani','Surya','Puspita','Ismail','Nuraini',
-    ];
-    private array $kota = [
-        'Bandung','Jakarta','Surabaya','Yogyakarta','Medan','Semarang','Palembang',
-        'Makassar','Denpasar','Malang','Depok','Tangerang','Bekasi','Bogor','Solo',
-    ];
-    private array $kampus = [
-        'Universitas Indonesia','Institut Teknologi Bandung','Universitas Gadjah Mada',
-        'Universitas Airlangga','Universitas Padjadjaran','Institut Teknologi Sepuluh Nopember',
-        'Universitas Diponegoro','Politeknik Negeri Bandung','Politeknik Elektronika Negeri Surabaya',
-        'Universitas Hasanuddin',
-    ];
-    private array $perusahaan = [
-        'PT Astra International','PT Telkom Indonesia','PT Bank Mandiri','PT BCA',
-        'PT Pertamina','CV Solusi Digital','Gojek Indonesia','Tokopedia','PT Infomedia','CV NetWork Pro',
-    ];
-    private array $jabatan = ['Staff IT','Teknisi Jaringan','Web Developer','Admin Sistem','Desainer Grafis','Operator','Teknisi Hardware'];
-    private array $prodi = [
-        'Teknik Informatika','Sistem Informasi','Manajemen Informatika','Teknik Komputer Jaringan',
-        'Rekayasa Perangkat Lunak','Desain Komunikasi Visual','Akuntansi','Teknik Elektro',
-    ];
-    // ── Jurusan SMK ──────────────────────────────────────────────────────────
-    private array $jurusanList = ['TKJ', 'RPL', 'Multimedia', 'Akuntansi', 'Pemasaran'];
-    // Bidang industri sesuai jurusan SMK
-    private array $bidangIndustri = [
-        'TKJ'       => ['Jaringan & Telekomunikasi', 'IT Support', 'Infrastruktur IT'],
-        'RPL'       => ['Pengembangan Software', 'Web Developer', 'Mobile Developer'],
-        'Multimedia'=> ['Desain Grafis', 'Periklanan', 'Videografi & Animasi'],
-        'Akuntansi' => ['Perbankan', 'Keuangan', 'Perpajakan'],
-        'Pemasaran' => ['Retail', 'E-Commerce', 'Digital Marketing'],
+        'Saputra','Lestari','Wijaya','Purnama','Setiawan','Ardian','Firmansyah','Mulyadi',
+        'Permatasari','Handayani','Kusuma','Febrianti','Prasetyo','Anggraeni','Yulianto',
+        'Safitri','Ramadhan','Utama','Hakim','Septiani','Surya','Puspita','Ismail','Nuraini',
     ];
 
-    /** Generate NISN unik: awalan digit + padding */
-    private function nisn(int $n): string
+    // ── Tujuan alumni setelah lulus ─────────────────────────────────────────
+    /** Index 0–5 kampus di Lampung, 6–9 luar Lampung */
+    private array $kampus = [
+        'Universitas Lampung', 'Institut Teknologi Sumatera', 'Politeknik Negeri Lampung',
+        'Universitas Teknokrat Indonesia', 'IIB Darmajaya', 'UIN Raden Intan Lampung',
+        'Universitas Gadjah Mada', 'Institut Teknologi Bandung', 'Universitas Indonesia',
+        'Politeknik Negeri Jakarta',
+    ];
+    private array $kotaKampus = [
+        'Bandar Lampung', 'Lampung Selatan', 'Bandar Lampung', 'Bandar Lampung', 'Bandar Lampung',
+        'Bandar Lampung', 'Yogyakarta', 'Bandung', 'Depok', 'Depok',
+    ];
+    private array $prodiPerJurusan = [
+        'TKJ'        => ['Teknik Informatika', 'Teknik Komputer', 'Teknik Elektro', 'Teknologi Rekayasa Jaringan'],
+        'RPL'        => ['Teknik Informatika', 'Sistem Informasi', 'Ilmu Komputer', 'Rekayasa Perangkat Lunak'],
+        'Multimedia' => ['Desain Komunikasi Visual', 'Ilmu Komunikasi', 'Teknologi Rekayasa Multimedia', 'Film dan Televisi'],
+    ];
+
+    /** Tempat kerja per jurusan: [perusahaan, jabatan, bidang industri, kota] */
+    private array $kerjaPerJurusan = [
+        'TKJ' => [
+            ['PT Telkom Indonesia', 'Teknisi Jaringan', 'Jaringan & Telekomunikasi', 'Bandar Lampung'],
+            ['PT Indosat Ooredoo Hutchison', 'Network Engineer', 'Jaringan & Telekomunikasi', 'Jakarta'],
+            ['PT Biznet Networks', 'Teknisi Fiber Optic', 'Jaringan & Telekomunikasi', 'Bandar Lampung'],
+            ['PT Bank Lampung', 'IT Support', 'IT Support & Infrastruktur', 'Bandar Lampung'],
+            ['PT Astra International', 'Admin Sistem', 'IT Support & Infrastruktur', 'Jakarta'],
+        ],
+        'RPL' => [
+            ['Gojek Indonesia', 'Junior Mobile Developer', 'Pengembangan Software', 'Jakarta'],
+            ['Tokopedia', 'Web Developer', 'Pengembangan Software', 'Jakarta'],
+            ['CV Solusi Digital Lampung', 'Programmer', 'Pengembangan Software', 'Bandar Lampung'],
+            ['PT Infomedia Nusantara', 'Quality Assurance', 'Pengembangan Software', 'Bandung'],
+            ['PT Bank Mandiri', 'Staff IT', 'IT Support & Infrastruktur', 'Bandar Lampung'],
+        ],
+        'Multimedia' => [
+            ['Lampung Post', 'Desainer Grafis', 'Desain & Kreatif', 'Bandar Lampung'],
+            ['TVRI Lampung', 'Editor Video', 'Media & Penyiaran', 'Bandar Lampung'],
+            ['PT Kreasi Media Nusantara', 'Motion Designer', 'Desain & Kreatif', 'Jakarta'],
+            ['CV Visual Kreatif', 'Fotografer', 'Desain & Kreatif', 'Metro'],
+            ['PT Shopee International', 'Content Creator', 'Digital Marketing', 'Jakarta'],
+        ],
+    ];
+
+    /** Usaha alumni per jurusan: [nama usaha, bidang] */
+    private array $usahaPerJurusan = [
+        'TKJ'        => [['Servis Komputer & Jaringan', 'Jasa Teknologi'], ['Penyedia Internet RT/RW Net', 'Jaringan & Telekomunikasi']],
+        'RPL'        => [['Jasa Pembuatan Website', 'Pengembangan Software'], ['Toko Online Aksesoris HP', 'E-Commerce']],
+        'Multimedia' => [['Studio Foto & Video', 'Desain & Kreatif'], ['Jasa Desain & Sablon', 'Desain & Kreatif']],
+    ];
+
+    private array $gaji = ['< Rp 3 juta', 'Rp 3–5 juta', 'Rp 5–8 juta', '> Rp 8 juta'];
+
+    private int $nisnSeq = 100;
+    private string $now;
+
+    private function nisn(): string
     {
-        return str_pad((string)($n + 1000000), 10, '0', STR_PAD_LEFT);
+        return str_pad((string) (1000000 + $this->nisnSeq++), 10, '0', STR_PAD_LEFT);
     }
 
-    /** Pilih nama acak dari pool berdasarkan gender */
-    private function nama(bool $isLaki, int $index): string
+    private function nama(bool $laki, int $i): string
     {
-        $pool  = $isLaki ? $this->namaDepanL : $this->namaDepanP;
-        $depan = $pool[$index % count($pool)];
-        $belakang = $this->namaBelakang[($index * 3 + ($isLaki ? 1 : 7)) % count($this->namaBelakang)];
-        return "$depan $belakang";
+        $pool = $laki ? $this->depanL : $this->depanP;
+        return $pool[$i % count($pool)] . ' ' . $this->belakang[($i * 7 + ($laki ? 3 : 11)) % count($this->belakang)];
+    }
+
+    private function user(array $data): int
+    {
+        return DB::table('users')->insertGetId($data + [
+            'school' => self::SEKOLAH, 'is_active' => true,
+            'created_at' => $this->now, 'updated_at' => $this->now,
+        ]);
+    }
+
+    private function stamp(array $row): array
+    {
+        return $row + ['created_at' => $this->now, 'updated_at' => $this->now];
     }
 
     public function run(): void
     {
+        mt_srand(2026); // data acak tapi selalu sama setiap seeding
+        $this->now = now()->toDateTimeString();
+        $hash = [
+            'admin'  => Hash::make('admin123'),
+            'guru'   => Hash::make('guru123'),
+            'siswa'  => Hash::make('siswa123'),
+            'alumni' => Hash::make('alumni123'),
+        ];
+
         Schema::disableForeignKeyConstraints();
-        SkillCompetency::truncate();
-        Achievement::truncate();
-        TracerStudy::truncate();
-        GraduationDoc::truncate();
-        AcademicRecord::truncate();
-        User::truncate();
+        foreach (['skill_competencies', 'achievements', 'tracer_studies', 'graduation_docs', 'academic_records', 'users'] as $t) {
+            DB::table($t)->truncate();
+        }
         Schema::enableForeignKeyConstraints();
 
         // ─────────────────────────────────────────────────────────────────────
-        // 1. ADMIN
+        // 1. ADMIN (2)
         // ─────────────────────────────────────────────────────────────────────
-        $admin = User::create([
-            'name'      => 'Administrator SALUT',
-            'nisn'      => '0000000001',
-            'email'     => 'admin@salut.sch.id',
-            'password'  => Hash::make('admin123'),
-            'role'      => 'admin',
-            'school'    => 'SMK Negeri 1 Teladan',
-            'is_active' => true,
-        ]);
+        $adminId = $this->user(['name' => 'Administrator SALUT', 'nisn' => '0000000001', 'email' => 'admin@salut.sch.id', 'password' => $hash['admin'], 'role' => 'admin']);
+        $this->user(['name' => 'Staf TU Kurikulum', 'nisn' => '0000000006', 'email' => 'tu@salut.sch.id', 'password' => $hash['admin'], 'role' => 'admin']);
 
         // ─────────────────────────────────────────────────────────────────────
-        // 2. GURU (4 orang) — masing-masing wali jurusan
+        // 2. GURU (8) — penguji/validator per jurusan
         // ─────────────────────────────────────────────────────────────────────
         $guruData = [
-            ['Drs. Suharto, M.Pd',      '0000000002', 'guru@salut.sch.id',     'guru123', 'TKJ'],
-            ['Ibu Ratna Dewi, S.Pd',    '0000000003', 'ratna@salut.sch.id',    'guru123', 'RPL'],
-            ['Bpk. Arif Budiman, M.Pd', '0000000004', 'arif@salut.sch.id',     'guru123', 'Multimedia'],
-            ['Ibu Sri Wahyuni, S.Pd',   '0000000005', 'sriwahyuni@salut.sch.id','guru123','Akuntansi'],
+            ['Drs. Suharto, M.Pd',         '0000000002', 'guru@salut.sch.id',       'TKJ'],
+            ['Ibu Ratna Dewi, S.Pd',       '0000000003', 'ratna@salut.sch.id',      'RPL'],
+            ['Bpk. Arif Budiman, M.Pd',    '0000000004', 'arif@salut.sch.id',       'Multimedia'],
+            ['Ibu Sri Wahyuni, S.Pd',      '0000000005', 'sriwahyuni@salut.sch.id', 'TKJ'],
+            ['Bpk. Hendra Gunawan, S.Kom', '0000000007', 'hendra@salut.sch.id',     'RPL'],
+            ['Ibu Maya Sari, S.Ds',        '0000000008', 'maya@salut.sch.id',       'Multimedia'],
+            ['Bpk. Doni Saputra, S.T',     '0000000009', 'doni@salut.sch.id',       'TKJ'],
+            ['Ibu Lestari Putri, M.Kom',   '0000000010', 'lestari@salut.sch.id',    'RPL'],
         ];
-        $guru = null;
-        $gurusByJurusan = [];
-        foreach ($guruData as $i => $g) {
-            $created = User::create([
-                'name'      => $g[0],
-                'nisn'      => $g[1],
-                'email'     => $g[2],
-                'password'  => Hash::make($g[3]),
-                'role'      => 'guru',
-                'jurusan'   => $g[4],
-                'school'    => 'SMK Negeri 1 Teladan',
-                'is_active' => true,
-            ]);
-            $gurusByJurusan[$g[4]] = $created;
-            if ($i === 0) $guru = $created; // guru pertama untuk validasi
+        $guruByJurusan = [];
+        foreach ($guruData as $g) {
+            $id = $this->user(['name' => $g[0], 'nisn' => $g[1], 'email' => $g[2], 'password' => $hash['guru'], 'role' => 'guru', 'jurusan' => $g[3]]);
+            $guruByJurusan[$g[3]][] = $id;
         }
+        $guruUtama = $guruByJurusan['TKJ'][0];
 
         // ─────────────────────────────────────────────────────────────────────
-        // 3. SISWA — 190 total (63 Kelas X + 63 Kelas XI + 64 Kelas XII)
-        //    Tiap kelas: L dulu, P kemudian
+        // 3. SISWA AKTIF (130) — tingkat X/XI/XII × jurusan TKJ/RPL/Multimedia
+        //    Tahun ajaran 2026/2027 → angkatan = tahun lulus (XII lulus 2027)
         // ─────────────────────────────────────────────────────────────────────
-        // SMK: kelas berdasarkan jurusan bukan IPA/IPS
-        $kelasList = [
-            'X'   => ['X TKJ 1','X TKJ 2','X RPL 1','X Multimedia 1'],
-            'XI'  => ['XI TKJ 1','XI TKJ 2','XI RPL 1','XI Multimedia 1'],
-            'XII' => ['XII TKJ 1','XII TKJ 2','XII RPL 1','XII Multimedia 1'],
+        $sebaranSiswa = [ // [tingkat, jurusan, jumlah] → 129 + 1 siswa demo = 130
+            ['X', 'TKJ', 16], ['X', 'RPL', 15], ['X', 'Multimedia', 13],
+            ['XI', 'TKJ', 15], ['XI', 'RPL', 15], ['XI', 'Multimedia', 13],
+            ['XII', 'TKJ', 15], ['XII', 'RPL', 15], ['XII', 'Multimedia', 12],
         ];
-        // Mapping kelas → jurusan SMK
-        $jurusanByKelas = [
-            'TKJ 1' => 'TKJ', 'TKJ 2' => 'TKJ',
-            'RPL 1' => 'RPL', 'Multimedia 1' => 'Multimedia',
-        ];
-        $angkatanMap = ['X' => 2028, 'XI' => 2027, 'XII' => 2026];
-        $countMap    = ['X' => 63,  'XI' => 63,   'XII' => 64];
-        // Gender split: 32 L + 31 P per kelas (64: 33 L + 31 P)
-        $lCountMap  = ['X' => 32, 'XI' => 32, 'XII' => 33];
+        $angkatanSiswa   = ['X' => 2029, 'XI' => 2028, 'XII' => 2027];
+        $semesterSelesai = ['X' => 0, 'XI' => 2, 'XII' => 4];
 
-        $nisnCounter = 10; // mulai dari 0000000011
-        $idxL = 0; $idxP = 0;
-        $siswaSatu = null; // simpan 1 siswa untuk contoh prestasi
-        $allStudents = [];
-
-        // Siswa Demo Utama (Budi Santoso - sesuai LOGIN_SALUT.txt)
-        $budi = User::create([
-            'name'       => 'Budi Santoso',
-            'nisn'       => '0054321987',
-            'email'      => '0054321987@salut.sch.id',
-            'password'   => Hash::make('siswa123'),
-            'role'       => 'siswa',
-            'school'     => 'SMK Negeri 1 Teladan',
-            'class_name' => 'XII RPL 1',
-            'jurusan'    => 'RPL',
-            'angkatan'   => 2026,
-            'is_active'  => true,
+        $siswa = []; // [id, tingkat, jurusan]
+        $budiId = $this->user([
+            'name' => 'Budi Santoso', 'nisn' => '0054321987', 'email' => '0054321987@salut.sch.id',
+            'password' => $hash['siswa'], 'role' => 'siswa', 'class_name' => 'XII RPL 1',
+            'jurusan' => 'RPL', 'angkatan' => 2027,
         ]);
-        $siswaSatu = $budi;
-        $allStudents[] = $budi;
+        $siswa[] = [$budiId, 'XII', 'RPL'];
 
-        foreach (['X', 'XI', 'XII'] as $tingkat) {
-            $total  = $countMap[$tingkat];
-            $lCount = $lCountMap[$tingkat];
-            $pCount = $total - $lCount;
-            $kelasPilihan = $kelasList[$tingkat];
-            $angkatan = $angkatanMap[$tingkat];
-
-            for ($i = 0; $i < $lCount; $i++) {
-                $kelas = $kelasPilihan[$i % count($kelasPilihan)];
-                // Ekstrak jurusan dari nama kelas (misal: "X TKJ 1" → ambil setelah tingkat)
-                $kelasKey = trim(str_replace($tingkat, '', $kelas));
-                $jurusan  = $jurusanByKelas[$kelasKey] ?? 'TKJ';
-                $s = User::create([
-                    'name'       => $this->nama(true, $idxL++),
-                    'nisn'       => $this->nisn($nisnCounter++),
-                    'email'      => $this->nisn($nisnCounter - 1) . '@salut.sch.id',
-                    'password'   => Hash::make('siswa123'),
-                    'role'       => 'siswa',
-                    'school'     => 'SMK Negeri 1 Teladan',
-                    'class_name' => $kelas,
-                    'jurusan'    => $jurusan,
-                    'angkatan'   => $angkatan,
-                    'is_active'  => true,
+        $idx = 0;
+        foreach ($sebaranSiswa as [$tingkat, $jurusan, $jumlah]) {
+            for ($i = 0; $i < $jumlah; $i++, $idx++) {
+                $rombel = $jurusan === 'TKJ' ? ($i % 2) + 1 : 1; // TKJ punya 2 rombel
+                $nisn = $this->nisn();
+                $id = $this->user([
+                    'name' => $this->nama($i % 2 === 0, $idx), 'nisn' => $nisn, 'email' => "$nisn@salut.sch.id",
+                    'password' => $hash['siswa'], 'role' => 'siswa', 'class_name' => "$tingkat $jurusan $rombel",
+                    'jurusan' => $jurusan, 'angkatan' => $angkatanSiswa[$tingkat],
                 ]);
-                $allStudents[] = $s;
-                if ($siswaSatu === null) $siswaSatu = $s;
-            }
-
-            for ($i = 0; $i < $pCount; $i++) {
-                $kelas = $kelasPilihan[$i % count($kelasPilihan)];
-                $kelasKey = trim(str_replace($tingkat, '', $kelas));
-                $jurusan  = $jurusanByKelas[$kelasKey] ?? 'TKJ';
-                $s = User::create([
-                    'name'       => $this->nama(false, $idxP++),
-                    'nisn'       => $this->nisn($nisnCounter++),
-                    'email'      => $this->nisn($nisnCounter - 1) . '@salut.sch.id',
-                    'password'   => Hash::make('siswa123'),
-                    'role'       => 'siswa',
-                    'school'     => 'SMK Negeri 1 Teladan',
-                    'class_name' => $kelas,
-                    'jurusan'    => $jurusan,
-                    'angkatan'   => $angkatan,
-                    'is_active'  => true,
-                ]);
-                $allStudents[] = $s;
+                $siswa[] = [$id, $tingkat, $jurusan];
             }
         }
 
+        // Nilai rapor per semester yang sudah dilewati
+        $rapor = [];
+        foreach ($siswa as [$id, $tingkat]) {
+            $base = mt_rand(780, 920) / 10;
+            for ($s = 1; $s <= $semesterSelesai[$tingkat]; $s++) {
+                $rapor[] = $this->stamp([
+                    'user_id' => $id, 'semester' => $s,
+                    'average_score' => min(98, round($base + mt_rand(-20, 30) / 10, 2)),
+                    'rank' => mt_rand(1, 32), 'academic_year' => $angkatanSiswa[$tingkat] - 3 + intdiv($s - 1, 2),
+                    'status' => 'Tervalidasi', 'input_by' => $guruUtama,
+                ]);
+            }
+        }
+        foreach (array_chunk($rapor, 200) as $chunk) DB::table('academic_records')->insert($chunk);
+
         // ─────────────────────────────────────────────────────────────────────
-        // 4. ALUMNI — 10 orang (5 L + 5 P), angkatan 2024-2025
+        // 4. ALUMNI (60) — angkatan 2024, 2025, 2026 × 3 jurusan
         // ─────────────────────────────────────────────────────────────────────
-        $alumniAngkatan = [2024, 2024, 2024, 2025, 2025, 2024, 2025, 2025, 2024, 2025];
-        $alumniKelulusan = [
-            '2024-06-15','2024-06-15','2024-06-15','2025-06-14','2025-06-14',
-            '2024-06-15','2025-06-14','2025-06-14','2024-06-15','2025-06-14',
-        ];
-        $statusTracer = [
-            'Kuliah / Melanjutkan Studi','Bekerja','Bekerja','Kuliah / Melanjutkan Studi',
-            'Wirausaha','Bekerja','Kuliah / Melanjutkan Studi','Bekerja','Wirausaha','Kuliah / Melanjutkan Studi',
-        ];
+        // Komposisi status per 20 alumni/angkatan; null = belum mengisi tracer
+        $polaStatus = array_merge(
+            array_fill(0, 7, 'Bekerja'),
+            array_fill(0, 6, 'Kuliah / Melanjutkan Studi'),
+            array_fill(0, 3, 'Wirausaha'),
+            array_fill(0, 2, 'Mencari Kerja'),
+            ['Belum Memutuskan', null]
+        );
 
-        $alumniList = [];
-
-        // Alumni Demo Utama (Siti Rahayu - sesuai LOGIN_SALUT.txt)
-        $siti = User::create([
-            'name'            => 'Siti Rahayu',
-            'nisn'            => '0067890123',
-            'email'           => '0067890123@salut.sch.id',
-            'password'        => Hash::make('alumni123'),
-            'role'            => 'alumni',
-            'school'          => 'SMK Negeri 1 Teladan',
-            'class_name'      => 'XII TKJ 1',
-            'jurusan'         => 'TKJ',
-            'angkatan'        => 2024,
-            'graduation_date' => '2024-06-15',
-            'is_active'       => true,
+        $alumni = []; // [id, jurusan, angkatan, status]
+        $sitiId = $this->user([
+            'name' => 'Siti Rahayu', 'nisn' => '0067890123', 'email' => '0067890123@salut.sch.id',
+            'password' => $hash['alumni'], 'role' => 'alumni', 'class_name' => 'XII TKJ 1',
+            'jurusan' => 'TKJ', 'angkatan' => 2024, 'graduation_date' => '2024-06-15',
         ]);
-        GraduationDoc::create([
-            'user_id'     => $siti->id,
-            'doc_type'    => 'ijazah',
-            'title'       => 'Ijazah Asli Digital',
-            'file_path'   => "angkatan_2024/nisn_0067890123/ijazah.pdf",
-            'file_size'   => '2.4 MB',
-            'is_verified' => true,
-            'uploaded_by' => $admin->id,
-        ]);
-        GraduationDoc::create([
-            'user_id'     => $siti->id,
-            'doc_type'    => 'skhun',
-            'title'       => 'SKHUN',
-            'file_path'   => "angkatan_2024/nisn_0067890123/skhun.pdf",
-            'file_size'   => '1.8 MB',
-            'is_verified' => true,
-            'uploaded_by' => $admin->id,
-        ]);
-        TracerStudy::create([
-            'user_id'         => $siti->id,
-            'status'          => 'Bekerja',
-            'kota'            => 'Bandung',
-            'tahun_masuk'     => '2024',
-            'nama_instansi'   => 'PT Telkom Indonesia',
-            'jabatan'         => 'Teknisi Jaringan',
-            'bidang_industri' => 'Jaringan & Telekomunikasi',
-        ]);
-        $alumniList[] = $siti;
+        $alumni[] = [$sitiId, 'TKJ', 2024, 'Bekerja'];
 
-        for ($i = 0; $i < 10; $i++) {
-            $isLaki = $i < 5;
-            $angkatan = $alumniAngkatan[$i];
-            $nisn = $this->nisn($nisnCounter++);
-            $namaAlumni = $this->nama($isLaki, $i + 20);
+        $idx = 0;
+        foreach ([2024, 2025, 2026] as $angkatan) {
+            $pola = $polaStatus;
+            if ($angkatan === 2024) array_shift($pola); // satu slot "Bekerja" sudah dipakai Siti
+            shuffle($pola);
+            foreach ($pola as $i => $status) {
+                $jurusan = self::JURUSAN[$i % 3];
+                $nisn = $this->nisn();
+                $id = $this->user([
+                    'name' => $this->nama(mt_rand(0, 1) === 1, 60 + $idx++), 'nisn' => $nisn, 'email' => "$nisn@salut.sch.id",
+                    'password' => $hash['alumni'], 'role' => 'alumni', 'class_name' => "XII $jurusan 1",
+                    'jurusan' => $jurusan, 'angkatan' => $angkatan, 'graduation_date' => "$angkatan-06-15",
+                ]);
+                $alumni[] = [$id, $jurusan, $angkatan, $status];
+            }
+        }
 
-            $jurusanAlumni = $this->jurusanList[$i % count($this->jurusanList)];
-            $al = User::create([
-                'name'            => $namaAlumni,
-                'nisn'            => $nisn,
-                'email'           => $nisn . '@salut.sch.id',
-                'password'        => Hash::make('alumni123'),
-                'role'            => 'alumni',
-                'school'          => 'SMK Negeri 1 Teladan',
-                'class_name'      => 'XII ' . $jurusanAlumni . ' 1',
-                'jurusan'         => $jurusanAlumni,
-                'angkatan'        => $angkatan,
-                'graduation_date' => $alumniKelulusan[$i],
-                'is_active'       => true,
-            ]);
+        // Arsip dokumen + tracer study: ke mana alumni setelah lulus
+        $tracer = [];
+        $docs = [];
+        foreach ($alumni as [$id, $jurusan, $angkatan, $status]) {
+            foreach (['ijazah' => 'Ijazah Digital', 'skl' => 'Surat Keterangan Lulus', 'skhun' => 'SKHUN'] as $type => $title) {
+                $docs[] = $this->stamp([
+                    'user_id' => $id, 'doc_type' => $type, 'title' => $title,
+                    'file_path' => "angkatan_$angkatan/user_$id/$type.pdf",
+                    'file_size' => (mt_rand(5, 30) / 10) . ' MB', 'is_verified' => true, 'uploaded_by' => $adminId,
+                ]);
+            }
+            if ($status === null) continue;
 
-            // Arsip dokumen untuk setiap alumni
-            GraduationDoc::create([
-                'user_id'     => $al->id,
-                'doc_type'    => 'ijazah',
-                'title'       => 'Ijazah SMA Negeri 1 Teladan',
-                'file_path'   => "angkatan_{$angkatan}/nisn_{$nisn}/ijazah.pdf",
-                'file_size'   => '1.' . ($i + 1) . ' MB',
-                'is_verified' => true,
-                'uploaded_by' => $admin->id,
-            ]);
-            GraduationDoc::create([
-                'user_id'     => $al->id,
-                'doc_type'    => 'skl',
-                'title'       => 'Surat Keterangan Lulus',
-                'file_path'   => "angkatan_{$angkatan}/nisn_{$nisn}/skl.pdf",
-                'file_size'   => '0.' . (5 + $i % 4) . ' MB',
-                'is_verified' => true,
-                'uploaded_by' => $admin->id,
-            ]);
-            GraduationDoc::create([
-                'user_id'     => $al->id,
-                'doc_type'    => 'skhun',
-                'title'       => 'SKHUN',
-                'file_path'   => "angkatan_{$angkatan}/nisn_{$nisn}/skhun.pdf",
-                'file_size'   => '0.' . (3 + $i % 3) . ' MB',
-                'is_verified' => true,
-                'uploaded_by' => $admin->id,
-            ]);
-
-            // Tracer Study
-            $status = $statusTracer[$i];
-            $tracerData = [
-                'user_id'  => $al->id,
-                'status'   => $status,
-                'kota'     => $this->kota[$i % count($this->kota)],
-                'tahun_masuk' => (string)($angkatan),
+            $row = [
+                'user_id' => $id, 'status' => $status, 'tahun_masuk' => (string) $angkatan,
+                'nama_instansi' => null, 'kota' => null, 'jabatan' => null, 'bidang_industri' => null,
+                'nama_kampus' => null, 'nama_prodi' => null, 'prodi' => null, 'rentang_gaji' => null, 'keterangan' => null,
             ];
-            if ($status === 'Kuliah / Melanjutkan Studi') {
-                $namaKampus = $this->kampus[$i % count($this->kampus)];
-                $namaProdi  = $this->prodi[$i % count($this->prodi)];
-                $tracerData['nama_instansi'] = $namaKampus;
-                $tracerData['nama_kampus']   = $namaKampus;
-                $tracerData['prodi']         = $namaProdi;
-                $tracerData['nama_prodi']    = $namaProdi;
-            } elseif ($status === 'Bekerja') {
-                $bidangArr   = $this->bidangIndustri[$jurusanAlumni] ?? ['IT'];
-                $bidang      = $bidangArr[$i % count($bidangArr)];
-                $namaPerush  = $this->perusahaan[$i % count($this->perusahaan)];
-                $tracerData['nama_instansi']  = $namaPerush;
-                $tracerData['jabatan']        = $this->jabatan[$i % count($this->jabatan)];
-                $tracerData['bidang_industri']= $bidang;
-            } else {
-                $tracerData['nama_instansi']  = 'Usaha Mandiri';
-                $tracerData['jabatan']        = 'Pemilik Usaha';
-                $tracerData['bidang_industri']= 'Wirausaha';
+            switch ($status) {
+                case 'Bekerja':
+                    $pilihan = $this->kerjaPerJurusan[$jurusan];
+                    $kerja = $id === $sitiId ? $pilihan[0] : $pilihan[mt_rand(0, count($pilihan) - 1)];
+                    $row = array_merge($row, [
+                        'nama_instansi' => $kerja[0], 'jabatan' => $kerja[1], 'bidang_industri' => $kerja[2],
+                        'kota' => $kerja[3], 'rentang_gaji' => $this->gaji[mt_rand(0, 3)],
+                    ]);
+                    break;
+                case 'Kuliah / Melanjutkan Studi':
+                    // ±60% kuliah di Lampung, sisanya ke luar daerah
+                    $k = mt_rand(1, 10) <= 6 ? mt_rand(0, 5) : mt_rand(6, 9);
+                    $prodi = $this->prodiPerJurusan[$jurusan][mt_rand(0, 3)];
+                    $row = array_merge($row, [
+                        'nama_instansi' => $this->kampus[$k], 'nama_kampus' => $this->kampus[$k],
+                        'prodi' => $prodi, 'nama_prodi' => $prodi, 'kota' => $this->kotaKampus[$k],
+                    ]);
+                    break;
+                case 'Wirausaha':
+                    $u = $this->usahaPerJurusan[$jurusan][mt_rand(0, 1)];
+                    $row = array_merge($row, [
+                        'nama_instansi' => $u[0], 'jabatan' => 'Pemilik Usaha', 'bidang_industri' => $u[1],
+                        'kota' => ['Bandar Lampung', 'Metro', 'Pringsewu', 'Kalianda'][mt_rand(0, 3)],
+                    ]);
+                    break;
+                case 'Mencari Kerja':
+                    $row['keterangan'] = "Sedang melamar kerja di bidang $jurusan";
+                    $row['kota'] = 'Bandar Lampung';
+                    break;
+                default:
+                    $row['keterangan'] = 'Masih mempertimbangkan kuliah atau kerja';
             }
-            TracerStudy::create($tracerData);
-
-            $alumniList[] = $al;
+            $tracer[] = $this->stamp($row);
         }
+        DB::table('tracer_studies')->insert($tracer);
+        foreach (array_chunk($docs, 200) as $chunk) DB::table('graduation_docs')->insert($chunk);
 
         // ─────────────────────────────────────────────────────────────────────
-        // 5. PRESTASI contoh (untuk siswa pertama & beberapa alumni)
+        // 5. PRESTASI (45) — campuran Approved / Pending / Rejected
         // ─────────────────────────────────────────────────────────────────────
-        if ($siswaSatu) {
-            Achievement::create([
-                'user_id'        => $siswaSatu->id,
-                'nama_kegiatan'  => 'LKS (Lomba Kompetensi Siswa) Tingkat Kota',
-                'penyelenggara'  => 'Dinas Pendidikan Kota',
-                'tingkat'        => 'Kecamatan / Kabupaten',
-                'peringkat'      => 'Juara 1',
-                'tahun'          => 2025,
-                'deskripsi'      => 'Mewakili sekolah dalam Lomba Kompetensi Siswa bidang IT tingkat kota.',
-                'status_validasi'=> 'Approved',
-                'validated_by'   => $guru->id,
-                'validated_at'   => now(),
-            ]);
-            Achievement::create([
-                'user_id'        => $siswaSatu->id,
-                'nama_kegiatan'  => 'Hackathon Pelajar SMK Tingkat Provinsi',
-                'penyelenggara'  => 'Kemendikbudristek',
-                'tingkat'        => 'Provinsi',
-                'peringkat'      => 'Finalis Top 10',
-                'tahun'          => 2025,
-                'deskripsi'      => 'Membuat aplikasi solusi digital untuk UMKM lokal.',
-                'status_validasi'=> 'Pending',
+        $lomba = [
+            'TKJ'        => ['LKS IT Network Systems Administration', 'Lomba Konfigurasi MikroTik', 'Cyber Security Competition Pelajar'],
+            'RPL'        => ['LKS Software Application Development', 'Hackathon Pelajar SMK', 'Lomba Aplikasi Mobile Inovatif'],
+            'Multimedia' => ['LKS Graphic Design Technology', 'Festival Film Pendek Pelajar', 'Lomba Desain Poster Digital'],
+        ];
+        $tingkat   = ['Kecamatan / Kabupaten', 'Kota / Madya', 'Provinsi', 'Nasional', 'Internasional'];
+        $bobotTkt  = [0, 0, 0, 1, 1, 1, 2, 2, 3, 4]; // tingkat lokal lebih sering
+        $peringkat = ['Juara 1', 'Juara 2', 'Juara 3', 'Harapan 1', 'Finalis', 'Peserta'];
+        $statusVal = ['Approved', 'Approved', 'Approved', 'Pending', 'Pending', 'Rejected'];
+
+        $prestasi = [$this->stamp([ // contoh tetap untuk siswa demo
+            'user_id' => $budiId, 'nama_kegiatan' => 'LKS Software Application Development Tingkat Kota',
+            'penyelenggara' => 'Dinas Pendidikan Kota Bandar Lampung', 'tingkat' => 'Kota / Madya', 'peringkat' => 'Juara 1',
+            'tahun' => 2026, 'deskripsi' => 'Mewakili sekolah di bidang pengembangan aplikasi.', 'status_validasi' => 'Approved',
+            'catatan' => 'Sertifikat valid.', 'validated_by' => $guruByJurusan['RPL'][0], 'validated_at' => $this->now,
+        ])];
+        $kandidat = array_slice($siswa, 1);
+        shuffle($kandidat);
+        foreach (array_slice($kandidat, 0, 44) as [$id, , $jurusan]) {
+            $st = $statusVal[mt_rand(0, 5)];
+            $prestasi[] = $this->stamp([
+                'user_id' => $id, 'nama_kegiatan' => $lomba[$jurusan][mt_rand(0, 2)],
+                'penyelenggara' => ['Dinas Pendidikan Provinsi Lampung', 'Kemendikbudristek', 'Universitas Lampung', 'Asosiasi Industri TIK'][mt_rand(0, 3)],
+                'tingkat' => $tingkat[$bobotTkt[mt_rand(0, 9)]], 'peringkat' => $peringkat[mt_rand(0, 5)],
+                'tahun' => mt_rand(2025, 2026), 'deskripsi' => "Kompetisi bidang $jurusan.",
+                'status_validasi' => $st,
+                'catatan' => $st === 'Rejected' ? 'Sertifikat tidak terbaca, mohon unggah ulang.' : null,
+                'validated_by' => $st === 'Pending' ? null : $guruByJurusan[$jurusan][0],
+                'validated_at' => $st === 'Pending' ? null : $this->now,
             ]);
         }
+        DB::table('achievements')->insert($prestasi);
 
         // ─────────────────────────────────────────────────────────────────────
-        // 6. SKILL RAPORT / PORTOFOLIO KOMPETENSI SISWA SMK
+        // 6. KOMPETENSI / SKPI — alumni (4 kompetensi) + siswa XI–XII (2)
         // ─────────────────────────────────────────────────────────────────────
-        $skillCatalog = [
+        $katalog = [
             'TKJ' => [
-                ['Administrasi Server Linux (Debian/Ubuntu)', 'Sistem Operasi Jaringan', 'Mahir', 'Instalasi & konfigurasi DNS, Web Server, DHCP, FTP'],
-                ['Routing MikroTik Fundamental (MTCNA)', 'Jaringan Komputer', 'Mahir', 'Static & Dynamic Routing (OSPF), Bandwidth Management'],
-                ['Instalasi & Troubleshooting Fiber Optic', 'Infrastruktur Jaringan', 'Terampil', 'Penyambungan FO Splicer, Pengujian OTDR & OPM'],
-                ['Keamanan Jaringan & Firewall Filtering', 'Cyber Security', 'Terampil', 'Konfigurasi IPTables, Port Knocking, VPN Wireguard'],
+                ['Administrasi Server Linux', 'Sistem Operasi Jaringan', 'Instalasi DNS, Web Server, DHCP, FTP'],
+                ['Routing MikroTik (MTCNA)', 'Jaringan Komputer', 'Static & dynamic routing, bandwidth management'],
+                ['Instalasi Fiber Optic', 'Infrastruktur Jaringan', 'Splicing FO, pengujian OTDR & OPM'],
+                ['Keamanan Jaringan & Firewall', 'Cyber Security', 'IPTables, VPN WireGuard'],
             ],
             'RPL' => [
-                ['Pengembangan RESTful API dengan Laravel', 'Web Development', 'Mahir', 'Arsitektur MVC, Autentikasi JWT, Relasi Eloquent ORM'],
-                ['Pemrograman Mobile Multiplatform (Flutter & Dart)', 'Mobile Development', 'Mahir', 'State Management GetX/Provider, Integrasi REST API'],
-                ['Manajemen Basis Data Relasional (MySQL)', 'Database Engineering', 'Mahir', 'Normalisasi DB, Stored Procedures, Indexing & Query Optimization'],
-                ['Frontend Web Modern (Tailwind CSS & JavaScript)', 'Web Development', 'Terampil', 'Responsive Design, DOM Manipulation, Async/Await'],
+                ['RESTful API dengan Laravel', 'Web Development', 'MVC, autentikasi JWT, Eloquent ORM'],
+                ['Aplikasi Mobile Flutter', 'Mobile Development', 'State management GetX, integrasi REST API'],
+                ['Basis Data MySQL', 'Database Engineering', 'Normalisasi, indexing, optimasi query'],
+                ['Frontend Web Modern', 'Web Development', 'Responsive design, JavaScript async'],
             ],
             'Multimedia' => [
-                ['Desain Antarmuka Pengguna / UI/UX (Figma)', 'Desain Grafis', 'Mahir', 'Wireframing, High-Fidelity Prototyping, Design System'],
-                ['Video Editing & Audio Mixing (Adobe Premiere)', 'Audio-Visual', 'Mahir', 'Cut-to-beat, Multi-camera Editing, Audio Mastering'],
-                ['Motion Graphics & Visual Effects (After Effects)', 'Animasi', 'Terampil', 'Kinetic Typography, Shape Layers, 2D Character Rigging'],
-                ['Desain Vektor & Corporate Branding (Illustrator)', 'Desain Grafis', 'Mahir', 'Pembuatan Logo Vektor, Buku Pedoman Brand (GSM)'],
-            ],
-            'Akuntansi' => [
-                ['Komputerisasi Akuntansi (MYOB & Accurate)', 'Akuntansi Keuangan', 'Mahir', 'Setup Data Awal, Jurnal Khusus, Buku Besar, Neraca'],
-                ['Penyusunan Laporan Keuangan Standar PSAK', 'Akuntansi Keuangan', 'Mahir', 'Laporan Laba Rugi, Perubahan Modal, Arus Kas'],
-                ['Perhitungan & Pelaporan Pajak Terapan (e-SPT)', 'Perpajakan', 'Terampil', 'PPh Pasal 21, PPh Badan, dan PPN Faktur Pajak'],
-            ],
-            'Pemasaran' => [
-                ['Digital Marketing Campaign & Social Media Ads', 'Pemasaran Digital', 'Mahir', 'Meta Ads Manager, Content Planning, Copywriting'],
-                ['Pengelolaan Toko Online E-Commerce & Marketplace', 'E-Commerce', 'Mahir', 'Optimalisasi SEO Toko, Live Streaming Sales, Analisis GMV'],
-                ['Teknik Negosiasi & Manajemen Hubungan Pelanggan', 'Penjualan', 'Terampil', 'Handling Objections, CRM Software, Closing Deals'],
+                ['Desain UI/UX (Figma)', 'Desain Grafis', 'Wireframe, prototipe, design system'],
+                ['Video Editing (Premiere)', 'Audio-Visual', 'Multi-camera editing, audio mastering'],
+                ['Motion Graphics (After Effects)', 'Animasi', 'Kinetic typography, 2D rigging'],
+                ['Corporate Branding (Illustrator)', 'Desain Grafis', 'Logo vektor, brand guideline'],
             ],
         ];
+        $level = ['Dasar', 'Terampil', 'Terampil', 'Mahir'];
+        $peserta = [];
+        foreach ($alumni as [$id, $jurusan, $angkatan]) $peserta[] = [$id, $jurusan, 4, ($angkatan - 1) . '/' . $angkatan];
+        foreach ($siswa as [$id, $tkt, $jurusan]) if ($tkt !== 'X') $peserta[] = [$id, $jurusan, 2, '2025/2026'];
 
-        // Seed skill untuk alumni
-        foreach ($alumniList as $al) {
-            $j = $al->jurusan ?? 'TKJ';
-            $pool = $skillCatalog[$j] ?? $skillCatalog['TKJ'];
-            $guruPenguji = $gurusByJurusan[$j] ?? $guru;
-            foreach ($pool as $item) {
-                SkillCompetency::create([
-                    'user_id'         => $al->id,
-                    'guru_id'         => $guruPenguji->id,
-                    'nama_kompetensi' => $item[0],
-                    'kategori'        => $item[1],
-                    'level'           => $item[2],
-                    'keterangan'      => $item[3],
-                    'semester'        => 'Genap',
-                    'tahun_pelajaran' => '2023/2024',
+        $skill = [];
+        foreach ($peserta as [$id, $jurusan, $jumlah, $tp]) {
+            $penguji = $guruByJurusan[$jurusan];
+            foreach (array_slice($katalog[$jurusan], 0, $jumlah) as $k) {
+                $skill[] = $this->stamp([
+                    'user_id' => $id, 'guru_id' => $penguji[mt_rand(0, count($penguji) - 1)],
+                    'nama_kompetensi' => $k[0], 'kategori' => $k[1], 'level' => $level[mt_rand(0, 3)], 'keterangan' => $k[2],
+                    'semester' => 'Genap', 'tahun_pelajaran' => $tp,
                 ]);
             }
         }
-
-        // Seed skill untuk siswa (misal 50 siswa)
-        $sampleStudents = array_slice($allStudents, 0, 50);
-        foreach ($sampleStudents as $s) {
-            $j = $s->jurusan ?? 'TKJ';
-            $pool = $skillCatalog[$j] ?? $skillCatalog['TKJ'];
-            $guruPenguji = $gurusByJurusan[$j] ?? $guru;
-            for ($k = 0; $k < min(2, count($pool)); $k++) {
-                $item = $pool[$k];
-                SkillCompetency::create([
-                    'user_id'         => $s->id,
-                    'guru_id'         => $guruPenguji->id,
-                    'nama_kompetensi' => $item[0],
-                    'kategori'        => $item[1],
-                    'level'           => $item[2],
-                    'keterangan'      => $item[3],
-                    'semester'        => 'Ganjil',
-                    'tahun_pelajaran' => '2025/2026',
-                ]);
-            }
-        }
+        foreach (array_chunk($skill, 200) as $chunk) DB::table('skill_competencies')->insert($chunk);
 
         // ─────────────────────────────────────────────────────────────────────
-        // Output summary
+        // Ringkasan
         // ─────────────────────────────────────────────────────────────────────
-        $totalSiswa = User::where('role', 'siswa')->count();
-        $totalAlumni = User::where('role', 'alumni')->count();
-        $totalGuru = User::where('role', 'guru')->count();
-
+        $count = fn ($role) => DB::table('users')->where('role', $role)->count();
         $this->command->info('');
-        $this->command->info('╔════════════════════════════════════════╗');
-        $this->command->info('║   ✅  SEEDER SALUT v2.0 SELESAI        ║');
-        $this->command->info('╠════════════════════════════════════════╣');
-        $this->command->info("║  👨‍💼 Admin   : 1                       ║");
-        $this->command->info("║  👩‍🏫 Guru    : {$totalGuru}                       ║");
-        $this->command->info("║  👨‍🎓 Siswa   : {$totalSiswa} (63 X + 63 XI + 64 XII)");
-        $this->command->info("║  🎓 Alumni  : {$totalAlumni} (5L + 5P)              ║");
-        $this->command->info('╠════════════════════════════════════════╣');
-        $this->command->info('║  🔑 LOGIN CREDENTIALS:                 ║');
-        $this->command->info('║  Admin   → 0000000001 | admin123       ║');
-        $this->command->info('║  Guru    → 0000000002 | guru123        ║');
-        $this->command->info('║  Siswa   → 0000000011 | siswa123       ║');
-        $this->command->info('║  Alumni  → (lihat DB) | alumni123      ║');
-        $this->command->info('╚════════════════════════════════════════╝');
+        $this->command->info('  SEEDER SALUT v3.0 SELESAI — total ' . DB::table('users')->count() . ' pengguna');
+        $this->command->info("  Admin {$count('admin')} · Guru {$count('guru')} · Siswa {$count('siswa')} · Alumni {$count('alumni')}");
+        $this->command->info('  Tracer terisi ' . count($tracer) . ' · Prestasi ' . count($prestasi) . ' · Kompetensi ' . count($skill));
+        $this->command->info('  Login: Admin 0000000001/admin123 · Guru 0000000002/guru123');
+        $this->command->info('         Siswa 0054321987/siswa123 · Alumni 0067890123/alumni123');
         $this->command->info('');
     }
 }
