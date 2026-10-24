@@ -125,6 +125,13 @@ const Auth = {
             },
         ];
 
+        // Halaman khusus Admin yang dibuka Guru lewat URL → kembalikan ke Dashboard
+        const currentMenu = allMenus.find(function(menu) { return menu.id === activePage; });
+        if (currentMenu && !currentMenu.roles.includes(user.role)) {
+            window.location.replace('dashboard.html');
+            return;
+        }
+
         const nav = document.getElementById('sidebar-nav');
         if (!nav) return;
 

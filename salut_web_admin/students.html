@@ -233,7 +233,7 @@ async function exportAlumni() {
   try {
     toast('Menyiapkan file CSV...', 'info');
     var token = localStorage.getItem('salut_token');
-    var res = await fetch('http://127.0.0.1:8000/api/alumni/export', {
+    var res = await fetch(API_BASE + '/admin/alumni/export', {
       headers: { 'Authorization': 'Bearer ' + token }
     });
     if (!res.ok) throw new Error('Gagal export (hanya Admin yang diizinkan)');

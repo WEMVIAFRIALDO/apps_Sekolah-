@@ -34,6 +34,17 @@ class RaporController extends Controller
     }
 
     /**
+     * GET /api/rapor/my — Nilai rapor milik siswa/alumni yang login
+     */
+    public function myRapor(): JsonResponse
+    {
+        $user = JWTAuth::user();
+        $records = AcademicRecord::where('user_id', $user->id)->orderBy('semester')->get();
+
+        return response()->json(['success' => true, 'data' => $records]);
+    }
+
+    /**
      * GET /api/guru/rapor/students/{id}
      */
     public function getStudentRapor($id): JsonResponse

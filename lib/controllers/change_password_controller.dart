@@ -48,6 +48,7 @@ class ChangePasswordController extends GetxController {
       final response = await dio.patch('/profile/password', data: {
         'current_password': currentPassword.value,
         'new_password': newPassword.value,
+        'new_password_confirmation': confirmPassword.value,
       });
 
       if (response.statusCode == 200) {

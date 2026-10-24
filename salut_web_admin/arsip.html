@@ -288,9 +288,8 @@
       // Update stat cards
       if (summary.total_alumni !== undefined) document.getElementById('st-alumni').textContent = summary.total_alumni;
       if (summary.total_docs !== undefined)   document.getElementById('st-total-docs').textContent = summary.total_docs;
-
-      let countIjazah = 0;
-      let countSkl = 0;
+      if (summary.total_ijazah !== undefined) document.getElementById('st-ijazah').textContent = summary.total_ijazah;
+      if (summary.total_skl !== undefined)    document.getElementById('st-skl').textContent = summary.total_skl;
 
       if (list.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:32px;">Tidak ditemukan data alumni yang sesuai filter.</td></tr>`;
@@ -303,9 +302,6 @@
         const hasIjazah = docs.some(d => d.doc_type === 'ijazah');
         const hasSkl    = docs.some(d => d.doc_type === 'skl');
         const hasSkhun  = docs.some(d => d.doc_type === 'skhun');
-
-        if (hasIjazah) countIjazah++;
-        if (hasSkl) countSkl++;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -346,10 +342,6 @@
         `;
         tbody.appendChild(tr);
       });
-
-      // Update stat sederhana
-      document.getElementById('st-ijazah').textContent = countIjazah > 0 ? countIjazah : '11';
-      document.getElementById('st-skl').textContent = countSkl > 0 ? countSkl : '11';
 
     } catch (e) {
       tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:24px;">Terjadi kesalahan memuat data.</td></tr>`;

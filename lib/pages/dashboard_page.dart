@@ -44,43 +44,6 @@ class DashboardPage extends StatelessWidget {
             ],
           ),
           actions: [
-            // Switch Role Toggle (Untuk mempermudah simulasi/testing Dynamic UI)
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              decoration: BoxDecoration(
-                color: theme.cardSubtle,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: theme.borderGlow),
-              ),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(20),
-                onTap: controller.toggleRole,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.swap_horiz_rounded,
-                        size: 16,
-                        color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF2563EB),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Role: ${controller.currentRole.value}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: isDark ? const Color(0xFF93C5FD) : const Color(0xFF1D4ED8),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
             // Saklar Switch Theme Segmented (Konsisten dengan Web Admin)
             const ThemeSegmentedSwitch(),
             const SizedBox(width: 4),
@@ -107,6 +70,8 @@ class DashboardPage extends StatelessWidget {
           onRefresh: () async {
             await Future.wait([
               controller.fetchAchievements(),
+              controller.fetchSemesterGrades(),
+              controller.fetchAlumniArchives(),
               Future.delayed(const Duration(milliseconds: 400)),
             ]);
           },
@@ -146,6 +111,11 @@ class DashboardPage extends StatelessWidget {
           elevation: 4,
           backgroundColor: theme.navBar,
           indicatorColor: theme.primary.withValues(alpha: 0.15),
+          labelTextStyle: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: theme.primary)
+                : TextStyle(fontSize: 12, color: theme.textMuted),
+          ),
           destinations: [
             NavigationDestination(
               icon: Icon(Icons.dashboard_outlined, color: theme.textMuted),
@@ -464,6 +434,50 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
+  // --- BOTTOM SHEET DETAIL NILAI RAPOR SEMUA SEMESTER ---
+  void _showGradeDetail(DashboardController controller, ThemeService theme) {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+        decoration: BoxDecoration(
+          color: theme.card,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Detail Nilai Rapor',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.textPrimary),
+            ),
+            const SizedBox(height: 12),
+            if (controller.semesterGrades.isEmpty)
+              Text(
+                'Belum ada nilai rapor yang diinput guru.',
+                style: TextStyle(fontSize: 12, color: theme.textMuted),
+              ),
+            ...controller.semesterGrades.map((grade) => ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    grade['semester'],
+                    style: TextStyle(fontWeight: FontWeight.w600, color: theme.textPrimary),
+                  ),
+                  subtitle: Text(
+                    'Peringkat #${grade['rank']} • ${grade['status']}',
+                    style: TextStyle(fontSize: 12, color: theme.textMuted),
+                  ),
+                  trailing: Text(
+                    grade['average'],
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.primary),
+                  ),
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+
   // --- KONTEN DASHBOARD SISWA AKTIF ---
   Widget _buildSiswaDashboardContent(
     BuildContext context,
@@ -490,12 +504,18 @@ class DashboardPage extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () => _showGradeDetail(controller, theme),
               child: Text('Detail Nilai', style: TextStyle(color: theme.primary, fontWeight: FontWeight.w600)),
             ),
           ],
         ),
         const SizedBox(height: 8),
+        if (controller.semesterGrades.isEmpty)
+          Text(
+            'Belum ada nilai rapor yang diinput guru.',
+            style: TextStyle(fontSize: 12, color: theme.textMuted),
+          )
+        else
         SizedBox(
           height: 110,
           child: ListView.separated(
@@ -849,6 +869,12 @@ class DashboardPage extends StatelessWidget {
         const SizedBox(height: 12),
 
         // Daftar Dokumen Digital (Ijazah, SKHUN, SKL, dll.)
+        if (controller.alumniArchives.isEmpty)
+          Text(
+            'Belum ada dokumen arsip yang diunggah sekolah.',
+            style: TextStyle(fontSize: 12, color: theme.textMuted),
+          )
+        else
         ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),

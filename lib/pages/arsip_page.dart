@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:open_filex/open_filex.dart';
 import '../services/api_service.dart';
+import '../services/file_saver.dart';
 import '../services/theme_service.dart';
 
 /// REQ-F-09: Halaman Arsip Dokumen Digital untuk Alumni.
@@ -67,12 +66,8 @@ class _ArsipPageState extends State<ArsipPage> {
     });
 
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final savePath = '${dir.path}/salut_${docType}_$id.pdf';
-
-      await _api.downloadFile(
-        url: '$kBaseUrl/arsip/$id/download',
-        savePath: savePath,
+      final bytes = await _api.downloadBytes(
+        '/arsip/$id/download',
         onProgress: (p) {
           if (mounted) setState(() => _downloadProgress[id] = p);
         },
@@ -82,15 +77,15 @@ class _ArsipPageState extends State<ArsipPage> {
         _isDownloading[id] = false;
       });
 
-      final result = await OpenFilex.open(savePath);
-      if (result.type != ResultType.done) {
-        _showSnack('File disimpan di: $savePath', isError: false);
+      final savedPath = await saveAndOpenFile(bytes, 'salut_${docType}_$id.pdf');
+      if (savedPath != null) {
+        _showSnack('File disimpan di: $savedPath', isError: false);
       }
     } catch (e) {
       setState(() {
         _isDownloading[id] = false;
       });
-      _showSnack('Gagal mengunduh $title: ${e.toString()}', isError: true);
+      _showSnack('Gagal mengunduh $title: ${ApiService.parseError(e)}', isError: true);
     }
   }
 

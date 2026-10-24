@@ -51,6 +51,7 @@ Route::middleware('jwt.auth')->group(function () {
         Route::post('/users',                                   [AdminController::class, 'createUser']);
         Route::post('/users/import-csv',                        [AdminController::class, 'importCsv']);
         Route::patch('/users/{user}/promote',                   [AdminController::class, 'promoteToAlumni']);
+        Route::get('/alumni/export',                            [AdminController::class, 'exportAlumni']);
         // Validasi Prestasi (REQ-F-04)
         Route::get('/achievements',                             [AdminController::class, 'listAchievements']);
         Route::patch('/achievements/{achievement}/validate',    [AdminController::class, 'validateAchievement']);
@@ -76,6 +77,9 @@ Route::middleware('jwt.auth')->group(function () {
         Route::post('/skills',                                 [SkillController::class, 'store']);
         Route::delete('/skills/{id}',                          [SkillController::class, 'destroy']);
     });
+
+    // Nilai Rapor Siswa & Alumni (dashboard mobile)
+    Route::get('/rapor/my', [\App\Http\Controllers\Api\RaporController::class, 'myRapor']);
 
     // Skill Raport Siswa & Alumni (Portofolio Mandiri / SKPI)
     Route::prefix('skills')->group(function () {
