@@ -78,3 +78,6 @@ salut_backend/storage/logs/*
 # SALUT - Kredensial server Firebase
 *firebase-adminsdk*.json
 *service-account*.json
+
+# SALUT - Cache PHPUnit
+salut_backend/.phpunit.result.cache
