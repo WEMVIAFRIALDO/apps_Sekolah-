@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Perkembangan Proyek 2 - Frontend Mobile Flutter & Dynamic UI (SALUT)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            background: #F4F4F5;
+            color: #000000;
+            line-height: 1.5;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #FFFFFF;
+            border: 1px solid #D4D4D8;
+            border-radius: 4px;
+            padding: 60px 70px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+        .cover-box {
+            text-align: center;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 30px;
+            margin-bottom: 35px;
+        }
+        .univ-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #000000;
+            text-transform: uppercase;
+            line-height: 1.3;
+        }
+        .doc-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #000000;
+            margin: 20px 0 10px;
+            line-height: 1.4;
+            text-transform: uppercase;
+        }
+        .doc-subtitle {
+            font-size: 12pt;
+            color: #000000;
+            font-style: italic;
+        }
+        .author-box {
+            margin-top: 20px;
+            font-size: 12pt;
+            color: #000000;
+        }
+        .author-box strong {
+            font-size: 12pt;
+            color: #000000;
+        }
+        h2 {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #000000;
+            margin: 26px 0 10px;
+            text-align: justify;
+        }
+        h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            font-style: italic;
+            color: #000000;
+            margin: 18px 0 8px;
+            text-align: justify;
+        }
+        p {
+            font-size: 12pt;
+            color: #000000;
+            margin-bottom: 12px;
+            text-align: justify;
+            line-height: 1.5;
+        }
+        .figure-box {
+            text-align: center;
+            margin: 20px 0 24px;
+            border: 1px solid #D4D4D8;
+            border-radius: 4px;
+            padding: 14px;
+            background: #FAFAFA;
+        }
+        .figure-box img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #E4E4E7;
+        }
+        .figure-box.mobile img {
+            max-width: 300px;
+        }
+        .caption {
+            font-size: 12pt;
+            color: #000000;
+            font-style: italic;
+            margin-top: 8px;
+            text-align: justify;
+        }
+        .placeholder-box {
+            border: 2px dashed #000000;
+            background: #FAFAFA;
+            border-radius: 4px;
+            padding: 20px;
+            text-align: justify;
+            margin: 16px 0 24px;
+        }
+        .placeholder-box .p-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 4px;
+        }
+        .placeholder-box .p-sub {
+            font-size: 12pt;
+            font-style: italic;
+            color: #000000;
+        }
+        .summary-card {
+            border: 1px solid #000000;
+            border-radius: 4px;
+            padding: 18px 22px;
+            margin-top: 26px;
+            background: #FAFAFA;
+        }
+        .summary-card h3 {
+            color: #000000;
+            margin-bottom: 10px;
+            font-style: normal;
+        }
+        .summary-card ul {
+            padding-left: 20px;
+            font-size: 12pt;
+            color: #000000;
+        }
+        .summary-card li {
+            margin-bottom: 6px;
+            text-align: justify;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12pt;
+            margin: 20px 0 24px;
+        }
+        th, td {
+            padding: 8px 10px;
+            border: 1px solid #000000;
+            text-align: justify;
+            color: #000000;
+        }
+        th {
+            background: #E5E7EB;
+            color: #000000;
+            font-weight: bold;
+            text-align: justify;
+        }
+        tr:nth-child(even) {
+            background: #FAFAFA;
+        }
+        .btn-print {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #000000;
+            color: #FFFFFF;
+            padding: 10px 18px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12pt;
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            z-index: 100;
+        }
+        .btn-print:hover {
+            background: #333333;
+        }
+        @media print {
+            body { padding: 0; background: #FFF; }
+            .container { box-shadow: none; border: none; padding: 0; }
+            .btn-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+<button class="btn-print" onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
+<div class="container">
+
+    <div class="cover-box">
+        <div class="univ-title">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI<br>UNIVERSITAS LAMPUNG • FAKULTAS KEGURUAN DAN ILMU PENDIDIKAN<br>JURUSAN PENDIDIKAN MIPA • PROGRAM STUDI PENDIDIKAN TEKNOLOGI INFORMASI</div>
+        <div class="doc-title">LAPORAN PERKEMBANGAN PROYEK 2<br>PENGEMBANGAN ANTARMUKA MOBILE (FLUTTER) DAN INTEGRASI API BERBASIS TOKEN JWT</div>
+        <div class="doc-subtitle">Implementasi Dynamic UI Rendering Multi-Role Siswa Aktif dan Alumni SMK</div>
+        <div class="author-box">Disusun Oleh: <strong>WEMVI AFRIALDO</strong> (NPM. 2413025052)</div>
+    </div>
+
+    <h2>1. Perancangan Antarmuka Pengguna Mobile (Flutter)</h2>
+    <p>Tahap perkembangan kedua berfokus pada pembangunan antarmuka mobile menggunakan framework Flutter. Desain antarmuka dirancang responsif dengan mengadopsi estetika clean academic modern. Komponen utama meliputi halaman autentikasi (login_page.dart) dengan validasi form nomor induk siswa (NISN) dan kata sandi, serta dasbor utama (dashboard_page.dart) dengan kartu ringkasan informasi akademik dan menu aksi cepat.</p>
+    <div class="figure-box">
+        <img src="laporan_screenshots/laporan4_01_login_page_code.png" alt="Kode login_page.dart">
+        <div class="caption">Gambar 2.1: Potongan kode antarmuka halaman login pada file login_page.dart</div>
+    </div>
+
+    <h2>2. Integrasi HTTP Client Dio dan Pengelolaan Token JWT</h2>
+    <p>Aplikasi Flutter dihubungkan dengan Backend API Laravel melalui kelas ApiService yang memanfaatkan pustaka Dio HTTP Client. Diterapkan mekanisme Interceptor yang secara otomatis membaca token JWT dari media penyimpanan aman perangkat (flutter_secure_storage) dan menyematkannya pada header Authorization di setiap permintaan data ke server. Interceptor juga mendeteksi status 401 Unauthorized guna mengarahkan pengguna kembali ke halaman Login saat sesi berakhir.</p>
+    <div class="figure-box">
+        <img src="laporan_screenshots/laporan4_02_api_service_code.png" alt="Implementasi ApiService Dio">
+        <div class="caption">Gambar 2.2: Implementasi HTTP Client Dio dan Interceptor token JWT pada api_service.dart</div>
+    </div>
+
+    <h2>3. Pengujian dan Simulasi Antarmuka pada Perangkat</h2>
+    <p>Aplikasi mobile dikompilasi dan dijalankan pada emulator Android serta perangkat fisik HP Samsung. Pengujian memvalidasi dua skenario login peran: akun Siswa Aktif (Budi Santoso) dan akun Alumni (Siti Rahayu).</p>
+    
+    <div class="figure-box mobile">
+        <img src="laporan_screenshots/laporan4_03_login_mobile_app.png" alt="Tampilan Antarmuka Login">
+        <div class="caption">Gambar 2.3: Tampilan antarmuka Login aplikasi SALUT pada perangkat mobile</div>
+    </div>
+    <div class="placeholder-box">
+        <div class="p-title">📱 [AREA TEMPEL SCREENSHOT HP RESMI: HALAMAN LOGIN MOBILE]</div>
+        <div class="p-sub">Ambil tangkapan layar langsung dari HP saat berada di halaman Login SALUT. Anda dapat menempelkan hasil tangkapan layar langsung ke dalam kotak ini.</div>
+    </div>
+
+    <div class="figure-box mobile">
+        <img src="laporan_screenshots/laporan4_04_dashboard_siswa_app.png" alt="Dashboard Siswa Aktif">
+        <div class="caption">Gambar 2.5: Tampilan antarmuka Dashboard untuk peran Siswa Aktif</div>
+    </div>
+    <div class="placeholder-box">
+        <div class="p-title">📱 [AREA TEMPEL SCREENSHOT HP RESMI: DASHBOARD SISWA AKTIF]</div>
+        <div class="p-sub">Ambil tangkapan layar langsung dari HP saat login sebagai Siswa Aktif (Budi Santoso). Anda dapat menempelkan hasil tangkapan layar langsung ke dalam kotak ini.</div>
+    </div>
+
+    <div class="figure-box mobile">
+        <img src="laporan_screenshots/laporan4_05_dashboard_alumni_app.png" alt="Dashboard Alumni">
+        <div class="caption">Gambar 2.7: Tampilan antarmuka Dashboard untuk peran Alumni</div>
+    </div>
+    <div class="placeholder-box">
+        <div class="p-title">📱 [AREA TEMPEL SCREENSHOT HP RESMI: DASHBOARD ALUMNI]</div>
+        <div class="p-sub">Ambil tangkapan layar langsung dari HP saat login sebagai Alumni (Siti Rahayu). Anda dapat menempelkan hasil tangkapan layar langsung ke dalam kotak ini.</div>
+    </div>
+
+    <h2>4. Penerapan Logika Dynamic UI Rendering Berbasis Peran</h2>
+    <p>Menggunakan reactive state management GetX, antarmuka aplikasi SALUT dapat bertransformasi secara dinamis menyesuaikan data peran (role) yang diperoleh dari payload token JWT. Jika pengguna berstatus 'Siswa Aktif', menu yang ditampilkan berfokus pada pemantauan nilai rapor dan pengajuan prestasi; sebaliknya jika berstatus 'Alumni', tampilan otomatis berubah menyajikan menu arsip dokumen ijazah sah dan kuesioner tracer study.</p>
+    <div class="figure-box">
+        <img src="laporan_screenshots/laporan4_06_role_logic_code.png" alt="Logika Dynamic UI GetX">
+        <div class="caption">Gambar 2.9: Potongan kode logika pengkondisian tampilan menu per-role pada dashboard_page.dart</div>
+    </div>
+
+    <h2>5. Sinkronisasi Kode Frontend ke Repositori GitHub</h2>
+    <p>Seluruh pembaruan antarmuka mobile Flutter, GetX controller, model data, dan service disinkronisasikan ke repositori GitHub WEMVIAFRIALDO/apps_Sekolah-.</p>
+    <div class="figure-box">
+        <img src="laporan_screenshots/laporan4_07_git_push_frontend.png" alt="Git Push Frontend Terminal">
+        <div class="caption">Gambar 2.10: Terminal eksekusi git push kode frontend Flutter pada PowerShell</div>
+    </div>
+    <div class="figure-box">
+        <img src="laporan_screenshots/laporan4_08_github_frontend.png" alt="Repositori Frontend di GitHub">
+        <div class="caption">Gambar 2.11: Tampilan repositori direktori Flutter apps_sekolah di GitHub</div>
+    </div>
+
+    <div class="summary-card">
+        <h3>Ringkasan Capaian Perkembangan 2</h3>
+        <ul>
+            <li>UI Mobile responsif & elegan berhasil diimplementasikan dengan Flutter GetX.</li>
+            <li>Integrasi Dio HTTP Client dan interceptor Bearer Token JWT berjalan lancar.</li>
+            <li>Dynamic UI Rendering Siswa Aktif vs Alumni terbukti bekerja secara adaptif.</li>
+            <li>Source code frontend tersinkronisasi rapi pada repositori resmi GitHub.</li>
+        </ul>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px; padding-top: 16px; border-top: 1px solid #000000; font-size: 12pt; color: #000000;">
+        Dokumen Laporan Resmi Proyek SALUT &copy; 2026 • Universitas Lampung
+    </div>
+</div>
+</body>
+</html>

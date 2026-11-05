@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Perkembangan Proyek 3 - Fitur Kejuruan SMK SKPI & Arsip (SALUT)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            background: #F4F4F5;
+            color: #000000;
+            line-height: 1.5;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #FFFFFF;
+            border: 1px solid #D4D4D8;
+            border-radius: 4px;
+            padding: 60px 70px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+        .cover-box {
+            text-align: center;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 30px;
+            margin-bottom: 35px;
+        }
+        .univ-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #000000;
+            text-transform: uppercase;
+            line-height: 1.3;
+        }
+        .doc-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #000000;
+            margin: 20px 0 10px;
+            line-height: 1.4;
+            text-transform: uppercase;
+        }
+        .doc-subtitle {
+            font-size: 12pt;
+            color: #000000;
+            font-style: italic;
+        }
+        .author-box {
+            margin-top: 20px;
+            font-size: 12pt;
+            color: #000000;
+        }
+        .author-box strong {
+            font-size: 12pt;
+            color: #000000;
+        }
+        h2 {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #000000;
+            margin: 26px 0 10px;
+            text-align: justify;
+        }
+        h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            font-style: italic;
+            color: #000000;
+            margin: 18px 0 8px;
+            text-align: justify;
+        }
+        p {
+            font-size: 12pt;
+            color: #000000;
+            margin-bottom: 12px;
+            text-align: justify;
+            line-height: 1.5;
+        }
+        .figure-box {
+            text-align: center;
+            margin: 20px 0 24px;
+            border: 1px solid #D4D4D8;
+            border-radius: 4px;
+            padding: 14px;
+            background: #FAFAFA;
+        }
+        .figure-box img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #E4E4E7;
+        }
+        .figure-box.mobile img {
+            max-width: 300px;
+        }
+        .caption {
+            font-size: 12pt;
+            color: #000000;
+            font-style: italic;
+            margin-top: 8px;
+            text-align: justify;
+        }
+        .placeholder-box {
+            border: 2px dashed #000000;
+            background: #FAFAFA;
+            border-radius: 4px;
+            padding: 20px;
+            text-align: justify;
+            margin: 16px 0 24px;
+        }
+        .placeholder-box .p-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 4px;
+        }
+        .placeholder-box .p-sub {
+            font-size: 12pt;
+            font-style: italic;
+            color: #000000;
+        }
+        .summary-card {
+            border: 1px solid #000000;
+            border-radius: 4px;
+            padding: 18px 22px;
+            margin-top: 26px;
+            background: #FAFAFA;
+        }
+        .summary-card h3 {
+            color: #000000;
+            margin-bottom: 10px;
+            font-style: normal;
+        }
+        .summary-card ul {
+            padding-left: 20px;
+            font-size: 12pt;
+            color: #000000;
+        }
+        .summary-card li {
+            margin-bottom: 6px;
+            text-align: justify;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12pt;
+            margin: 20px 0 24px;
+        }
+        th, td {
+            padding: 8px 10px;
+            border: 1px solid #000000;
+            text-align: justify;
+            color: #000000;
+        }
+        th {
+            background: #E5E7EB;
+            color: #000000;
+            font-weight: bold;
+            text-align: justify;
+        }
+        tr:nth-child(even) {
+            background: #FAFAFA;
+        }
+        .btn-print {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #000000;
+            color: #FFFFFF;
+            padding: 10px 18px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12pt;
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            z-index: 100;
+        }
+        .btn-print:hover {
+            background: #333333;
+        }
+        @media print {
+            body { padding: 0; background: #FFF; }
+            .container { box-shadow: none; border: none; padding: 0; }
+            .btn-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+<button class="btn-print" onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
+<div class="container">
+
+    <div class="cover-box">
+        <div class="univ-title">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI<br>UNIVERSITAS LAMPUNG • FAKULTAS KEGURUAN DAN ILMU PENDIDIKAN<br>JURUSAN PENDIDIKAN MIPA • PROGRAM STUDI PENDIDIKAN TEKNOLOGI INFORMASI</div>
+        <div class="doc-title">LAPORAN PERKEMBANGAN PROYEK 3<br>PENGEMBANGAN FITUR EKOSISTEM KEJURUAN SMK (PORTOFOLIO SKPI & ARSIP DOKUMEN DIGITAL)</div>
+        <div class="doc-subtitle">Pencatatan Kompetensi Keahlian Siswa dan Validasi Kelulusan Digital Terverifikasi</div>
+        <div class="author-box">Disusun Oleh: <strong>WEMVI AFRIALDO</strong> (NPM. 2413025052)</div>
+    </div>
+
+    <h2>1. Perancangan Skema Database Portofolio Keahlian (SKPI)</h2>
+    <p>Untuk memenuhi kebutuhan spesifik Sekolah Menengah Kejuruan (SMK), nilai akademik ijazah perlu dilengkapi dengan Surat Keterangan Pendamping Ijazah (SKPI) yang memuat unit kompetensi keahlian standar SKKNI dan BNSP. Dirancang migration tabel baru skill_competencies yang memuat data user_id, competence_code, competence_name, competency_level (Dasar, Terampil, Mahir), score asesmen, dan verified_by (asesor).</p>
+    <div class="figure-box">
+        <img src="laporan_screenshots/laporan5_01_migration_skpi.png" alt="Migration SKPI">
+        <div class="caption">Gambar 3.1: Kode migration Laravel untuk pembuatan tabel skill_competencies (SKPI)</div>
+    </div>
+    <div class="figure-box">
+        <img src="laporan_screenshots/laporan5_02_phpmyadmin_skpi.png" alt="Tabel SKPI di phpMyAdmin">
+        <div class="caption">Gambar 3.2: Tampilan record data 136 unit kompetensi keahlian siswa pada phpMyAdmin</div>
+    </div>
+
+    <h2>2. Implementasi Endpoint API Portofolio Keahlian</h2>
+    <p>Pada sisi backend dibangun SkillController.php dengan endpoint utama GET /api/skills/my. Endpoint ini menyajikan daftar seluruh unit kompetensi kejuruan yang telah diselesaikan oleh siswa terautentikasi sesuai bidang jurusannya (RPL, TKJ, atau Multimedia). Pengujian endpoint menunjukkan respons 200 OK dengan payload data kompetensi yang lengkap.</p>
+    <div class="figure-box">
+        <img src="laporan_screenshots/laporan5_03_skill_controller.png" alt="SkillController Laravel">
+        <div class="caption">Gambar 3.3: Implementasi SkillController.php pada backend Laravel</div>
+    </div>
+    <div class="figure-box">
+        <img src="laporan_screenshots/laporan5_04_api_skills_test.png" alt="Uji Endpoint Skills API">
+        <div class="caption">Gambar 3.4: Hasil pengujian endpoint GET /api/skills/my dengan respons 200 OK</div>
+    </div>
+
+    <h2>3. Pengembangan Halaman Portofolio Keahlian Mobile (skills_page.dart)</h2>
+    <p>Pada aplikasi Flutter, dibangun antarmuka skills_page.dart yang menyajikan kartu-kartu capaian unit kompetensi keahlian. Setiap kartu memuat rincian kode unit, predikat kemahiran dengan badge warna informatif (Mahir hijau, Terampil oranye), skor capaian, dan nama asesor penguji, serta dilengkapi tombol aksi untuk mengunduh berkas SKPI resmi.</p>
+    <div class="figure-box">
+        <img src="laporan_screenshots/laporan5_05_skills_page_code.png" alt="Kode skills_page.dart">
+        <div class="caption">Gambar 3.5: Kode antarmuka reactive GetX pada file skills_page.dart</div>
+    </div>
+    <div class="figure-box mobile">
+        <img src="laporan_screenshots/laporan5_06_skills_mobile_app.png" alt="Tampilan SKPI Mobile">
+        <div class="caption">Gambar 3.6: Tampilan antarmuka Portofolio Keahlian (SKPI) pada mobile app</div>
+    </div>
+    <div class="placeholder-box">
+        <div class="p-title">📱 [AREA TEMPEL SCREENSHOT HP RESMI: PORTOFOLIO KEAHLIAN SKPI]</div>
+        <div class="p-sub">Ambil tangkapan layar langsung dari HP pada menu Portofolio Keahlian SKPI. Anda dapat menempelkan hasil tangkapan layar langsung ke dalam kotak ini.</div>
+    </div>
+
+    <h2>4. Modul Arsip Digital Kelulusan Mobile (arsip_page.dart)</h2>
+    <p>Untuk mencegah kerusakan atau kehilangan ijazah fisik serta mempermudah legalisir digital bagi alumni, dibangun modul arsip_page.dart. Alumni dapat melihat dan mengunduh berkas digital (Ijazah Asli, SKL, dan Transkrip Nilai) yang telah dibubuhi QR-Code verifikasi resmi dan Tanda Tangan Elektronik.</p>
+    <div class="figure-box mobile">
+        <img src="laporan_screenshots/laporan5_07_arsip_mobile_app.png" alt="Modul Arsip Digital">
+        <div class="caption">Gambar 3.8: Tampilan modul Arsip Digital Kelulusan dengan opsi unduh PDF pada mobile</div>
+    </div>
+    <div class="placeholder-box">
+        <div class="p-title">📱 [AREA TEMPEL SCREENSHOT HP RESMI: ARSIP DIGITAL KELULUSAN]</div>
+        <div class="p-sub">Ambil tangkapan layar langsung dari HP pada menu Arsip Dokumen Digital Ijazah. Anda dapat menempelkan hasil tangkapan layar langsung ke dalam kotak ini.</div>
+    </div>
+
+    <h2>5. Sinkronisasi Repositori Fitur SKPI ke GitHub</h2>
+    <p>Seluruh controller, migration kejuruan SMK, dan modul antarmuka Flutter disinkronisasikan ke repositori GitHub WEMVIAFRIALDO/apps_Sekolah-.</p>
+    <div class="figure-box">
+        <img src="laporan_screenshots/laporan5_08_git_push.png" alt="Git Push SKPI Terminal">
+        <div class="caption">Gambar 3.10: Terminal eksekusi git push pembaruan fitur SKPI dan arsip digital</div>
+    </div>
+
+    <div class="summary-card">
+        <h3>Ringkasan Capaian Perkembangan 3</h3>
+        <ul>
+            <li>Tabel skill_competencies dan SKPI berhasil merekam kompetensi siswa per jurusan SMK.</li>
+            <li>API /api/skills/my menyajikan data kompetensi dan asesor penguji berlisensi BNSP.</li>
+            <li>Ijazah dan SKL digital tersimpan aman dalam format PDF terenkripsi ber-TTE.</li>
+            <li>Pembaruan kode sumber terdokumentasi rapi pada commit Git terbaru.</li>
+        </ul>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px; padding-top: 16px; border-top: 1px solid #000000; font-size: 12pt; color: #000000;">
+        Dokumen Laporan Resmi Proyek SALUT &copy; 2026 • Universitas Lampung
+    </div>
+</div>
+</body>
+</html>
