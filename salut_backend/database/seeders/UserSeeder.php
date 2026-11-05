@@ -5,6 +5,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Seeder SALUT v3.0 — 200 pengguna dummy untuk statistik dashboard.
@@ -14,7 +15,10 @@ use Illuminate\Support\Facades\Schema;
  *   - 60  Alumni angkatan 2024–2026, lengkap dengan tracer study
  *         (kuliah di mana, kerja di mana, wirausaha apa)
  *
- * Akun demo tetap sama dengan LOGIN_SALUT.txt:
+ * PERINGATAN: seeder ini MENGOSONGKAN tabel users dan tabel terkait.
+ * Jangan jalankan pada database yang datanya ingin dipertahankan.
+ *
+ * Akun demo:
  *   Admin 0000000001 / admin123 · Guru 0000000002 / guru123
  *   Siswa 0054321987 / siswa123 · Alumni 0067890123 / alumni123
  *
@@ -228,13 +232,13 @@ class UserSeeder extends Seeder
             ['Belum Memutuskan', null]
         );
 
-        $alumni = []; // [id, jurusan, angkatan, status]
+        $alumni = []; // [id, jurusan, angkatan, status, nisn]
         $sitiId = $this->user([
             'name' => 'Siti Rahayu', 'nisn' => '0067890123', 'email' => '0067890123@salut.sch.id',
             'password' => $hash['alumni'], 'role' => 'alumni', 'class_name' => 'XII TKJ 1',
             'jurusan' => 'TKJ', 'angkatan' => 2024, 'graduation_date' => '2024-06-15',
         ]);
-        $alumni[] = [$sitiId, 'TKJ', 2024, 'Bekerja'];
+        $alumni[] = [$sitiId, 'TKJ', 2024, 'Bekerja', '0067890123'];
 
         $idx = 0;
         foreach ([2024, 2025, 2026] as $angkatan) {
@@ -249,18 +253,20 @@ class UserSeeder extends Seeder
                     'password' => $hash['alumni'], 'role' => 'alumni', 'class_name' => "XII $jurusan 1",
                     'jurusan' => $jurusan, 'angkatan' => $angkatan, 'graduation_date' => "$angkatan-06-15",
                 ]);
-                $alumni[] = [$id, $jurusan, $angkatan, $status];
+                $alumni[] = [$id, $jurusan, $angkatan, $status, $nisn];
             }
         }
 
         // Arsip dokumen + tracer study: ke mana alumni setelah lulus
         $tracer = [];
         $docs = [];
-        foreach ($alumni as [$id, $jurusan, $angkatan, $status]) {
+        foreach ($alumni as [$id, $jurusan, $angkatan, $status, $nisn]) {
             foreach (['ijazah' => 'Ijazah Digital', 'skl' => 'Surat Keterangan Lulus', 'skhun' => 'SKHUN'] as $type => $title) {
+                $path = "angkatan_$angkatan/nisn_$nisn/$type.pdf";
+                Storage::disk('local')->put($path, "%PDF-1.4\n% Dokumen contoh SALUT\n%%EOF\n");
                 $docs[] = $this->stamp([
                     'user_id' => $id, 'doc_type' => $type, 'title' => $title,
-                    'file_path' => "angkatan_$angkatan/user_$id/$type.pdf",
+                    'file_path' => $path,
                     'file_size' => (mt_rand(5, 30) / 10) . ' MB', 'is_verified' => true, 'uploaded_by' => $adminId,
                 ]);
             }

@@ -42,12 +42,14 @@ class PrestasiController extends Controller
             'sertifikat'     => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // maks 5MB
         ]);
 
-        // Simpan sertifikat ke private storage: achievements/{user_id}/{timestamp}_{filename}
-        $path = $request->file('sertifikat')->storeAs(
-            "achievements/{$user->id}",
-            time() . '_' . $request->file('sertifikat')->getClientOriginalName(),
-            'local'  // private, tidak bisa diakses langsung
-        );
+        $folder = $user->storageFolder();
+        if (!$folder) {
+            return response()->json(['message' => 'Akun Anda belum memiliki angkatan atau NISN yang valid.'], 422);
+        }
+
+        // Simpan ke private storage: angkatan_{tahun}/nisn_{nisn}/sertifikat/{nama_acak}.{ext}
+        // Nama file dari klien tidak dipakai agar tidak memengaruhi path.
+        $path = $request->file('sertifikat')->store("{$folder}/sertifikat", 'local');
 
         $achievement = Achievement::create([
             'user_id'         => $user->id,
@@ -78,11 +80,15 @@ class PrestasiController extends Controller
             return response()->json(['message' => 'Tidak diizinkan.'], 403);
         }
 
-        if (!Storage::disk('local')->exists($achievement->sertifikat_path)) {
+        $path = $achievement->sertifikat_path;
+        if (!$path || !Storage::disk('local')->exists($path)) {
             return response()->json(['message' => 'File tidak ditemukan.'], 404);
         }
 
-        return Storage::disk('local')->download($achievement->sertifikat_path);
+        return Storage::disk('local')->download(
+            $path,
+            "sertifikat_{$achievement->id}." . pathinfo($path, PATHINFO_EXTENSION)
+        );
     }
 
     private function formatAchievement(Achievement $a): array {

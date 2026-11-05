@@ -56,3 +56,25 @@ salut_backend/storage/logs/*.log
 ~$*.docx
 ~$*.doc
 
+
+# SALUT - Rahasia dan file lingkungan
+.env
+.env.*
+!.env.example
+_privat/
+
+# SALUT - Dependensi dan hasil build
+node_modules/
+salut_backend/public/build/
+
+# SALUT - Storage Laravel
+salut_backend/public/storage
+salut_backend/storage/logs/*
+!salut_backend/storage/logs/.gitignore
+
+# SALUT - Media besar
+*.mp4
+
+# SALUT - Kredensial server Firebase
+*firebase-adminsdk*.json
+*service-account*.json

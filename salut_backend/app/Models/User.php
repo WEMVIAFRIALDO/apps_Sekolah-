@@ -37,6 +37,19 @@ class User extends Authenticatable implements JWTSubject
     public function isGuru(): bool   { return $this->role === 'guru'; }
     public function isAdmin(): bool  { return $this->role === 'admin'; }
 
+    /**
+     * Folder penyimpanan dokumen: angkatan_{tahun}/nisn_{nisn}.
+     * Null bila angkatan/NISN tidak valid (mis. akun guru), sehingga path tidak
+     * pernah terbentuk dari nilai kosong atau berisi karakter seperti "../".
+     */
+    public function storageFolder(): ?string
+    {
+        if (!preg_match('/^\d{4}$/', (string) $this->angkatan) || !preg_match('/^\d+$/', (string) $this->nisn)) {
+            return null;
+        }
+        return "angkatan_{$this->angkatan}/nisn_{$this->nisn}";
+    }
+
     // ─── Relationships ─────────────────────────────────────────────────────────
     public function achievements()      { return $this->hasMany(Achievement::class); }
     public function academicRecords()   { return $this->hasMany(AcademicRecord::class); }

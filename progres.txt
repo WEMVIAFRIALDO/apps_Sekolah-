@@ -110,3 +110,21 @@ Selasa, 13 Oktober 2026 (Sesi 5 - Implementasi Ekosistem SMK & Saran Dosen)
 - Menambahkan widget banner interaktif "Portofolio Keahlian SMK" pada `dashboard_page.dart` untuk peran Siswa dan Alumni.
 - Validasi kode menggunakan `flutter analyze` (0 error).
 
+Kamis, 5 November 2026 (Sesi 6 - Keamanan & Perapian)
+-------------------------------------------------------------------------
+[BACKEND LARAVEL]
+- Menjalankan storage:link dan mematikan rute /storage milik disk privat.
+- Unggahan arsip dan sertifikat baru memakai angkatan_{tahun}/nisn_{nisn}/...; seeder ikut diselaraskan.
+- Membuat config/cors.php tanpa wildcard dan melengkapi .env.example tanpa secret.
+- Menambah tests/Feature/DokumenRahasiaTest.php (berjalan di SQLite in-memory).
+
+[WEB ADMIN]
+- Memusatkan alamat backend di js/config.js.
+
+[FRONTEND FLUTTER]
+- Menangkap galat inisialisasi FCM agar aplikasi tetap berjalan tanpa Firebase.
+
+[INFRASTRUKTUR]
+- Menambah start_salut.bat dan DATA_LOGIN_SALUT.example.txt; data login asli dipindah ke _privat/.
+- Memindahkan arsip lama, backup database, dan video ke D:\proyek_applikasi_arsip.
+- Catatan: LOGIN_SALUT.txt yang disebut pada Sesi 3 kini berada di _privat/.
