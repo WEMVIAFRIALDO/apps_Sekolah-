@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'api_service.dart';
+import 'auth_service.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -28,9 +30,11 @@ class FcmService extends GetxService {
     try {
       String? token = await _fcm.getToken();
       debugPrint("FCM Token: $token");
+      await _kirimTokenKeServer(token);
     } catch (e) {
       debugPrint("Gagal mengambil FCM Token: $e");
     }
+    _fcm.onTokenRefresh.listen(_kirimTokenKeServer);
 
     // 4. Listener saat app berjalan di foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -58,5 +62,16 @@ class FcmService extends GetxService {
     });
 
     return this;
+  }
+
+  /// Saat login, token ikut terkirim lewat POST /login. Ini untuk sesi yang sudah
+  /// berjalan dan token yang diperbarui Firebase.
+  Future<void> _kirimTokenKeServer(String? token) async {
+    if (token == null || !await AuthService().isLoggedIn()) return;
+    try {
+      await ApiService().dio.patch('/profile/fcm-token', data: {'fcm_token': token});
+    } catch (e) {
+      debugPrint("[FCM] Gagal mengirim token ke server: $e");
+    }
   }
 }

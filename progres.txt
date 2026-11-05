@@ -128,3 +128,11 @@ Kamis, 5 November 2026 (Sesi 6 - Keamanan & Perapian)
 - Menambah start_salut.bat dan DATA_LOGIN_SALUT.example.txt; data login asli dipindah ke _privat/.
 - Memindahkan arsip lama, backup database, dan video ke D:\proyek_applikasi_arsip.
 - Catatan: LOGIN_SALUT.txt yang disebut pada Sesi 3 kini berada di _privat/.
+
+Jumat, 6 November 2026 (Sesi 7 - Tindak Lanjut Keamanan)
+-------------------------------------------------------------------------
+- Mengganti APP_KEY dan JWT_SECRET, lalu membersihkan riwayat git dari secret dan LOGIN_SALUT.txt.
+- Memindahkan dokumen lama ke angkatan_{tahun}/nisn_{nisn} dan memperbarui path di salut_db.
+- Membuat FcmService di backend dan endpoint PATCH /api/profile/fcm-token.
+- Membatasi unggah arsip hanya untuk Admin.
+- Mengubah FILESYSTEM_DISK menjadi local.

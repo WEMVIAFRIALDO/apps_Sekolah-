@@ -60,6 +60,21 @@ class DokumenRahasiaTest extends TestCase
         $this->assertSame([], Storage::disk('public')->allFiles());
     }
 
+    public function test_guru_tidak_boleh_mengunggah_arsip(): void
+    {
+        $guru = $this->buatUser('guru', ['nisn' => '0000000002']);
+        $alumni = $this->buatUser('alumni', ['nisn' => '0012345678', 'angkatan' => 2026]);
+
+        $this->sebagai($guru)->postJson('/api/arsip', [
+            'user_id' => $alumni->id,
+            'doc_type' => 'ijazah',
+            'title' => 'Ijazah',
+            'file' => UploadedFile::fake()->create('a.pdf', 10, 'application/pdf'),
+        ])->assertForbidden();
+
+        $this->assertSame([], Storage::disk('local')->allFiles());
+    }
+
     public function test_upload_arsip_ditolak_jika_nisn_tujuan_tidak_valid(): void
     {
         $admin = $this->buatUser('admin', ['nisn' => '0000000001']);

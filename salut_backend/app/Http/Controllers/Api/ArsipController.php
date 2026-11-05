@@ -63,7 +63,7 @@ class ArsipController extends Controller
     public function store(Request $request): JsonResponse
     {
         $uploader = JWTAuth::user();
-        if (!$uploader->isAdmin() && !$uploader->isGuru()) {
+        if (!$uploader->isAdmin()) {
             return response()->json(['message' => 'Hanya Admin yang bisa upload arsip.'], 403);
         }
 

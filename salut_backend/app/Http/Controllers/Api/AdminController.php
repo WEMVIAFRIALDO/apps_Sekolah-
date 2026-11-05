@@ -323,7 +323,7 @@ class AdminController extends Controller
      * REQ-F-07: Transisi manual Siswa → Alumni oleh Admin.
      * (Otomatis dijalankan via cron job saat jadwal pengumuman tiba)
      */
-    public function promoteToAlumni(User $user): JsonResponse
+    public function promoteToAlumni(User $user, \App\Services\FcmService $fcm): JsonResponse
     {
         $admin = JWTAuth::user();
         if (!$admin->isAdmin()) {
@@ -335,6 +335,12 @@ class AdminController extends Controller
         }
 
         $user->update(['role' => 'alumni', 'graduation_date' => now()]);
+
+        $fcm->send(
+            [$user->fcm_token],
+            'Selamat, kamu telah lulus',
+            'Status akunmu kini Alumni. Buka SALUT untuk melihat arsip dokumen dan mengisi tracer study.'
+        );
 
         return response()->json([
             'success' => true,

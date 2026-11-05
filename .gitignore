@@ -81,3 +81,10 @@ salut_backend/storage/logs/*
 
 # SALUT - Cache PHPUnit
 salut_backend/.phpunit.result.cache
+
+# SALUT - Gambar yang tidak dikirim ke GitHub
+srs_mockup_images/
+laporan_screenshots/proto_*.png
+
+# SALUT - Skrip lokal berisi password
+salut_backend/seed_alumni_alt.php

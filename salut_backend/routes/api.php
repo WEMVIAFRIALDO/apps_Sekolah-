@@ -21,6 +21,7 @@ Route::middleware('jwt.auth')->group(function () {
         Route::get('/',           [ProfileController::class, 'show']);
         Route::patch('/',         [ProfileController::class, 'update']);
         Route::patch('/password', [ProfileController::class, 'changePassword']);
+        Route::patch('/fcm-token', [ProfileController::class, 'updateFcmToken']);
     });
 
     // Prestasi Siswa (REQ-F-03, REQ-NF-03)

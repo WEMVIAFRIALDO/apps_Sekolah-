@@ -199,7 +199,7 @@ Mengakomodasi kebutuhan verifikasi kompetensi kejuruan siswa SMK sesuai standar 
 
 Fitur automasi enterprise untuk meniadakan proses manual administrasi tahunan:
 
-> **Status FCM:** penerima notifikasi di aplikasi Flutter sudah ada, tetapi belum aktif karena butuh kredensial Firebase, dan backend belum memiliki pengirim notifikasi. Lihat [Setup Push Notification](#-9-setup-push-notification-fcm).
+> **Status FCM:** kode penerima di Flutter dan pengirim di backend sudah ada, tetapi belum aktif karena butuh kredensial Firebase. Lihat [Setup Push Notification](#-9-setup-push-notification-fcm).
 
 |                                     Implementasi FCM Service Client                                     |                                      Tampilan Notifikasi Broadcast Kelulusan                                       |
 | :-----------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------: |
@@ -366,10 +366,11 @@ Semua endpoint selain `POST /api/login` wajib memakai header `Authorization: Bea
 | `POST`         | `/api/logout`, `/api/refresh`         | Login             | Mengakhiri atau memperbarui token    |
 | `GET`, `PATCH` | `/api/profile`                        | Login             | Melihat dan mengubah profil          |
 | `PATCH`        | `/api/profile/password`               | Login             | Mengganti password                   |
+| `PATCH`        | `/api/profile/fcm-token`              | Login             | Mendaftarkan perangkat untuk notifikasi |
 | `GET`, `POST`  | `/api/prestasi`                       | Login             | Daftar dan unggah prestasi           |
 | `GET`          | `/api/prestasi/{id}/sertifikat`       | Pemilik/Guru/Admin | Mengunduh sertifikat                |
 | `GET`          | `/api/arsip`                          | Login             | Daftar arsip milik sendiri           |
-| `POST`         | `/api/arsip`                          | Admin/Guru        | Mengunggah arsip siswa               |
+| `POST`         | `/api/arsip`                          | Admin             | Mengunggah arsip siswa               |
 | `GET`          | `/api/arsip/{id}/download`            | Pemilik/Admin     | Mengunduh dokumen rahasia            |
 | `GET`, `POST`  | `/api/tracer-study`                   | Login             | Melihat dan mengisi tracer study     |
 | `GET`          | `/api/rapor/my`, `/api/skills/my`     | Login             | Nilai rapor dan portofolio sendiri   |
@@ -389,7 +390,10 @@ Dokumen disimpan di disk privat (`storage/app/private`) dengan struktur `angkata
 
 ## 🔔 9. Setup Push Notification (FCM)
 
-**Status saat ini:** aplikasi Flutter sudah memiliki penerima notifikasi (`lib/services/fcm_service.dart`), tetapi kredensial Firebase belum dipasang. Tanpa kredensial, aplikasi tetap berjalan dan mencatat `[FCM] Push notification nonaktif` di log. Backend juga belum memiliki kode pengirim notifikasi, sehingga `salut:promote-alumni` tidak mengirim notifikasi meski Firebase sudah dipasang.
+**Status saat ini:** kode sudah lengkap, tetapi kredensial Firebase belum dipasang dan pengiriman belum pernah diuji ke Firebase sungguhan. Tanpa kredensial, aplikasi dan backend tetap berjalan, lalu mencatat `[FCM]` di log.
+
+- **Penerima:** `lib/services/fcm_service.dart` mendaftarkan token perangkat ke server.
+- **Pengirim:** `salut_backend/app/Services/FcmService.php` memberi tahu siswa saat `salut:promote-alumni` atau tombol promosi admin mengubah statusnya menjadi alumni.
 
 Langkah mengaktifkan penerima di Android:
 
@@ -405,7 +409,14 @@ Langkah mengaktifkan penerima di Android:
    ```
 5. Jalankan `flutter clean`, lalu `flutter run`. Log `FCM Token: ...` menandakan penerima sudah aktif.
 
-File *service account* Firebase untuk server tidak boleh masuk git.
+Langkah mengaktifkan pengirim di backend:
+
+1. Di Firebase Console, buka **Project settings > Service accounts**, lalu pilih **Generate new private key**.
+2. Simpan file JSON itu **di luar folder proyek**, karena file ini tidak boleh masuk git.
+3. Tambahkan path-nya ke `salut_backend/.env`:
+   ```env
+   FIREBASE_CREDENTIALS=C:/rahasia/firebase-adminsdk.json
+   ```
 
 ---
 
@@ -455,11 +466,14 @@ Catatan rinci per sesi ada di `progres.txt`.
 - **Web admin:** alamat backend dipusatkan di `js/config.js`.
 - **Konfigurasi:** `.env.example` dilengkapi tanpa secret, dan `config/cors.php` dibuat tanpa wildcard.
 - **Kredensial:** data login asli dipindah ke `_privat/`, dengan contoh di `DATA_LOGIN_SALUT.example.txt`.
-- **FCM:** galat inisialisasi kini tertangkap dan dicatat, sehingga aplikasi tetap berjalan tanpa Firebase.
+- **FCM:** galat inisialisasi kini tertangkap dan dicatat. Backend kini punya pengirim notifikasi kelulusan, dan token perangkat tersimpan di server.
+- **Hak akses:** unggah arsip kini hanya untuk Admin.
 - **Skrip dan tes:** menambah `start_salut.bat` dan `tests/Feature/DokumenRahasiaTest.php`.
 - **Dokumentasi:** README diselaraskan dengan kode: versi Laravel, cara login, daftar endpoint, dan status FCM.
 
-**Belum selesai:** 180 dokumen lama masih berada di `angkatan_*/user_*` dan sertifikat lama di `achievements/`. Keduanya tetap bisa diunduh karena path-nya tercatat di database.
+**Data lama:** 180 dokumen dan 1 sertifikat dipindah ke struktur `angkatan_{tahun}/nisn_{nisn}/...`. Lima file sertifikat di `achievements/6/` tetap di tempatnya karena tidak tercatat di database.
+
+**Kunci dan riwayat git:** `APP_KEY` dan `JWT_SECRET` diganti karena pernah bocor, dan riwayat git dibersihkan. Hash commit lama berubah, sehingga salinan repo lain perlu di-clone ulang.
 
 ---
 
