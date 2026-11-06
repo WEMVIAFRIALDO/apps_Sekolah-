@@ -257,6 +257,8 @@ class AdminController extends Controller
 
         $user = User::create([
             ...$validated,
+            // Kolom email NOT NULL: bila dikosongkan, isi otomatis dengan {nisn}@salut.sch.id
+            'email'    => $validated['email'] ?? "{$validated['nisn']}@salut.sch.id",
             'password' => Hash::make($validated['password']),
             'school'   => 'SMA Negeri 1 Teladan',
         ]);
@@ -300,7 +302,8 @@ class AdminController extends Controller
             User::create([
                 'name'       => trim($row[0]),
                 'nisn'       => $nisn,
-                'email'      => trim($row[2]) ?: null,
+                // Kolom email NOT NULL: bila kosong, isi otomatis dengan {nisn}@salut.sch.id
+                'email'      => trim($row[2]) ?: "{$nisn}@salut.sch.id",
                 'password'   => Hash::make('rahasia123'), // Default password
                 'role'       => strtolower(trim($row[3])) ?: 'siswa',
                 'class_name' => trim($row[4]) ?: null,
