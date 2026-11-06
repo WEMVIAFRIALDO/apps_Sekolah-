@@ -35,8 +35,8 @@ Seluruh naskah laporan akademik, dokumentasi instalasi, pengujian API, dan integ
 
 | Nama Dokumen Laporan                               | Format  | Deskripsi Isi Dokumen                                                                                                                                                                                          |                           Tautan Langsung                            |
 | :------------------------------------------------- | :-----: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------: |
-| **Laporan Lengkap Master (Bab 1 - 6 + Instalasi)** | `.docx` | Dokumen akademik komprehensif 35-40 halaman, mencakup Laporan 1 & 2 (Instalasi), Laporan 3 (Backend API), Laporan 4 (Frontend Mobile), Laporan 5 (SKPI & Portofolio), dan Laporan 6 (Automasi & Tracer Study). | [📂 Buka Dokumen](./Laporan_Lengkap_Sistem_SALUT_dan_Instalasi.docx) |
-| **Laporan Kemajuan Sistem 3, 4, 5, 6**             | `.docx` | Naskah laporan kompilasi teknis implementasi backend, mobile Flutter, portofolio SKPI, cron automasi, dan analitik web SMK beserta 32 tangkapan layar.                                                         |          [📂 Buka Dokumen](./Laporan_Lengkap_3_4_5_6.docx)           |
+| **Laporan Lengkap Master (Bab 1 - 6 + Instalasi)** | `.docx` | Dokumen akademik komprehensif 35-40 halaman, mencakup Laporan 1 & 2 (Instalasi), Laporan 3 (Backend API), Laporan 4 (Frontend Mobile), Laporan 5 (SKPI & Portofolio), dan Laporan 6 (Automasi & Tracer Study). | [📂 Buka Dokumen](./Laporan_Lengkap_Sistem_SALUT_dan_Instalasi_Terbaru.docx) |
+| **Laporan Kemajuan Sistem 3, 4, 5, 6**             | `.docx` | Naskah laporan kompilasi teknis implementasi backend, mobile Flutter, portofolio SKPI, cron automasi, dan analitik web SMK beserta 32 tangkapan layar.                                                         |          [📂 Buka Dokumen](./Laporan_Lengkap_Sistem_SALUT_dan_Instalasi_Terbaru.docx)           |
 | **Pratinjau Laporan Web Interaktif**               | `.html` | Versi web yang dapat langsung dibuka dan dibaca di Google Chrome / browser tanpa perlu Microsoft Word.                                                                                                         |         [🌐 Buka di Browser](./Laporan_Lengkap_3_4_5_6.html)         |
 
 ---
@@ -265,7 +265,7 @@ apps_sekolah/
 │   └── tracer.html                 # Rekapitulasi tracer study DUDI & Kampus
 │
 ├── laporan_screenshots/            # 32 Aset Gambar Screenshot Beresolusi Tinggi
-├── Laporan_Lengkap_Sistem_SALUT_dan_Instalasi.docx  # Master dokumen laporan komprehensif
+├── Laporan_Lengkap_Sistem_SALUT_dan_Instalasi_Terbaru.docx  # Master dokumen laporan komprehensif
 ├── start_salut.bat                 # Menjalankan backend, penjadwal, dan web admin
 ├── DATA_LOGIN_SALUT.example.txt    # Contoh data login, password disamarkan
 ├── _privat/                        # Data login asli, lokal saja, tidak masuk git
