@@ -4,22 +4,26 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Input Nilai Rapor — SALUT Admin/Guru</title>
 <meta name="description" content="Manajemen Nilai Rapor Siswa SALUT">
-<link rel="stylesheet" href="css/style.css">
+<script src="js/theme-init.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 <div id="toast-container"></div>
 
 <!-- Modal Input Rapor -->
 <div class="modal-overlay" id="modal-rapor">
-  <div class="modal" style="max-width:500px;">
+  <div class="modal modal-sm">
     <div class="modal-title">Input Nilai Rapor Siswa</div>
     <div class="modal-sub" id="modal-student-name">Nama Siswa</div>
-    <div id="rapor-alert" class="alert alert-error" style="display:none"></div>
+    <div id="rapor-alert" class="alert alert-error" role="alert" hidden></div>
     <input type="hidden" id="inp-student-id">
-    
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;">
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Semester</label>
+
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label class="form-label" for="inp-semester">Semester</label>
         <select id="inp-semester" class="form-input form-select" onchange="loadStudentRapor(document.getElementById('inp-student-id').value)">
           <option value="1">Semester 1</option>
           <option value="2">Semester 2</option>
@@ -29,94 +33,92 @@
           <option value="6">Semester 6</option>
         </select>
       </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Tahun Akademik</label>
-        <input id="inp-year" type="number" class="form-input" placeholder="Misal: 2026">
+      <div class="form-group">
+        <label class="form-label" for="inp-year">Tahun akademik</label>
+        <input id="inp-year" type="number" class="form-input mono" placeholder="Misal: 2026">
       </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Nilai Rata-rata</label>
-        <input id="inp-score" type="number" step="0.01" class="form-input" placeholder="0.0 - 100.0">
+      <div class="form-group">
+        <label class="form-label" for="inp-score">Nilai rata-rata</label>
+        <input id="inp-score" type="number" step="0.01" class="form-input mono" placeholder="0.0 - 100.0">
       </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Peringkat Kelas (Opsional)</label>
-        <input id="inp-rank" type="number" class="form-input" placeholder="1">
+      <div class="form-group">
+        <label class="form-label" for="inp-rank">Peringkat kelas (opsional)</label>
+        <input id="inp-rank" type="number" class="form-input mono" placeholder="1">
       </div>
     </div>
-    
-    <div style="display:flex;gap:12px;margin-top:20px;">
-      <button class="btn btn-primary" style="flex:1;" onclick="submitRapor()">✅ Simpan Nilai</button>
-      <button class="btn btn-ghost" onclick="document.getElementById('modal-rapor').classList.remove('show')">Batal</button>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" onclick="submitRapor()"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Simpan nilai</button>
+      <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-rapor').classList.remove('show')">Batal</button>
     </div>
   </div>
 </div>
 
 <div class="layout">
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="Navigasi utama">
     <div class="sidebar-logo">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <img src="img/logo_salut.png" alt="SALUT Logo" style="width:42px; height:42px; object-fit:contain; filter:drop-shadow(0 2px 8px rgba(6,182,212,0.4));">
-        <div>
-          <p id="sidebar-role-label" style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin:0;">Admin Panel</p>
-          <span style="font-size:10px; color:var(--cyan); font-weight:500;">v1.0 • SMK 1 Teladan</span>
-        </div>
+      <img class="brand-mark" src="img/logo_salut.png" alt="">
+      <div>
+        <p class="brand-role" id="sidebar-role-label">Admin Panel</p>
+        <span class="brand-sub">v1.0 • SMK 1 Teladan</span>
       </div>
     </div>
-    <nav class="nav-section" id="sidebar-nav"></nav>
+    <nav class="nav-section" id="sidebar-nav" aria-label="Menu"></nav>
     <div class="sidebar-footer">
-      <div class="user-card"><div class="user-avatar" id="user-avatar">A</div><div><div class="user-name" id="nav-user-name">Loading...</div><div class="user-role" id="nav-user-role">role</div></div></div>
-      <button class="btn-logout" id="btn-logout">🚪 Keluar</button>
+      <div class="user-card">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div class="user-name" id="nav-user-name">Memuat...</div>
+          <div class="user-role" id="nav-user-role">peran</div>
+        </div>
+      </div>
+      <button type="button" class="btn-logout" id="btn-logout"><svg class="icon" aria-hidden="true"><use href="#i-log-out"/></svg>Keluar</button>
     </div>
   </aside>
 
   <main class="main">
-    <div class="topbar">
-      <div><div class="page-title">Nilai Rapor</div><div class="page-sub">Manajemen Nilai Rapor (Academic Records)</div></div>
-    </div>
+    <header class="topbar">
+      <div><h1 class="page-title">Nilai Rapor</h1><p class="page-sub">Manajemen nilai rapor siswa per semester</p></div>
+    </header>
 
     <div class="content">
-      <div class="card" style="padding: 16px; margin-bottom: 20px;">
-        <div class="toolbar" style="margin-bottom: 0;">
-          <select class="form-input form-select" id="filter-class" style="width:200px;" onchange="loadStudents()">
-            <option value="">-- Semua Kelas --</option>
-            <optgroup label="Kelas X">
-              <option value="X TKJ 1">X TKJ 1</option>
-              <option value="X TKJ 2">X TKJ 2</option>
-              <option value="X RPL 1">X RPL 1</option>
-              <option value="X Multimedia 1">X Multimedia 1</option>
-            </optgroup>
-            <optgroup label="Kelas XI">
-              <option value="XI TKJ 1">XI TKJ 1</option>
-              <option value="XI TKJ 2">XI TKJ 2</option>
-              <option value="XI RPL 1">XI RPL 1</option>
-              <option value="XI Multimedia 1">XI Multimedia 1</option>
-            </optgroup>
-            <optgroup label="Kelas XII">
-              <option value="XII TKJ 1">XII TKJ 1</option>
-              <option value="XII TKJ 2">XII TKJ 2</option>
-              <option value="XII RPL 1">XII RPL 1</option>
-              <option value="XII Multimedia 1">XII Multimedia 1</option>
-            </optgroup>
-          </select>
-          <div style="color:var(--muted);font-size:14px;margin-left:12px;">Pilih kelas untuk melihat daftar siswa</div>
-        </div>
+      <div class="toolbar">
+        <select class="form-input form-select" id="filter-class" aria-label="Pilih kelas" onchange="loadStudents()">
+          <option value="">-- Semua Kelas --</option>
+          <optgroup label="Kelas X">
+            <option value="X TKJ 1">X TKJ 1</option>
+            <option value="X TKJ 2">X TKJ 2</option>
+            <option value="X RPL 1">X RPL 1</option>
+            <option value="X Multimedia 1">X Multimedia 1</option>
+          </optgroup>
+          <optgroup label="Kelas XI">
+            <option value="XI TKJ 1">XI TKJ 1</option>
+            <option value="XI TKJ 2">XI TKJ 2</option>
+            <option value="XI RPL 1">XI RPL 1</option>
+            <option value="XI Multimedia 1">XI Multimedia 1</option>
+          </optgroup>
+          <optgroup label="Kelas XII">
+            <option value="XII TKJ 1">XII TKJ 1</option>
+            <option value="XII TKJ 2">XII TKJ 2</option>
+            <option value="XII RPL 1">XII RPL 1</option>
+            <option value="XII Multimedia 1">XII Multimedia 1</option>
+          </optgroup>
+        </select>
+        <span class="text-muted">Pilih kelas untuk melihat daftar siswa</span>
       </div>
 
-      <div class="card" style="padding: 0">
-        <div style="overflow-x:auto;">
-          <table class="data-table" id="students-table">
-            <thead>
-              <tr>
-                <th>Nama Siswa</th>
-                <th>NISN</th>
-                <th>Kelas</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td colspan="4" style="text-align:center;padding:24px;">Pilih kelas terlebih dahulu.</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="table-wrap">
+        <table id="students-table">
+          <thead>
+            <tr>
+              <th>Nama siswa</th>
+              <th>NISN</th>
+              <th>Kelas</th>
+              <th class="col-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
   </main>
@@ -125,56 +127,57 @@
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script src="js/motion.js"></script>
 <script>
   let currentStudentRecords = [];
 
-  function toast(msg, type) {
-    type = type || 'info';
-    var el = document.createElement('div');
-    el.className = 'toast toast-' + type;
-    el.innerHTML = (type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️') + ' ' + msg;
-    document.getElementById('toast-container').appendChild(el);
-    setTimeout(function() { el.remove(); }, 4000);
+  function stateRow(html) {
+    return `<tr><td colspan="4">${html}</td></tr>`;
   }
 
   async function loadStudents() {
     const className = document.getElementById('filter-class').value;
     const tbody = document.querySelector('#students-table tbody');
     if (!className) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;">Pilih kelas terlebih dahulu.</td></tr>`;
+      tbody.innerHTML = stateRow(UI.empty('Pilih kelas terlebih dahulu', 'Daftar siswa muncul setelah kelas dipilih.', 'users'));
       return;
     }
 
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;">Memuat data...</td></tr>`;
-    
-    const res = await Api.get('/guru/rapor/students?class=' + encodeURIComponent(className));
-    if (!res.success) return;
-    
-    tbody.innerHTML = '';
-    if (res.data.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;">Tidak ada siswa di kelas ini.</td></tr>`;
-      return;
-    }
+    tbody.innerHTML = stateRow(UI.loading(5, false));
 
-    res.data.forEach(s => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td style="font-weight:bold;">${s.name}</td>
-        <td>${s.nisn}</td>
-        <td>${s.class_name}</td>
-        <td>
-          <button class="btn btn-ghost" style="padding:4px 8px;font-size:12px;border:1px solid var(--border)" onclick="openRaporModal(${s.id}, '${s.name}')">✏️ Input Nilai</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
+    try {
+      const res = await Api.get('/guru/rapor/students?class=' + encodeURIComponent(className));
+      if (!res.success) throw new Error('Server menolak permintaan.');
+
+      tbody.innerHTML = '';
+      if (res.data.length === 0) {
+        tbody.innerHTML = stateRow(UI.empty('Tidak ada siswa di kelas ini', 'Pilih kelas lain.', 'users'));
+        return;
+      }
+
+      res.data.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="cell-name">${UI.esc(s.name)}</td>
+          <td class="mono">${UI.esc(s.nisn)}</td>
+          <td>${UI.esc(s.class_name)}</td>
+          <td class="col-right">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="openRaporModal(${s.id}, '${UI.esc(String(s.name).replace(/'/g, "\\'"))}')">${Icons.svg('clipboard-check', 16)}Input nilai</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } catch (e) {
+      tbody.innerHTML = stateRow(UI.error(e.message, 'loadStudents()'));
+    }
   }
 
   async function openRaporModal(id, name) {
     document.getElementById('inp-student-id').value = id;
     document.getElementById('modal-student-name').textContent = name;
     document.getElementById('modal-rapor').classList.add('show');
-    
+
     document.getElementById('inp-year').value = new Date().getFullYear();
     document.getElementById('inp-score').value = '';
     document.getElementById('inp-rank').value = '';
@@ -191,7 +194,7 @@
     // Fill form if record for selected semester exists
     const semester = parseInt(document.getElementById('inp-semester').value);
     const record = currentStudentRecords.find(r => r.semester === semester);
-    
+
     if (record) {
       document.getElementById('inp-year').value = record.academic_year;
       document.getElementById('inp-score').value = record.average_score;
@@ -208,7 +211,7 @@
     const year = document.getElementById('inp-year').value;
     const score = document.getElementById('inp-score').value;
     const rank = document.getElementById('inp-rank').value;
-    
+
     const alertEl = document.getElementById('rapor-alert');
     alertEl.style.display = 'none';
 
@@ -226,7 +229,7 @@
         rank: rank || null
       });
       document.getElementById('modal-rapor').classList.remove('show');
-      toast('Nilai rapor berhasil disimpan!', 'success');
+      toast('Nilai rapor berhasil disimpan.', 'success');
     } catch(e) {
       alertEl.textContent = e.message;
       alertEl.style.display = 'block';
@@ -236,6 +239,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     Auth.guard();
     Auth.buildNav('rapor');
+    loadStudents();
   });
 </script>
 </body>

@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Validasi Prestasi — SALUT Admin</title>
-<link rel="stylesheet" href="css/style.css">
+<script src="js/theme-init.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 <div id="toast-container"></div>
@@ -12,53 +16,55 @@
   <div class="modal">
     <div class="modal-title" id="modal-title">Validasi Prestasi</div>
     <div class="modal-sub" id="modal-sub">Tinjau dan berikan keputusan validasi</div>
-    <div id="modal-info" style="background:rgba(255,255,255,0.04);border-radius:12px;padding:16px;margin-bottom:20px;font-size:13px;line-height:1.8;"></div>
+    <dl id="modal-info" class="info-panel"></dl>
     <div class="form-group">
-      <label class="form-label">Catatan (opsional, wajib jika Reject)</label>
-      <textarea id="inp-catatan" class="form-input" rows="3" style="resize:vertical;" placeholder="Masukkan alasan penolakan atau catatan..."></textarea>
+      <label class="form-label" for="inp-catatan">Catatan (opsional, wajib jika ditolak)</label>
+      <textarea id="inp-catatan" class="form-input form-textarea" rows="3" placeholder="Masukkan alasan penolakan atau catatan..."></textarea>
     </div>
-    <div style="display:flex;gap:12px;margin-top:8px;">
-      <button class="btn btn-success" style="flex:1;" onclick="submitValidasi('Approved')">✅ Setujui</button>
-      <button class="btn btn-danger" style="flex:1;" onclick="submitValidasi('Rejected')">❌ Tolak</button>
-      <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-success" onclick="submitValidasi('Approved')"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>Setujui</button>
+      <button type="button" class="btn btn-danger" onclick="submitValidasi('Rejected')"><svg class="icon" aria-hidden="true"><use href="#i-x-circle"/></svg>Tolak</button>
+      <button type="button" class="btn btn-ghost" onclick="closeModal()">Batal</button>
     </div>
   </div>
 </div>
 
 <div class="layout">
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="Navigasi utama">
     <div class="sidebar-logo">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <img src="img/logo_salut.png" alt="SALUT Logo" style="width:42px; height:42px; object-fit:contain; filter:drop-shadow(0 2px 8px rgba(6,182,212,0.4));">
-        <div>
-          <p id="sidebar-role-label" style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin:0;">Admin Panel</p>
-          <span style="font-size:10px; color:var(--cyan); font-weight:500;">v1.0 • SMK 1 Teladan</span>
-        </div>
+      <img class="brand-mark" src="img/logo_salut.png" alt="">
+      <div>
+        <p class="brand-role" id="sidebar-role-label">Admin Panel</p>
+        <span class="brand-sub">v1.0 • SMK 1 Teladan</span>
       </div>
     </div>
-    <nav class="nav-section" id="sidebar-nav"></nav>
+    <nav class="nav-section" id="sidebar-nav" aria-label="Menu"></nav>
     <div class="sidebar-footer">
-      <div class="user-card"><div class="user-avatar" id="user-avatar">A</div><div><div class="user-name" id="nav-user-name">Loading...</div><div class="user-role" id="nav-user-role">role</div></div></div>
-      <button class="btn-logout" id="btn-logout">🚪 Keluar</button>
+      <div class="user-card">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div class="user-name" id="nav-user-name">Memuat...</div>
+          <div class="user-role" id="nav-user-role">peran</div>
+        </div>
+      </div>
+      <button type="button" class="btn-logout" id="btn-logout"><svg class="icon" aria-hidden="true"><use href="#i-log-out"/></svg>Keluar</button>
     </div>
   </aside>
 
   <main class="main">
-    <div class="topbar">
-      <div><div class="page-title">Validasi Prestasi</div><div class="page-sub">Review dan validasi prestasi yang dikirim siswa</div></div>
-    </div>
+    <header class="topbar">
+      <div><h1 class="page-title">Validasi Prestasi</h1><p class="page-sub">Review dan validasi prestasi yang dikirim siswa</p></div>
+    </header>
     <div class="content">
-      <!-- Filter tabs -->
-      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
-        <button class="btn btn-primary btn-sm tab-btn active" onclick="filterStatus('', this)">Semua</button>
-        <button class="btn btn-ghost btn-sm tab-btn" onclick="filterStatus('Pending', this)" style="border-color:rgba(245,158,11,0.3);color:#FBBF24">⏳ Pending</button>
-        <button class="btn btn-ghost btn-sm tab-btn" onclick="filterStatus('Approved', this)" style="border-color:rgba(16,185,129,0.3);color:#34D399">✅ Approved</button>
-        <button class="btn btn-ghost btn-sm tab-btn" onclick="filterStatus('Rejected', this)" style="border-color:rgba(239,68,68,0.3);color:#FCA5A5">❌ Rejected</button>
+      <!-- Filter status -->
+      <div class="toolbar" role="group" aria-label="Filter status prestasi">
+        <button type="button" class="btn btn-ghost btn-sm tab-btn is-current" aria-pressed="true" onclick="filterStatus('', this)">Semua</button>
+        <button type="button" class="btn btn-ghost btn-sm tab-btn" aria-pressed="false" onclick="filterStatus('Pending', this)"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Pending</button>
+        <button type="button" class="btn btn-ghost btn-sm tab-btn" aria-pressed="false" onclick="filterStatus('Approved', this)"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>Approved</button>
+        <button type="button" class="btn btn-ghost btn-sm tab-btn" aria-pressed="false" onclick="filterStatus('Rejected', this)"><svg class="icon" aria-hidden="true"><use href="#i-x-circle"/></svg>Rejected</button>
       </div>
 
-      <div id="table-content">
-        <div class="loading"><div class="spinner"></div>Memuat data prestasi...</div>
-      </div>
+      <div id="table-content"></div>
     </div>
   </main>
 </div>
@@ -66,44 +72,50 @@
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script src="js/motion.js"></script>
 <script>
 Auth.init();
 Auth.buildNav('prestasi');
 
 let allData = [];
 let currentId = null;
+let currentStatus = '';
+const statusIcon = { Pending: 'clock', Approved: 'check-circle', Rejected: 'x-circle' };
+const statusDone = { Approved: 'disetujui', Rejected: 'ditolak' };
 
 async function loadData(status='') {
-    document.getElementById('table-content').innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>';
+    currentStatus = status;
+    document.getElementById('table-content').innerHTML = UI.loading();
     try {
         const path = '/admin/achievements' + (status ? `?status=${status}` : '');
         const res = await Api.get(path);
         allData = res.data?.data || res.data || [];
         renderTable(allData);
-    } catch(e) { document.getElementById('table-content').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Gagal memuat data</div></div>'; }
+    } catch(e) { document.getElementById('table-content').innerHTML = UI.error(e.message, `loadData('${status}')`); }
 }
 
 function renderTable(data) {
     if (!data.length) {
-        document.getElementById('table-content').innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><div class="empty-title">Tidak ada prestasi</div><div class="empty-sub">Belum ada prestasi yang perlu divalidasi</div></div>';
+        document.getElementById('table-content').innerHTML = UI.empty('Tidak ada prestasi', 'Belum ada prestasi dengan status ini.', 'badge-check');
         return;
     }
     const rows = data.map(a => `
         <tr>
             <td>
-                <div style="font-weight:600;font-size:13px;">${a.nama_kegiatan}</div>
-                <div style="font-size:12px;color:var(--muted);">${a.penyelenggara}</div>
+                <div class="cell-name">${UI.esc(a.nama_kegiatan)}</div>
+                <div class="cell-sub">${UI.esc(a.penyelenggara)}</div>
             </td>
             <td>
-                <div style="font-size:13px;font-weight:600;">${a.user?.name || '—'}</div>
-                <div style="font-size:12px;color:var(--muted);">NISN: ${a.user?.nisn || '—'}</div>
+                <div class="cell-name">${UI.esc(a.user?.name || '—')}</div>
+                <div class="cell-sub mono">NISN ${UI.esc(a.user?.nisn || '—')}</div>
             </td>
-            <td><span style="font-size:12px;background:rgba(255,255,255,0.06);padding:3px 10px;border-radius:6px;">${a.tingkat}</span></td>
-            <td><span style="font-weight:600;font-size:13px;">🥇 ${a.peringkat}</span></td>
-            <td>${a.tahun}</td>
-            <td><span class="badge badge-${a.status_validasi.toLowerCase()}">${a.status_validasi}</span></td>
+            <td><span class="badge">${UI.esc(a.tingkat)}</span></td>
+            <td>${UI.esc(a.peringkat)}</td>
+            <td class="num">${UI.esc(a.tahun)}</td>
+            <td><span class="badge badge-${UI.esc(a.status_validasi.toLowerCase())}">${Icons.svg(statusIcon[a.status_validasi] || 'info', 12)}${UI.esc(a.status_validasi)}</span></td>
             <td>
-                ${a.status_validasi === 'Pending' ? `<button class="btn btn-primary btn-sm" onclick="openModal(${JSON.stringify(a).replace(/"/g,'&quot;')})">Review</button>` : '<span style="font-size:12px;color:var(--muted);">Sudah diproses</span>'}
+                ${a.status_validasi === 'Pending' ? `<button type="button" class="btn btn-primary btn-sm" onclick="openModal(${JSON.stringify(a).replace(/&/g,'&amp;').replace(/"/g,'&quot;')})">Review</button>` : '<span class="text-muted">Sudah diproses</span>'}
             </td>
         </tr>`).join('');
 
@@ -111,8 +123,8 @@ function renderTable(data) {
         <div class="table-wrap">
           <table>
             <thead><tr>
-              <th>Nama Kegiatan</th><th>Siswa</th><th>Tingkat</th>
-              <th>Peringkat</th><th>Tahun</th><th>Status</th><th>Aksi</th>
+              <th>Nama kegiatan</th><th>Siswa</th><th>Tingkat</th>
+              <th>Peringkat</th><th class="num">Tahun</th><th>Status</th><th>Aksi</th>
             </tr></thead>
             <tbody>${rows}</tbody>
           </table>
@@ -120,8 +132,9 @@ function renderTable(data) {
 }
 
 function filterStatus(status, el) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('is-current'); b.setAttribute('aria-pressed', 'false'); });
+    el.classList.add('is-current');
+    el.setAttribute('aria-pressed', 'true');
     loadData(status);
 }
 
@@ -130,11 +143,9 @@ function openModal(achievement) {
     document.getElementById('modal-title').textContent = achievement.nama_kegiatan;
     document.getElementById('modal-sub').textContent = `${achievement.penyelenggara} • ${achievement.tingkat} • ${achievement.tahun}`;
     document.getElementById('modal-info').innerHTML = `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <div><span style="color:var(--muted)">Peringkat</span><br><strong>${achievement.peringkat}</strong></div>
-            <div><span style="color:var(--muted)">Siswa</span><br><strong>${achievement.user?.name || '—'}</strong></div>
-            <div style="grid-column:span 2"><span style="color:var(--muted)">Deskripsi</span><br>${achievement.deskripsi || '—'}</div>
-        </div>`;
+        <div><dt>Peringkat</dt><dd>${UI.esc(achievement.peringkat)}</dd></div>
+        <div><dt>Siswa</dt><dd>${UI.esc(achievement.user?.name || '—')}</dd></div>
+        <div class="info-wide"><dt>Deskripsi</dt><dd>${UI.esc(achievement.deskripsi || '—')}</dd></div>`;
     document.getElementById('inp-catatan').value = '';
     document.getElementById('modal-validate').classList.add('show');
 }
@@ -142,21 +153,13 @@ function closeModal() { document.getElementById('modal-validate').classList.remo
 
 async function submitValidasi(status) {
     const catatan = document.getElementById('inp-catatan').value.trim();
-    if (status === 'Rejected' && !catatan) { toast('Wajib isi catatan alasan penolakan!','error'); return; }
+    if (status === 'Rejected' && !catatan) { toast('Wajib isi catatan alasan penolakan.','error'); return; }
     try {
         await Api.patch(`/admin/achievements/${currentId}/validate`, { status, catatan });
-        toast(`Prestasi berhasil di-${status}!`, 'success');
+        toast(`Prestasi berhasil ${statusDone[status] || status}.`, 'success');
         closeModal();
-        loadData();
+        loadData(currentStatus);
     } catch(e) { toast('Gagal memproses validasi.', 'error'); }
-}
-
-function toast(msg, type='info') {
-    const el = document.createElement('div');
-    el.className = `toast toast-${type}`;
-    el.innerHTML = `${type==='success'?'✅':type==='error'?'❌':'ℹ️'} ${msg}`;
-    document.getElementById('toast-container').appendChild(el);
-    setTimeout(() => el.remove(), 4000);
 }
 
 loadData();

@@ -4,70 +4,46 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portofolio Keahlian SMK — SALUT Admin/Guru</title>
 <meta name="description" content="Manajemen Portofolio Keahlian Siswa SMK (SKPI) SALUT">
-<link rel="stylesheet" href="css/style.css">
-<style>
-  .badge-skill {
-    display: inline-block;
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 700;
-  }
-  .badge-mahir { background: rgba(16,185,129,0.18); color: #34D399; border: 1px solid rgba(16,185,129,0.3); }
-  .badge-terampil { background: rgba(59,130,246,0.18); color: #60A5FA; border: 1px solid rgba(59,130,246,0.3); }
-  .badge-dasar { background: rgba(245,158,11,0.18); color: #FBBF24; border: 1px solid rgba(245,158,11,0.3); }
-  .skill-item {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-</style>
+<script src="js/theme-init.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 <div id="toast-container"></div>
 
 <!-- Modal Detail & Input Portofolio Keahlian -->
 <div class="modal-overlay" id="modal-skills">
-  <div class="modal" style="max-width:680px;max-height:90vh;overflow-y:auto;">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+  <div class="modal modal-lg">
+    <div class="modal-head">
       <div>
-        <div class="modal-title" style="font-size:18px;">Portofolio Keahlian Siswa (SKPI)</div>
-        <div class="modal-sub" id="modal-student-info">Nama Siswa • NISN • Jurusan</div>
+        <h2 class="modal-title">Portofolio Keahlian Siswa (SKPI)</h2>
+        <p class="modal-sub" id="modal-student-info">Nama Siswa • NISN • Jurusan</p>
       </div>
-      <button class="btn btn-ghost" style="padding:4px 8px;" onclick="closeModal()">✕</button>
+      <button type="button" class="icon-btn" aria-label="Tutup" onclick="closeModal()"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
 
-    <div id="skill-alert" class="alert alert-error" style="display:none;margin-top:12px;"></div>
+    <div id="skill-alert" class="alert alert-error" role="alert" hidden></div>
 
-    <!-- Tab / Section: Daftar Kompetensi Saat Ini -->
-    <div style="margin-top:16px;">
-      <div style="font-size:14px;font-weight:700;margin-bottom:8px;color:var(--text);display:flex;align-items:center;gap:6px;">
-        <span>📜</span> Daftar Kompetensi Tersertifikasi
-      </div>
-      <div id="skills-list-container" style="max-height:220px;overflow-y:auto;padding-right:4px;">
-        <div style="color:var(--muted);font-size:13px;text-align:center;padding:16px;">Memuat data kompetensi...</div>
-      </div>
-    </div>
+    <!-- Daftar Kompetensi Saat Ini -->
+    <section class="modal-section">
+      <h3 class="modal-section-title"><svg class="icon" aria-hidden="true"><use href="#i-badge-check"/></svg>Daftar kompetensi tersertifikasi</h3>
+      <div id="skills-list-container" class="scroll-list"><p class="text-muted">Memuat data kompetensi...</p></div>
+    </section>
 
-    <!-- Section: Form Tambah Kompetensi Baru -->
-    <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);">
-      <div style="font-size:14px;font-weight:700;margin-bottom:12px;color:#A5B4FC;display:flex;align-items:center;gap:6px;">
-        <span>➕</span> Input Sertifikasi Kompetensi Baru
-      </div>
+    <!-- Form Tambah Kompetensi Baru -->
+    <section class="modal-section">
+      <h3 class="modal-section-title"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Input sertifikasi kompetensi baru</h3>
       <input type="hidden" id="inp-skill-user-id">
-      
-      <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;">
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Nama Kompetensi Keahlian *</label>
+
+      <div class="form-grid-2-1">
+        <div class="form-group">
+          <label class="form-label" for="inp-nama-kompetensi">Nama kompetensi keahlian *</label>
           <input id="inp-nama-kompetensi" type="text" class="form-input" placeholder="Misal: Konfigurasi Routing MikroTik (MTCNA)">
         </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Level Kompetensi *</label>
+        <div class="form-group">
+          <label class="form-label" for="inp-level">Level kompetensi *</label>
           <select id="inp-level" class="form-input form-select">
             <option value="Mahir">Mahir (Advanced)</option>
             <option value="Terampil" selected>Terampil (Intermediate)</option>
@@ -76,104 +52,101 @@
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px;">
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Kategori Bidang</label>
+      <div class="form-grid-3">
+        <div class="form-group">
+          <label class="form-label" for="inp-kategori">Kategori bidang</label>
           <input id="inp-kategori" type="text" class="form-input" placeholder="Misal: Jaringan Komputer">
         </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Semester</label>
+        <div class="form-group">
+          <label class="form-label" for="inp-semester">Semester</label>
           <select id="inp-semester" class="form-input form-select">
             <option value="Ganjil">Semester Ganjil</option>
             <option value="Genap">Semester Genap</option>
           </select>
         </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Tahun Pelajaran</label>
-          <input id="inp-tapel" type="text" class="form-input" placeholder="Misal: 2025/2026">
+        <div class="form-group">
+          <label class="form-label" for="inp-tapel">Tahun pelajaran</label>
+          <input id="inp-tapel" type="text" class="form-input mono" placeholder="Misal: 2025/2026">
         </div>
       </div>
 
-      <div class="form-group" style="margin-top:10px;">
-        <label class="form-label">Uraian / Deskripsi Capaian</label>
-        <textarea id="inp-keterangan" class="form-input" style="height:60px;resize:vertical;" placeholder="Uraikan detail penguasaan materi, studi kasus, atau peralatan yang dikuasai siswa..."></textarea>
+      <div class="form-group">
+        <label class="form-label" for="inp-keterangan">Uraian capaian</label>
+        <textarea id="inp-keterangan" class="form-input form-textarea" placeholder="Uraikan detail penguasaan materi, studi kasus, atau peralatan yang dikuasai siswa..."></textarea>
       </div>
 
-      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;">
-        <button class="btn btn-ghost" onclick="closeModal()">Tutup</button>
-        <button class="btn btn-primary" onclick="submitSkill()">💾 Simpan Kompetensi</button>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" onclick="submitSkill()"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Simpan kompetensi</button>
+        <button type="button" class="btn btn-ghost" onclick="closeModal()">Tutup</button>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 
 <div class="layout">
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="Navigasi utama">
     <div class="sidebar-logo">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <img src="img/logo_salut.png" alt="SALUT Logo" style="width:42px; height:42px; object-fit:contain; filter:drop-shadow(0 2px 8px rgba(6,182,212,0.4));">
-        <div>
-          <p id="sidebar-role-label" style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin:0;">Admin Panel</p>
-          <span style="font-size:10px; color:var(--cyan); font-weight:500;">v1.0 • SMK 1 Teladan</span>
-        </div>
+      <img class="brand-mark" src="img/logo_salut.png" alt="">
+      <div>
+        <p class="brand-role" id="sidebar-role-label">Admin Panel</p>
+        <span class="brand-sub">v1.0 • SMK 1 Teladan</span>
       </div>
     </div>
-    <nav class="nav-section" id="sidebar-nav"></nav>
+    <nav class="nav-section" id="sidebar-nav" aria-label="Menu"></nav>
     <div class="sidebar-footer">
-      <div class="user-card"><div class="user-avatar" id="user-avatar">A</div><div><div class="user-name" id="nav-user-name">Loading...</div><div class="user-role" id="nav-user-role">role</div></div></div>
-      <button class="btn-logout" id="btn-logout">🚪 Keluar</button>
+      <div class="user-card">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div class="user-name" id="nav-user-name">Memuat...</div>
+          <div class="user-role" id="nav-user-role">peran</div>
+        </div>
+      </div>
+      <button type="button" class="btn-logout" id="btn-logout"><svg class="icon" aria-hidden="true"><use href="#i-log-out"/></svg>Keluar</button>
     </div>
   </aside>
 
   <main class="main">
-    <div class="topbar">
+    <header class="topbar">
       <div>
-        <div class="page-title">Portofolio Keahlian Siswa SMK</div>
-        <div class="page-sub">Skill Raport & Surat Keterangan Pendamping Ijazah (SKPI) Kejuruan</div>
+        <h1 class="page-title">Portofolio Keahlian Siswa SMK</h1>
+        <p class="page-sub">Skill raport dan Surat Keterangan Pendamping Ijazah (SKPI) kejuruan</p>
       </div>
-    </div>
+    </header>
 
     <div class="content">
       <!-- Toolbar Filter -->
-      <div class="card" style="padding: 16px; margin-bottom: 20px;">
-        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
-          <div>
-            <select class="form-input form-select" id="filter-jurusan" style="width:180px;" onchange="loadStudents()">
-              <option value="">-- Semua Jurusan --</option>
-              <option value="TKJ">TKJ (Teknik Komputer & Jaringan)</option>
-              <option value="RPL">RPL (Rekayasa Perangkat Lunak)</option>
-              <option value="Multimedia">Multimedia / DMM</option>
-              <option value="Akuntansi">Akuntansi</option>
-              <option value="Pemasaran">Pemasaran</option>
-            </select>
-          </div>
-          <div style="flex:1;min-width:200px;">
-            <input type="text" id="search-input" class="form-input" placeholder="🔍 Cari nama siswa atau NISN..." oninput="debounceSearch()">
-          </div>
-          <button class="btn btn-ghost" onclick="resetFilter()">Reset</button>
+      <div class="toolbar">
+        <div class="search-input-wrap">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+          <input type="text" id="search-input" class="search-input" aria-label="Cari nama siswa atau NISN" placeholder="Cari nama siswa atau NISN..." oninput="debounceSearch()">
         </div>
+        <select class="form-input form-select" id="filter-jurusan" aria-label="Filter jurusan" onchange="loadStudents()">
+          <option value="">-- Semua Jurusan --</option>
+          <option value="TKJ">TKJ (Teknik Komputer &amp; Jaringan)</option>
+          <option value="RPL">RPL (Rekayasa Perangkat Lunak)</option>
+          <option value="Multimedia">Multimedia / DMM</option>
+          <option value="Akuntansi">Akuntansi</option>
+          <option value="Pemasaran">Pemasaran</option>
+        </select>
+        <button type="button" class="btn btn-ghost" onclick="resetFilter()">Reset filter</button>
       </div>
 
       <!-- Tabel Siswa -->
-      <div class="card" style="padding: 0">
-        <div style="overflow-x:auto;">
-          <table class="data-table" id="students-table">
-            <thead>
-              <tr>
-                <th>Nama Siswa</th>
-                <th>NISN</th>
-                <th>Jurusan</th>
-                <th>Kelas</th>
-                <th>Angkatan</th>
-                <th>Status</th>
-                <th style="text-align:center;">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="table-body">
-              <tr><td colspan="7" style="text-align:center;padding:24px;">Memuat data siswa...</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="table-wrap">
+        <table id="students-table">
+          <thead>
+            <tr>
+              <th>Nama siswa</th>
+              <th>NISN</th>
+              <th>Jurusan</th>
+              <th>Kelas</th>
+              <th class="num">Angkatan</th>
+              <th>Status</th>
+              <th class="col-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
       </div>
     </div>
   </main>
@@ -182,6 +155,8 @@
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script src="js/motion.js"></script>
 <script>
 Auth.guard();
 Auth.buildNav('skills');
@@ -200,9 +175,13 @@ function resetFilter() {
     loadStudents();
 }
 
+function stateRow(html) {
+    return `<tr><td colspan="7">${html}</td></tr>`;
+}
+
 async function loadStudents() {
     const tbody = document.getElementById('table-body');
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;">Memuat data siswa...</td></tr>';
+    tbody.innerHTML = stateRow(UI.loading(6, false));
 
     try {
         const jurusan = document.getElementById('filter-jurusan').value;
@@ -218,35 +197,31 @@ async function loadStudents() {
         const students = res.data;
 
         if (!students || students.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted);">Tidak ada data siswa ditemukan.</td></tr>';
+            tbody.innerHTML = stateRow(UI.empty('Tidak ada siswa yang cocok', 'Ubah jurusan atau kata kunci pencarian.', 'users'));
             return;
         }
 
         tbody.innerHTML = students.map(s => {
-            const roleBadge = s.role === 'alumni' 
-                ? '<span style="background:rgba(6,182,212,0.15);color:#06B6D4;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700">Alumni</span>'
-                : '<span style="background:rgba(99,102,241,0.15);color:#818CF8;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700">Siswa</span>';
-
-            const jurBadge = `<span style="background:rgba(168,85,247,0.15);color:#C084FC;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700">${s.jurusan || '-'}</span>`;
+            const roleBadge = s.role === 'alumni'
+                ? '<span class="badge badge-alumni">Alumni</span>'
+                : '<span class="badge badge-siswa">Siswa</span>';
 
             return `
                 <tr>
-                    <td style="font-weight:700;color:var(--text);font-size:14px;">${s.name}</td>
-                    <td>${s.nisn}</td>
-                    <td>${jurBadge}</td>
-                    <td>${s.class_name || '-'}</td>
-                    <td>${s.angkatan || '-'}</td>
+                    <td class="cell-name">${UI.esc(s.name)}</td>
+                    <td class="mono">${UI.esc(s.nisn)}</td>
+                    <td><span class="badge">${UI.esc(s.jurusan || '-')}</span></td>
+                    <td>${UI.esc(s.class_name || '-')}</td>
+                    <td class="num">${UI.esc(s.angkatan || '-')}</td>
                     <td>${roleBadge}</td>
-                    <td style="text-align:center;">
-                        <button class="btn btn-sm btn-primary" onclick="openStudentSkills(${s.id}, '${escapeQuotes(s.name)}', '${s.nisn}', '${s.jurusan || ''}')">
-                            🛠️ Kelola Skill
-                        </button>
+                    <td class="col-right">
+                        <button type="button" class="btn btn-ghost btn-sm" onclick="openStudentSkills(${s.id}, '${UI.esc(escapeQuotes(s.name))}', '${UI.esc(s.nisn)}', '${UI.esc(escapeQuotes(s.jurusan || ''))}')">${Icons.svg('flask', 16)}Kelola skill</button>
                     </td>
                 </tr>
             `;
         }).join('');
     } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--red);">Gagal memuat data: ${e.message}</td></tr>`;
+        tbody.innerHTML = stateRow(UI.error(e.message, 'loadStudents()'));
     }
 }
 
@@ -272,44 +247,40 @@ async function openStudentSkills(studentId, name, nisn, jurusan) {
 
 async function loadStudentSkillList(studentId) {
     const container = document.getElementById('skills-list-container');
-    container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:12px;">Memuat data...</div>';
+    container.innerHTML = UI.loading(3);
 
     try {
         const res = await Api.get(`/guru/skills/${studentId}`);
         const skills = res.data;
 
         if (!skills || skills.length === 0) {
-            container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:16px;background:rgba(255,255,255,0.02);border-radius:8px;">Belum ada sertifikasi kompetensi untuk siswa ini. Tambahkan di bawah.</div>';
+            container.innerHTML = UI.empty('Belum ada sertifikasi kompetensi', 'Tambahkan lewat formulir di bawah.', 'badge-check');
             return;
         }
 
         container.innerHTML = skills.map(sk => {
             const lvl = sk.level || 'Terampil';
-            const badgeClass = lvl === 'Mahir' ? 'badge-mahir' : lvl === 'Terampil' ? 'badge-terampil' : 'badge-dasar';
+            const badgeClass = lvl === 'Mahir' ? 'badge-success' : lvl === 'Terampil' ? 'badge-accent' : 'badge-warning';
 
             return `
-                <div class="skill-item">
-                    <div style="flex:1;">
-                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                            <span style="font-weight:700;color:#F8FAFC;font-size:13px;">${sk.nama_kompetensi}</span>
-                            <span class="badge-skill ${badgeClass}">${lvl}</span>
-                        </div>
-                        <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">
-                            Kategori: <span style="color:#CBD5E1;">${sk.kategori || '-'}</span> • Semester: ${sk.semester || '-'} (${sk.tahun_pelajaran || '-'})
-                        </div>
-                        ${sk.keterangan ? `<div style="font-size:12px;color:#94A3B8;background:rgba(0,0,0,0.2);padding:6px 10px;border-radius:6px;margin-top:4px;">${sk.keterangan}</div>` : ''}
-                        <div style="font-size:11px;color:#64748B;margin-top:4px;">
-                            Penguji: ${sk.guru ? sk.guru.name : 'Guru Produktif'}
+                <div class="list-item">
+                    <div class="list-item-main">
+                        <div>
+                            <div class="list-item-title">
+                                <span>${UI.esc(sk.nama_kompetensi)}</span>
+                                <span class="badge ${badgeClass}">${UI.esc(lvl)}</span>
+                            </div>
+                            <div class="cell-sub">Kategori: ${UI.esc(sk.kategori || '-')} • Semester ${UI.esc(sk.semester || '-')} (<span class="mono">${UI.esc(sk.tahun_pelajaran || '-')}</span>)</div>
+                            ${sk.keterangan ? `<div class="list-item-note">${UI.esc(sk.keterangan)}</div>` : ''}
+                            <div class="cell-sub">Penguji: ${UI.esc(sk.guru ? sk.guru.name : 'Guru Produktif')}</div>
                         </div>
                     </div>
-                    <button class="btn btn-sm btn-ghost" style="color:var(--red);margin-left:12px;" onclick="deleteSkill(${sk.id})">
-                        🗑️
-                    </button>
+                    <button type="button" class="btn btn-ghost btn-sm" aria-label="Hapus kompetensi ${UI.esc(sk.nama_kompetensi)}" onclick="deleteSkill(${sk.id})">${Icons.svg('trash', 16)}Hapus</button>
                 </div>
             `;
         }).join('');
     } catch (e) {
-        container.innerHTML = `<div style="color:var(--red);font-size:13px;padding:12px;">Gagal memuat: ${e.message}</div>`;
+        container.innerHTML = UI.error(e.message, `loadStudentSkillList(${studentId})`);
     }
 }
 
@@ -343,7 +314,7 @@ async function submitSkill() {
         };
 
         await Api.post('/guru/skills', payload);
-        alert('Kompetensi berhasil ditambahkan!');
+        toast('Kompetensi berhasil ditambahkan.', 'success');
 
         // Reset nama & keterangan
         document.getElementById('inp-nama-kompetensi').value = '';
@@ -362,9 +333,10 @@ async function deleteSkill(skillId) {
 
     try {
         await Api.delete(`/guru/skills/${skillId}`);
+        toast('Kompetensi dihapus.', 'success');
         await loadStudentSkillList(currentStudentId);
     } catch (e) {
-        alert('Gagal menghapus kompetensi: ' + e.message);
+        toast('Gagal menghapus kompetensi: ' + e.message, 'error');
     }
 }
 

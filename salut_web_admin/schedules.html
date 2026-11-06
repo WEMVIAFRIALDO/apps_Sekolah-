@@ -4,78 +4,68 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jadwal Kelulusan — SALUT Admin</title>
 <meta name="description" content="Manajemen Jadwal Kelulusan Angkatan SALUT">
-<link rel="stylesheet" href="css/style.css">
+<script src="js/theme-init.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 <div id="toast-container"></div>
 
 <!-- Modal Tambah Jadwal (Admin only) -->
 <div class="modal-overlay" id="modal-add">
-  <div class="modal" style="max-width:400px;">
+  <div class="modal modal-sm">
     <div class="modal-title">Set Jadwal Kelulusan</div>
     <div class="modal-sub">Otomatis luluskan siswa kelas XII angkatan tertentu (Cronjob)</div>
-    <div id="add-alert" class="alert alert-error" style="display:none"></div>
+    <div id="add-alert" class="alert alert-error" role="alert" hidden></div>
     <div class="form-group">
-      <label class="form-label">Tahun Angkatan</label>
-      <input id="inp-angkatan" type="number" class="form-input" placeholder="Misal: 2026">
+      <label class="form-label" for="inp-angkatan">Tahun angkatan</label>
+      <input id="inp-angkatan" type="number" class="form-input mono" placeholder="Misal: 2026">
     </div>
     <div class="form-group">
-      <label class="form-label">Tanggal Pengumuman (Otomatis)</label>
-      <input id="inp-date" type="datetime-local" class="form-input">
+      <label class="form-label" for="inp-date">Tanggal pengumuman (otomatis)</label>
+      <input id="inp-date" type="datetime-local" class="form-input mono">
     </div>
-    <div style="display:flex;gap:12px;margin-top:20px;">
-      <button class="btn btn-primary" style="flex:1;" onclick="submitAdd()">✅ Simpan Jadwal</button>
-      <button class="btn btn-ghost" onclick="document.getElementById('modal-add').classList.remove('show')">Batal</button>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" onclick="submitAdd()"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Simpan jadwal</button>
+      <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-add').classList.remove('show')">Batal</button>
     </div>
   </div>
 </div>
 
 <div class="layout">
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="Navigasi utama">
     <div class="sidebar-logo">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <img src="img/logo_salut.png" alt="SALUT Logo" style="width:42px; height:42px; object-fit:contain; filter:drop-shadow(0 2px 8px rgba(6,182,212,0.4));">
-        <div>
-          <p id="sidebar-role-label" style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin:0;">Admin Panel</p>
-          <span style="font-size:10px; color:var(--cyan); font-weight:500;">v1.0 • SMK 1 Teladan</span>
-        </div>
+      <img class="brand-mark" src="img/logo_salut.png" alt="">
+      <div>
+        <p class="brand-role" id="sidebar-role-label">Admin Panel</p>
+        <span class="brand-sub">v1.0 • SMK 1 Teladan</span>
       </div>
     </div>
-    <nav class="nav-section" id="sidebar-nav"></nav>
+    <nav class="nav-section" id="sidebar-nav" aria-label="Menu"></nav>
     <div class="sidebar-footer">
-      <div class="user-card"><div class="user-avatar" id="user-avatar">A</div><div><div class="user-name" id="nav-user-name">Loading...</div><div class="user-role" id="nav-user-role">role</div></div></div>
-      <button class="btn-logout" id="btn-logout">🚪 Keluar</button>
+      <div class="user-card">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div class="user-name" id="nav-user-name">Memuat...</div>
+          <div class="user-role" id="nav-user-role">peran</div>
+        </div>
+      </div>
+      <button type="button" class="btn-logout" id="btn-logout"><svg class="icon" aria-hidden="true"><use href="#i-log-out"/></svg>Keluar</button>
     </div>
   </aside>
 
   <main class="main">
-    <div class="topbar">
-      <div><div class="page-title">Jadwal Kelulusan</div><div class="page-sub">Manajemen jadwal pengumuman otomatis (Cronjob)</div></div>
-      <div style="display:flex;gap:10px;">
-        <button class="btn btn-primary" id="btn-add-schedule" onclick="document.getElementById('modal-add').classList.add('show')" style="display:none">
-          + Set Jadwal Baru
-        </button>
+    <header class="topbar">
+      <div><h1 class="page-title">Jadwal Kelulusan</h1><p class="page-sub">Manajemen jadwal pengumuman otomatis (Cronjob)</p></div>
+      <div class="btn-group">
+        <button type="button" class="btn btn-primary" id="btn-add-schedule" onclick="document.getElementById('modal-add').classList.add('show')" hidden><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Set jadwal baru</button>
       </div>
-    </div>
-    
+    </header>
+
     <div class="content">
-      <div class="card" style="padding: 0">
-        <div style="overflow-x:auto;">
-          <table class="data-table" id="schedules-table">
-            <thead>
-              <tr>
-                <th>Angkatan</th>
-                <th>Tanggal Kelulusan</th>
-                <th>Status</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td colspan="4" style="text-align:center;padding:24px;">Memuat data...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <div id="table-content"></div>
     </div>
   </main>
 </div>
@@ -83,6 +73,8 @@
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script src="js/motion.js"></script>
 <script>
   function showAlert(msg) {
     const el = document.getElementById('add-alert');
@@ -90,58 +82,69 @@
   }
 
   async function loadSchedules() {
-    const res = await Api.get('/admin/schedules');
-    if (!res.success) return;
-    
-    const tbody = document.querySelector('#schedules-table tbody');
-    tbody.innerHTML = '';
-    
-    if (res.data.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;">Belum ada jadwal yang diset.</td></tr>`;
-      return;
-    }
+    const box = document.getElementById('table-content');
+    box.innerHTML = UI.loading(4);
 
-    res.data.forEach(s => {
-      const statusBadge = s.status === 'completed' 
-        ? `<span class="badge badge-success">Completed</span>`
-        : `<span class="badge badge-warning">Pending</span>`;
-      
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td style="font-weight:bold;">${s.angkatan}</td>
-        <td>${new Date(s.graduation_date).toLocaleString('id-ID')}</td>
-        <td>${statusBadge}</td>
-        <td>-</td>
-      `;
-      tbody.appendChild(tr);
-    });
+    try {
+      const res = await Api.get('/admin/schedules');
+      if (!res.success) throw new Error('Server menolak permintaan.');
+
+      if (res.data.length === 0) {
+        box.innerHTML = UI.empty('Belum ada jadwal kelulusan', 'Admin dapat menambahkan jadwal lewat tombol "Set jadwal baru".', 'calendar');
+        return;
+      }
+
+      const rows = res.data.map(s => {
+        const statusBadge = s.status === 'completed'
+          ? `<span class="badge badge-success">${Icons.svg('check-circle', 12)}Selesai</span>`
+          : `<span class="badge badge-warning">${Icons.svg('clock', 12)}Menunggu</span>`;
+
+        return `<tr id="schedules-row-${UI.esc(s.id)}">
+          <td class="mono cell-name">${UI.esc(s.angkatan)}</td>
+          <td class="mono">${UI.esc(new Date(s.graduation_date).toLocaleString('id-ID'))}</td>
+          <td>${statusBadge}</td>
+        </tr>`;
+      }).join('');
+
+      box.innerHTML = `<div class="table-wrap"><table id="schedules-table">
+        <thead><tr><th>Angkatan</th><th>Tanggal kelulusan</th><th>Status</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>`;
+    } catch (e) {
+      box.innerHTML = UI.error(e.message, 'loadSchedules()');
+    }
   }
 
   async function submitAdd() {
     const angkatan = document.getElementById('inp-angkatan').value;
     const date = document.getElementById('inp-date').value;
+    document.getElementById('add-alert').style.display = 'none';
 
     if(!angkatan || !date) return showAlert('Semua field harus diisi.');
-    
-    const res = await Api.post('/admin/schedules', { angkatan, graduation_date: date });
-    if (res.success) {
-      document.getElementById('modal-add').classList.remove('show');
-      document.getElementById('inp-angkatan').value = '';
-      document.getElementById('inp-date').value = '';
-      loadSchedules();
-    } else {
-      showAlert(res.message || 'Gagal menyimpan jadwal');
+
+    try {
+      const res = await Api.post('/admin/schedules', { angkatan, graduation_date: date });
+      if (res.success) {
+        document.getElementById('modal-add').classList.remove('show');
+        document.getElementById('inp-angkatan').value = '';
+        document.getElementById('inp-date').value = '';
+        toast('Jadwal kelulusan disimpan.', 'success');
+        loadSchedules();
+      } else {
+        showAlert(res.message || 'Gagal menyimpan jadwal');
+      }
+    } catch (e) {
+      showAlert(e.message || 'Gagal menyimpan jadwal');
     }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     Auth.guard();
     Auth.buildNav('schedules');
-    
+
     const user = Auth.user();
     if(user && user.role === 'admin') {
       const btnAdd = document.getElementById('btn-add-schedule');
-      if (btnAdd) btnAdd.style.display = 'block';
+      if (btnAdd) btnAdd.hidden = false;
     }
     loadSchedules();
   });

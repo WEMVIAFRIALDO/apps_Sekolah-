@@ -4,102 +4,109 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Manajemen Siswa — SALUT Admin</title>
 <meta name="description" content="Manajemen data siswa dan alumni SALUT">
-<link rel="stylesheet" href="css/style.css">
+<script src="js/theme-init.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 <div id="toast-container"></div>
 <!-- Modal Tambah Siswa (Admin only) -->
 <div class="modal-overlay" id="modal-add">
-  <div class="modal" style="max-width:560px;">
+  <div class="modal modal-md">
     <div class="modal-title">Tambah Pengguna Baru</div>
     <div class="modal-sub">Daftarkan akun siswa, alumni, atau guru baru</div>
-    <div id="add-alert" class="alert alert-error" style="display:none"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-      <div class="form-group" style="margin:0"><label class="form-label">Nama Lengkap</label><input id="inp-name" class="form-input" placeholder="Nama lengkap"></div>
-      <div class="form-group" style="margin:0"><label class="form-label">NISN (10 digit)</label><input id="inp-nisn" class="form-input" placeholder="0000000000" maxlength="10"></div>
-      <div class="form-group" style="margin:0"><label class="form-label">Email (opsional)</label><input id="inp-email" class="form-input" type="email" placeholder="email@example.com"></div>
-      <div class="form-group" style="margin:0"><label class="form-label">No. HP</label><input id="inp-phone" class="form-input" placeholder="+62..."></div>
-      <div class="form-group" style="margin:0"><label class="form-label">Role</label>
+    <div id="add-alert" class="alert alert-error" role="alert" hidden></div>
+    <div class="form-grid-2">
+      <div class="form-group"><label class="form-label" for="inp-name">Nama Lengkap</label><input id="inp-name" class="form-input" placeholder="Nama lengkap"></div>
+      <div class="form-group"><label class="form-label" for="inp-nisn">NISN (10 digit)</label><input id="inp-nisn" class="form-input mono" placeholder="0000000000" maxlength="10"></div>
+      <div class="form-group"><label class="form-label" for="inp-email">Email (opsional)</label><input id="inp-email" class="form-input" type="email" placeholder="email@example.com"></div>
+      <div class="form-group"><label class="form-label" for="inp-phone">No. HP</label><input id="inp-phone" class="form-input" placeholder="+62..."></div>
+      <div class="form-group"><label class="form-label" for="inp-role">Role</label>
         <select id="inp-role" class="form-input form-select" onchange="toggleFields()">
           <option value="siswa">Siswa Aktif</option>
           <option value="alumni">Alumni</option>
           <option value="guru">Guru</option>
         </select>
       </div>
-      <div class="form-group" style="margin:0"><label class="form-label">Password</label><input id="inp-pass" class="form-input" type="password" placeholder="Min. 6 karakter"></div>
-      <div class="form-group student-field" style="margin:0"><label class="form-label">Kelas</label>
+      <div class="form-group"><label class="form-label" for="inp-pass">Password</label><input id="inp-pass" class="form-input" type="password" placeholder="Min. 6 karakter"></div>
+      <div class="form-group student-field"><label class="form-label" for="inp-class">Kelas</label>
         <select id="inp-class" class="form-input form-select">
           <option value="">-- Pilih Kelas --</option>
-          <optgroup label="Kelas X"><option>X IPA 1</option><option>X IPA 2</option><option>X IPS 1</option><option>X IPS 2</option></optgroup>
-          <optgroup label="Kelas XI"><option>XI IPA 1</option><option>XI IPA 2</option><option>XI IPS 1</option><option>XI IPS 2</option></optgroup>
-          <optgroup label="Kelas XII"><option>XII IPA 1</option><option>XII IPA 2</option><option>XII IPS 1</option><option>XII IPS 2</option></optgroup>
+          <optgroup label="Kelas X"><option>X TKJ 1</option><option>X TKJ 2</option><option>X RPL 1</option><option>X Multimedia 1</option></optgroup>
+          <optgroup label="Kelas XI"><option>XI TKJ 1</option><option>XI TKJ 2</option><option>XI RPL 1</option><option>XI Multimedia 1</option></optgroup>
+          <optgroup label="Kelas XII"><option>XII TKJ 1</option><option>XII TKJ 2</option><option>XII RPL 1</option><option>XII Multimedia 1</option></optgroup>
         </select>
       </div>
-      <div class="form-group student-field" style="margin:0"><label class="form-label">Angkatan</label><input id="inp-angkatan" class="form-input" placeholder="2026" maxlength="4"></div>
+      <div class="form-group student-field"><label class="form-label" for="inp-angkatan">Angkatan</label><input id="inp-angkatan" class="form-input mono" placeholder="2026" maxlength="4"></div>
     </div>
-    <div style="display:flex;gap:12px;margin-top:20px;">
-      <button class="btn btn-primary" style="flex:1;" onclick="submitAdd()">✅ Simpan</button>
-      <button class="btn btn-ghost" onclick="document.getElementById('modal-add').classList.remove('show')">Batal</button>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" onclick="submitAdd()"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Simpan pengguna</button>
+      <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-add').classList.remove('show')">Batal</button>
     </div>
   </div>
 </div>
 
 <!-- Modal Import CSV -->
 <div class="modal-overlay" id="modal-import">
-  <div class="modal" style="max-width:400px;">
+  <div class="modal modal-sm">
     <div class="modal-title">Import Data Siswa (CSV)</div>
     <div class="modal-sub">Format: Nama, NISN, Email, Role, Kelas, Angkatan, No HP</div>
-    <div id="import-alert" class="alert alert-error" style="display:none"></div>
+    <div id="import-alert" class="alert alert-error" role="alert" hidden></div>
     <div class="form-group">
-      <label class="form-label">Pilih file CSV</label>
-      <input type="file" id="inp-csv" accept=".csv" class="form-input" style="padding: 10px;">
+      <label class="form-label" for="inp-csv">Pilih file CSV</label>
+      <input type="file" id="inp-csv" accept=".csv" class="form-input">
     </div>
-    <div style="display:flex;gap:12px;margin-top:20px;">
-      <button class="btn btn-primary" style="flex:1;" onclick="submitImportCsv()">🚀 Import</button>
-      <button class="btn btn-ghost" onclick="document.getElementById('modal-import').classList.remove('show')">Batal</button>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" onclick="submitImportCsv()"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>Import file</button>
+      <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-import').classList.remove('show')">Batal</button>
     </div>
   </div>
 </div>
 
 <div class="layout">
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="Navigasi utama">
     <div class="sidebar-logo">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <img src="img/logo_salut.png" alt="SALUT Logo" style="width:42px; height:42px; object-fit:contain; filter:drop-shadow(0 2px 8px rgba(6,182,212,0.4));">
-        <div>
-          <p id="sidebar-role-label" style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin:0;">Admin Panel</p>
-          <span style="font-size:10px; color:var(--cyan); font-weight:500;">v1.0 • SMK 1 Teladan</span>
-        </div>
+      <img class="brand-mark" src="img/logo_salut.png" alt="">
+      <div>
+        <p class="brand-role" id="sidebar-role-label">Admin Panel</p>
+        <span class="brand-sub">v1.0 • SMK 1 Teladan</span>
       </div>
     </div>
-    <nav class="nav-section" id="sidebar-nav"></nav>
+    <nav class="nav-section" id="sidebar-nav" aria-label="Menu"></nav>
     <div class="sidebar-footer">
-      <div class="user-card"><div class="user-avatar" id="user-avatar">A</div><div><div class="user-name" id="nav-user-name">Loading...</div><div class="user-role" id="nav-user-role">role</div></div></div>
-      <button class="btn-logout" id="btn-logout">🚪 Keluar</button>
+      <div class="user-card">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div class="user-name" id="nav-user-name">Memuat...</div>
+          <div class="user-role" id="nav-user-role">peran</div>
+        </div>
+      </div>
+      <button type="button" class="btn-logout" id="btn-logout"><svg class="icon" aria-hidden="true"><use href="#i-log-out"/></svg>Keluar</button>
     </div>
   </aside>
   <main class="main">
-    <div class="topbar">
-      <div><div class="page-title">Siswa &amp; Alumni</div><div class="page-sub">Manajemen akun pengguna SALUT</div></div>
-      <div style="display:flex;gap:10px;" id="topbar-actions">
-        <button class="btn btn-ghost" onclick="exportAlumni()" style="border:1px solid var(--border)">📊 Export Alumni CSV</button>
-        <button class="btn btn-primary" onclick="document.getElementById('modal-import').classList.add('show')">📁 Import CSV</button>
+    <header class="topbar">
+      <div><h1 class="page-title">Siswa &amp; Alumni</h1><p class="page-sub">Manajemen akun pengguna SALUT</p></div>
+      <div class="btn-group" id="topbar-actions">
+        <button type="button" class="btn btn-ghost" onclick="exportAlumni()"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Export alumni (CSV)</button>
+        <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-import').classList.add('show')"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>Import CSV</button>
       </div>
-    </div>
+    </header>
     <div class="content">
-      <!-- Stat ringkas -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;">
-        <div class="card" style="padding:16px;text-align:center"><div style="font-size:24px;font-weight:800;color:#6366F1" id="st-siswa">—</div><div style="font-size:12px;color:var(--muted)">Siswa Aktif</div></div>
-        <div class="card" style="padding:16px;text-align:center"><div style="font-size:24px;font-weight:800;color:#06B6D4" id="st-alumni">—</div><div style="font-size:12px;color:var(--muted)">Alumni</div></div>
-        <div class="card" style="padding:16px;text-align:center"><div style="font-size:24px;font-weight:800;color:#F59E0B" id="st-guru">—</div><div style="font-size:12px;color:var(--muted)">Guru</div></div>
-        <div class="card" style="padding:16px;text-align:center"><div style="font-size:24px;font-weight:800;color:#10B981" id="st-total">—</div><div style="font-size:12px;color:var(--muted)">Total</div></div>
-      </div>
+      <dl class="card kpi-list kpi-list--4" aria-label="Ringkasan pengguna">
+        <div class="kpi"><dt class="kpi-label">Siswa aktif</dt><dd class="kpi-value" id="st-siswa" data-count>—</dd></div>
+        <div class="kpi"><dt class="kpi-label">Alumni</dt><dd class="kpi-value" id="st-alumni" data-count>—</dd></div>
+        <div class="kpi"><dt class="kpi-label">Guru</dt><dd class="kpi-value" id="st-guru" data-count>—</dd></div>
+        <div class="kpi"><dt class="kpi-label">Total pengguna</dt><dd class="kpi-value" id="st-total" data-count>—</dd></div>
+      </dl>
       <div class="toolbar">
-        <div class="search-input-wrap"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg><input type="text" class="search-input" id="search" placeholder="Cari nama atau NISN..." oninput="applyFilters()"></div>
-        <select class="form-input form-select" id="filter-role" style="width:145px;" onchange="applyFilters()">
+        <div class="search-input-wrap"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><input type="text" class="search-input" id="search" aria-label="Cari nama atau NISN" placeholder="Cari nama atau NISN..." oninput="applyFilters()"></div>
+        <select class="form-input form-select" id="filter-role" aria-label="Filter role" onchange="applyFilters()">
           <option value="">Semua Role</option><option value="siswa">Siswa</option><option value="alumni">Alumni</option><option value="guru">Guru</option>
         </select>
-        <select class="form-input form-select" id="filter-kelas" style="width:165px;" onchange="applyFilters()">
+        <select class="form-input form-select" id="filter-kelas" aria-label="Filter kelas" onchange="applyFilters()">
           <option value="">Semua Kelas</option>
           <optgroup label="Kelas X">
             <option value="X TKJ 1">X TKJ 1</option>
@@ -120,19 +127,21 @@
             <option value="XII Multimedia 1">XII Multimedia 1</option>
           </optgroup>
         </select>
-        <select class="form-input form-select" id="filter-angkatan" style="width:140px;" onchange="applyFilters()">
+        <select class="form-input form-select" id="filter-angkatan" aria-label="Filter angkatan" onchange="applyFilters()">
           <option value="">Semua Angkatan</option>
           <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option>
         </select>
       </div>
-      <div id="table-content"><div class="loading"><div class="spinner"></div>Memuat data pengguna...</div></div>
-      <div id="pagination" style="display:flex;justify-content:center;gap:8px;margin-top:16px;flex-wrap:wrap;"></div>
+      <div id="table-content"></div>
+      <div id="pagination" class="pagination"></div>
     </div>
   </main>
 </div>
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script src="js/motion.js"></script>
 <script>
 Auth.guard();
 Auth.buildNav('students');
@@ -141,10 +150,11 @@ const isAdmin = currentUser && currentUser.role === 'admin';
 
 if (isAdmin) {
   document.getElementById('topbar-actions').insertAdjacentHTML('beforeend',
-    '<button class="btn btn-primary" onclick="document.getElementById(\'modal-add\').classList.add(\'show\')">➕ Tambah Pengguna</button>'
+    '<button type="button" class="btn btn-primary" onclick="document.getElementById(\'modal-add\').classList.add(\'show\')">' + Icons.svg('plus', 16) + 'Tambah pengguna</button>'
   );
 }
 
+const roleLabel = { siswa: 'Siswa', alumni: 'Alumni', guru: 'Guru', admin: 'Admin' };
 let currentPage = 1;
 
 async function loadStats() {
@@ -161,7 +171,7 @@ async function loadStats() {
 async function loadUsers(page) {
   page = page || 1;
   currentPage = page;
-  document.getElementById('table-content').innerHTML = '<div class="loading"><div class="spinner"></div>Memuat...</div>';
+  document.getElementById('table-content').innerHTML = UI.loading();
   const role     = document.getElementById('filter-role').value;
   const kelas    = document.getElementById('filter-kelas').value;
   const angkatan = document.getElementById('filter-angkatan').value;
@@ -178,8 +188,7 @@ async function loadUsers(page) {
     renderUsers(paged.data);
     renderPagination(paged);
   } catch(e) {
-    document.getElementById('table-content').innerHTML =
-      '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-title">Gagal memuat data</div><div class="empty-sub">' + e.message + '</div></div>';
+    document.getElementById('table-content').innerHTML = UI.error(e.message, 'loadUsers(' + page + ')');
   }
 }
 
@@ -187,27 +196,30 @@ function applyFilters() { loadUsers(1); }
 
 function renderUsers(data) {
   if (!data || !data.length) {
-    document.getElementById('table-content').innerHTML = '<div class="empty"><div class="empty-icon">👤</div><div class="empty-title">Tidak ada data pengguna</div></div>';
+    document.getElementById('table-content').innerHTML = UI.empty('Tidak ada pengguna yang cocok', 'Ubah filter atau kata kunci pencarian.', 'users');
     return;
   }
   var rows = data.map(function(u) {
     var aksi = '';
     if (isAdmin && u.role === 'siswa') {
-      aksi = '<button class="btn btn-ghost btn-sm" onclick="promoteAlumni(' + u.id + ',\'' + u.name.replace(/'/g, "\\'") + '\')">🎓 Promosi Alumni</button>';
+      aksi = '<button type="button" class="btn btn-ghost btn-sm" onclick="promoteAlumni(' + u.id + ',\'' + UI.esc(u.name.replace(/'/g, "\\'")) + '\')">' + Icons.svg('graduation', 16) + 'Promosikan ke alumni</button>';
     } else {
-      aksi = '<span style="color:var(--muted);font-size:12px;">—</span>';
+      aksi = '<span class="text-muted">—</span>';
     }
+    var status = u.is_active
+      ? '<span class="badge badge-success">' + Icons.svg('check-circle', 12) + 'Aktif</span>'
+      : '<span class="badge badge-danger">' + Icons.svg('x-circle', 12) + 'Nonaktif</span>';
     return '<tr>' +
-      '<td><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#6366F1,#06B6D4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">' + u.name.charAt(0) + '</div><div><div style="font-weight:600;font-size:13px;">' + u.name + '</div><div style="font-size:11px;color:var(--muted)">NISN: ' + u.nisn + '</div></div></div></td>' +
-      '<td><span class="badge badge-' + u.role + '">' + u.role + '</span></td>' +
-      '<td style="font-size:13px;">' + (u.class_name || '—') + '</td>' +
-      '<td style="font-size:13px;">' + (u.angkatan || '—') + '</td>' +
-      '<td><span style="font-size:12px;font-weight:600;color:' + (u.is_active ? '#34D399' : '#FCA5A5') + '">' + (u.is_active ? '✅ Aktif' : '❌ Nonaktif') + '</span></td>' +
+      '<td><div class="cell-person"><div class="avatar-sm" aria-hidden="true">' + UI.esc(u.name.charAt(0)) + '</div><div><div class="cell-name">' + UI.esc(u.name) + '</div><div class="cell-sub mono">NISN ' + UI.esc(u.nisn) + '</div></div></div></td>' +
+      '<td><span class="badge badge-' + UI.esc(u.role) + '">' + UI.esc(roleLabel[u.role] || u.role) + '</span></td>' +
+      '<td>' + UI.esc(u.class_name || '—') + '</td>' +
+      '<td class="num">' + UI.esc(u.angkatan || '—') + '</td>' +
+      '<td>' + status + '</td>' +
       '<td>' + aksi + '</td>' +
       '</tr>';
   }).join('');
   document.getElementById('table-content').innerHTML =
-    '<div class="table-wrap"><table><thead><tr><th>Nama</th><th>Role</th><th>Kelas</th><th>Angkatan</th><th>Status</th><th>Aksi</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    '<div class="table-wrap"><table><thead><tr><th>Nama</th><th>Role</th><th>Kelas</th><th class="num">Angkatan</th><th>Status</th><th>Aksi</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
 function renderPagination(meta) {
@@ -215,8 +227,8 @@ function renderPagination(meta) {
   if (!meta || meta.last_page <= 1) { el.innerHTML = ''; return; }
   var html = '';
   for (var p = 1; p <= meta.last_page; p++) {
-    var style = p === meta.current_page ? 'background:rgba(99,102,241,0.2);color:#A5B4FC;' : '';
-    html += '<button class="btn btn-ghost btn-sm" style="' + style + '" onclick="loadUsers(' + p + ')">' + p + '</button>';
+    var current = p === meta.current_page;
+    html += '<button type="button" class="btn btn-ghost btn-sm' + (current ? ' is-current' : '') + '"' + (current ? ' aria-current="page"' : '') + ' aria-label="Halaman ' + p + '" onclick="loadUsers(' + p + ')">' + p + '</button>';
   }
   el.innerHTML = html;
 }
@@ -225,7 +237,7 @@ async function promoteAlumni(id, name) {
   if (!confirm('Promosikan ' + name + ' menjadi Alumni? Tindakan ini tidak bisa dibatalkan.')) return;
   try {
     await Api.patch('/admin/users/' + id + '/promote');
-    toast(name + ' berhasil dipromosikan menjadi Alumni! 🎓', 'success');
+    toast(name + ' berhasil dipromosikan menjadi Alumni.', 'success');
     loadStats(); loadUsers(currentPage);
   } catch(e) { toast(e.message || 'Gagal promosi.', 'error'); }
 }
@@ -272,19 +284,10 @@ async function submitAdd() {
   }
   try {
     await Api.post('/admin/users', data);
-    toast('Akun ' + data.name + ' berhasil dibuat! ✅', 'success');
+    toast('Akun ' + data.name + ' berhasil dibuat.', 'success');
     document.getElementById('modal-add').classList.remove('show');
     loadStats(); loadUsers(1);
   } catch(e) { alertEl.textContent = e.message || 'Gagal membuat akun.'; alertEl.style.display = 'block'; }
-}
-
-function toast(msg, type) {
-  type = type || 'info';
-  var el = document.createElement('div');
-  el.className = 'toast toast-' + type;
-  el.innerHTML = (type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️') + ' ' + msg;
-  document.getElementById('toast-container').appendChild(el);
-  setTimeout(function() { el.remove(); }, 4000);
 }
 
 async function submitImportCsv() {
@@ -305,7 +308,7 @@ async function submitImportCsv() {
     });
     const json = await res.json();
     if (!res.ok) throw new Error(json.message || 'Gagal import file');
-    
+
     document.getElementById('modal-import').classList.remove('show');
     toast(json.message || 'Import berhasil!', 'success');
     fileInput.value = '';
