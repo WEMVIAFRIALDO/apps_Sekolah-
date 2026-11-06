@@ -50,17 +50,32 @@
 
 <!-- Modal Import CSV -->
 <div class="modal-overlay" id="modal-import">
-  <div class="modal modal-sm">
-    <div class="modal-title">Import Data Siswa (CSV)</div>
-    <div class="modal-sub">Format: Nama, NISN, Email, Role, Kelas, Angkatan, No HP</div>
+  <div class="modal modal-md">
+    <div class="modal-title" id="import-title">Import Data Siswa (CSV)</div>
+    <div class="modal-sub" id="import-sub">Format: Nama, NISN, Email, Role, Kelas, Angkatan, No HP</div>
     <div id="import-alert" class="alert alert-error" role="alert" hidden></div>
-    <div class="form-group">
-      <label class="form-label" for="inp-csv">Pilih file CSV</label>
-      <input type="file" id="inp-csv" accept=".csv" class="form-input">
+    <div id="import-form">
+      <div class="form-group">
+        <label class="form-label" for="inp-csv">Pilih file CSV</label>
+        <input type="file" id="inp-csv" accept=".csv" class="form-input">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" onclick="submitImportCsv()"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>Import file</button>
+        <button type="button" class="btn btn-ghost" onclick="closeImportModal()">Batal</button>
+      </div>
     </div>
-    <div class="modal-actions">
-      <button type="button" class="btn btn-primary" onclick="submitImportCsv()"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>Import file</button>
-      <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-import').classList.remove('show')">Batal</button>
+    <div id="import-result" hidden>
+      <div class="table-wrap scroll-list">
+        <table>
+          <thead><tr><th>Nama</th><th>NISN</th><th>Role</th><th>Kata sandi sementara</th></tr></thead>
+          <tbody id="import-result-body"></tbody>
+        </table>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" onclick="copyImportAccounts()"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Salin daftar</button>
+        <button type="button" class="btn btn-ghost" onclick="downloadImportAccounts()"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Unduh CSV</button>
+        <button type="button" class="btn btn-ghost" onclick="closeImportModal()">Selesai</button>
+      </div>
     </div>
   </div>
 </div>
@@ -91,7 +106,7 @@
       <div><h1 class="page-title">Siswa &amp; Alumni</h1><p class="page-sub">Manajemen akun pengguna SALUT</p></div>
       <div class="btn-group" id="topbar-actions">
         <button type="button" class="btn btn-ghost" onclick="exportAlumni()"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Export alumni (CSV)</button>
-        <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-import').classList.add('show')"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>Import CSV</button>
+        <button type="button" class="btn btn-ghost" onclick="openImportModal()"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>Import CSV</button>
       </div>
     </header>
     <div class="content">
@@ -290,6 +305,76 @@ async function submitAdd() {
   } catch(e) { alertEl.textContent = e.message || 'Gagal membuat akun.'; alertEl.style.display = 'block'; }
 }
 
+// Hasil impor: daftar akun + kata sandi sementara (hanya ada di memori halaman, dihapus saat modal ditutup)
+let importAccounts = [];
+const IMPORT_TITLE = 'Import Data Siswa (CSV)';
+const IMPORT_SUB = 'Format: Nama, NISN, Email, Role, Kelas, Angkatan, No HP';
+
+function resetImportModal() {
+  importAccounts = [];
+  document.getElementById('import-result-body').innerHTML = '';
+  document.getElementById('import-result').hidden = true;
+  document.getElementById('import-form').hidden = false;
+  document.getElementById('import-title').textContent = IMPORT_TITLE;
+  document.getElementById('import-sub').textContent = IMPORT_SUB;
+  document.getElementById('import-alert').style.display = 'none';
+  document.getElementById('inp-csv').value = '';
+}
+
+function openImportModal() {
+  resetImportModal();
+  document.getElementById('modal-import').classList.add('show');
+}
+
+function closeImportModal() {
+  document.getElementById('modal-import').classList.remove('show');
+}
+
+// Esc dan klik tombol sama-sama menutup lewat kelas "show": bersihkan kata sandi dari halaman setiap kali modal tertutup
+new MutationObserver(function() {
+  if (!document.getElementById('modal-import').classList.contains('show')) resetImportModal();
+}).observe(document.getElementById('modal-import'), { attributes: true, attributeFilter: ['class'] });
+
+function showImportResult(accounts) {
+  importAccounts = accounts;
+  document.getElementById('import-title').textContent = 'Impor selesai: ' + accounts.length + ' akun dibuat';
+  document.getElementById('import-sub').textContent = 'Kata sandi sementara hanya tampil sekali dan tidak disimpan sebagai teks. Bagikan ke pengguna, lalu minta mereka menggantinya setelah masuk.';
+  document.getElementById('import-result-body').innerHTML = accounts.map(function(a) {
+    return '<tr><td class="cell-name">' + UI.esc(a.name) + '</td><td class="mono">' + UI.esc(a.nisn) + '</td><td>' +
+      UI.esc(roleLabel[a.role] || a.role) + '</td><td class="mono">' + UI.esc(a.password) + '</td></tr>';
+  }).join('');
+  document.getElementById('import-form').hidden = true;
+  document.getElementById('import-result').hidden = false;
+}
+
+async function copyImportAccounts() {
+  var lines = ['Nama\tNISN\tRole\tKata sandi sementara'].concat(importAccounts.map(function(a) {
+    return [a.name, a.nisn, roleLabel[a.role] || a.role, a.password].join('\t');
+  }));
+  try {
+    await navigator.clipboard.writeText(lines.join('\n'));
+    toast('Daftar akun disalin.', 'success');
+  } catch(e) { toast('Gagal menyalin. Gunakan Unduh CSV.', 'error'); }
+}
+
+function csvCell(value) {
+  var text = String(value == null ? '' : value);
+  if (/^[=+\-@]/.test(text)) text = "'" + text; // cegah rumus spreadsheet dari data impor
+  return '"' + text.replace(/"/g, '""') + '"';
+}
+
+function downloadImportAccounts() {
+  var rows = [['Nama', 'NISN', 'Email', 'Role', 'Kata sandi sementara']].concat(importAccounts.map(function(a) {
+    return [a.name, a.nisn, a.email, roleLabel[a.role] || a.role, a.password];
+  }));
+  var csv = rows.map(function(r) { return r.map(csvCell).join(','); }).join('\r\n');
+  var url = window.URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+  var a = document.createElement('a');
+  a.href = url; a.download = 'Akun_Impor_SALUT_' + new Date().toISOString().split('T')[0] + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  window.URL.revokeObjectURL(url);
+}
+
 async function submitImportCsv() {
   const fileInput = document.getElementById('inp-csv');
   if (!fileInput.files || fileInput.files.length === 0) {
@@ -309,9 +394,13 @@ async function submitImportCsv() {
     const json = await res.json();
     if (!res.ok) throw new Error(json.message || 'Gagal import file');
 
-    document.getElementById('modal-import').classList.remove('show');
     toast(json.message || 'Import berhasil!', 'success');
     fileInput.value = '';
+    if (json.accounts && json.accounts.length) {
+      showImportResult(json.accounts);
+    } else {
+      closeImportModal();
+    }
     loadStats(); loadUsers(currentPage);
   } catch(e) {
     document.getElementById('import-alert').textContent = e.message;
