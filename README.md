@@ -7,7 +7,7 @@
 ### _Integrated Academic Graduation Archive, SKPI Portfolio & Alumni Tracer Study System_
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
-[![Laravel](https://img.shields.io/badge/Laravel-11.x-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)](https://php.net)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0%2B-4479A1?logo=mysql&logoColor=white)](https://mysql.com)
 [![Firebase](https://img.shields.io/badge/Firebase-FCM%20Push-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com)
@@ -16,7 +16,7 @@
 
   <p align="center">
     <b>Aplikasi Ekosistem Terpadu Berbasis Mobile (Flutter) dan Web Administrator (Laravel API & Modern Web)</b><br>
-    Dirancang khusus untuk Tata Kelola Arsip Kelulusan, Portofolio SKPI Siswa, dan Pelacakan Jejang Karir Alumni SMK.
+    Dirancang khusus untuk Tata Kelola Arsip Kelulusan, Portofolio SKPI Siswa, dan Pelacakan Jenjang Karir Alumni SMK.
   </p>
 
   <p align="center">
@@ -35,10 +35,9 @@ Seluruh naskah laporan akademik, dokumentasi instalasi, pengujian API, dan integ
 
 | Nama Dokumen Laporan                               | Format  | Deskripsi Isi Dokumen                                                                                                                                                                                          |                           Tautan Langsung                            |
 | :------------------------------------------------- | :-----: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------: |
-| **Laporan Lengkap Master (Bab 1 - 6 + Instalasi)** | `.docx` | Dokumen akademik komprehensif 35-40 halaman, mencakup Laporan 1 & 2 (Instalasi), Laporan 3 (Backend API), Laporan 4 (Frontend Mobile), Laporan 5 (SKPI & Portofolio), dan Laporan 6 (Automasi & Tracer Study). | [📂 Buka Dokumen](./Laporan_Lengkap_Sistem_SALUT_dan_Instalasi.docx) |
-| **Laporan Kemajuan Sistem 3, 4, 5, 6**             | `.docx` | Naskah laporan kompilasi teknis implementasi backend, mobile Flutter, portofolio SKPI, cron automasi, dan analitik web SMK beserta 32 tangkapan layar.                                                         |          [📂 Buka Dokumen](./Laporan_Lengkap_3_4_5_6.docx)           |
+| **Laporan Lengkap Master (Bab 1 - 6 + Instalasi)** | `.docx` | Dokumen akademik komprehensif 35-40 halaman, mencakup Laporan 1 & 2 (Instalasi), Laporan 3 (Backend API), Laporan 4 (Frontend Mobile), Laporan 5 (SKPI & Portofolio), dan Laporan 6 (Automasi & Tracer Study). | [📂 Buka Dokumen](./Laporan_Lengkap_Sistem_SALUT_dan_Instalasi_Terbaru.docx) |
+| **Laporan Kemajuan Sistem 3, 4, 5, 6**             | `.docx` | Naskah laporan kompilasi teknis implementasi backend, mobile Flutter, portofolio SKPI, cron automasi, dan analitik web SMK beserta 32 tangkapan layar.                                                         |          [📂 Buka Dokumen](./Laporan_Lengkap_Sistem_SALUT_dan_Instalasi_Terbaru.docx)           |
 | **Pratinjau Laporan Web Interaktif**               | `.html` | Versi web yang dapat langsung dibuka dan dibaca di Google Chrome / browser tanpa perlu Microsoft Word.                                                                                                         |         [🌐 Buka di Browser](./Laporan_Lengkap_3_4_5_6.html)         |
-| **Panduan Instalasi & Setup Awal (Laporan 1 & 2)** | `.docx` | Dokumen panduan instalasi Flutter SDK, Android Studio, XAMPP, Git, dan arsitektur database awal.                                                                                                               |                 [📂 Buka Dokumen](../instalasi.docx)                 |
 
 ---
 
@@ -56,9 +55,11 @@ Seluruh naskah laporan akademik, dokumentasi instalasi, pengujian API, dan integ
    - [E. Dashboard Web Admin & Analitik Kejuruan SMK](#e-dashboard-web-admin--analitik-kejuruan-smk)
 6. [Struktur Direktori Repositori](#-5-struktur-direktori-repositori)
 7. [Panduan Instalasi & Menjalankan Sistem](#-6-panduan-instalasi--menjalankan-sistem)
-8. [Daftar Kredensial Akun Pengujian (Testing Accounts)](#-7-daftar-kredensial-akun-pengujian-testing-accounts)
+8. [Akun Pengujian](#-7-akun-pengujian)
 9. [Dokumentasi Ringkas Endpoint REST API](#-8-dokumentasi-ringkas-endpoint-rest-api)
-10. [Milestone & Log Progres Pengembangan](#-9-milestone--log-progres-pengembangan)
+10. [Setup Push Notification (FCM)](#-9-setup-push-notification-fcm)
+11. [Panduan Produksi](#-10-panduan-produksi)
+12. [Milestone & Riwayat Pembaruan](#-11-milestone--riwayat-pembaruan)
 
 ---
 
@@ -95,11 +96,10 @@ graph TD
         Jadwal_Panel["Penjadwalan Kelulusan Otomatis"]
     end
 
-    subgraph Backend Engine ["⚙️ Backend Engine (Laravel 11 REST API)"]
+    subgraph Backend Engine ["⚙️ Backend Engine (Laravel 12 REST API)"]
         Auth_JWT["JWT Authenticator & Middleware"]
         API_Routes["REST API Endpoints"]
         Cron_Scheduler["Artisan Scheduler & Task Runner"]
-        FCM_Service["FCM Push Notification Broadcaster"]
     end
 
     subgraph Storage ["💾 Data Layer (MySQL Database)"]
@@ -134,7 +134,7 @@ Dokumentasi ini diselaraskan secara detail dengan seluruh rangkaian pengujian da
 
 ### A. Backend RESTful API & Basis Data (Laporan 3)
 
-Backend SALUT dibangun di atas **Laravel 11** dengan arsitektur REST API murni, menggunakan protokol autentikasi aman berbasis JWT (_JSON Web Tokens_).
+Backend SALUT dibangun di atas **Laravel 12** dengan arsitektur REST API murni, menggunakan protokol autentikasi aman berbasis JWT (_JSON Web Tokens_).
 
 |                                Parameter Konfigurasi `.env`                                |                                       Migrasi & Model Eloquent                                        |
 | :----------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------: |
@@ -199,6 +199,8 @@ Mengakomodasi kebutuhan verifikasi kompetensi kejuruan siswa SMK sesuai standar 
 
 Fitur automasi enterprise untuk meniadakan proses manual administrasi tahunan:
 
+> **Status FCM:** kode penerima di Flutter dan pengirim di backend sudah ada, tetapi belum aktif karena butuh kredensial Firebase. Lihat [Setup Push Notification](#-9-setup-push-notification-fcm).
+
 |                                     Implementasi FCM Service Client                                     |                                      Tampilan Notifikasi Broadcast Kelulusan                                       |
 | :-----------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan6_01_fcm_service_code.png" width="400" alt="Kode FCM Service" /> | <img src="./laporan_screenshots/laporan6_02_fcm_notification_app.png" width="400" alt="Tampilan Notifikasi FCM" /> |
@@ -207,7 +209,7 @@ Fitur automasi enterprise untuk meniadakan proses manual administrasi tahunan:
 |                              Engine Otomatisasi Kelulusan (Artisan Command)                               |                                           Eksekusi Penjadwalan di Terminal                                           |
 | :-------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------: |
 | <img src="./laporan_screenshots/laporan6_03_cron_promote_code.png" width="400" alt="Kode Cron Promote" /> | <img src="./laporan_screenshots/laporan6_04_cron_execution_terminal.png" width="400" alt="Eksekusi Terminal Cron" /> |
-|    _Logika otomatis pengubahan status siswa kelas XII menjadi alumni tepat saat waktu kelulusan tiba._    |                    _Hasil log eksekusi `php artisan students:promote-alumni` sukses tanpa error._                    |
+|    _Logika otomatis pengubahan status siswa kelas XII menjadi alumni tepat saat waktu kelulusan tiba._    |                    _Hasil log eksekusi `php artisan salut:promote-alumni` sukses tanpa error._                    |
 
 |                                  Manajemen Keamanan & Ganti Sandi Mandiri                                   |                                    Antarmuka Kuesioner Tracer Study Alumni                                    |
 | :---------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: |
@@ -244,13 +246,16 @@ apps_sekolah/
 │
 ├── salut_backend/                  # [SERVER BACKEND RESTful API]
 │   ├── app/Http/Controllers/Api/   # Controller API (Auth, Admin, Skill, Tracer)
-│   ├── app/Console/Commands/       # Cron Job Artisan (PromoteAlumniCommand)
+│   ├── app/Console/Commands/       # Cron Job Artisan (PromoteAlumni)
 │   ├── database/migrations/        # Skrip migrasi skema tabel MySQL
 │   ├── routes/api.php              # Pemetaan seluruh REST API Endpoints
-│   └── .env                        # Konfigurasi environment & kredensial DB
+│   ├── config/cors.php             # Daftar origin yang diizinkan
+│   ├── storage/app/private/        # Dokumen rahasia: angkatan_{tahun}/nisn_{nisn}/...
+│   └── .env.example                # Templat konfigurasi tanpa secret
 │
 ├── salut_web_admin/                # [WEB PORTAL ADMINISTRATOR & GURU]
 │   ├── css/style.css               # Tema Cyber-Academic Elite UI
+│   ├── js/config.js                # Alamat backend (API_BASE)
 │   ├── js/                         # Script controller DOM, Auth, & Chart.js
 │   ├── dashboard.html              # Ringkasan analitik kejuruan & statistik
 │   ├── students.html               # Manajemen data siswa per jurusan SMK
@@ -260,7 +265,10 @@ apps_sekolah/
 │   └── tracer.html                 # Rekapitulasi tracer study DUDI & Kampus
 │
 ├── laporan_screenshots/            # 32 Aset Gambar Screenshot Beresolusi Tinggi
-├── Laporan_Lengkap_Sistem_SALUT_dan_Instalasi.docx  # Master dokumen laporan komprehensif
+├── Laporan_Lengkap_Sistem_SALUT_dan_Instalasi_Terbaru.docx  # Master dokumen laporan komprehensif
+├── start_salut.bat                 # Menjalankan backend, penjadwal, dan web admin
+├── DATA_LOGIN_SALUT.example.txt    # Contoh data login, password disamarkan
+├── _privat/                        # Data login asli, lokal saja, tidak masuk git
 └── README.md                       # Dokumentasi Repositori ini
 ```
 
@@ -280,54 +288,38 @@ apps_sekolah/
 
 ### Langkah 1: Setup Basis Data & Backend Laravel
 
-1. Buka XAMPP Control Panel dan pastikan layanan **Apache** dan **MySQL** aktif (_Running_).
-2. Buat database baru bernama `salut_db` melalui phpMyAdmin (`http://localhost/phpmyadmin`).
-3. Masuk ke direktori backend:
+1. Aktifkan **MySQL** dari XAMPP Control Panel, lalu buat database `salut_db` lewat phpMyAdmin.
+2. Siapkan backend:
    ```bash
    cd salut_backend
-   ```
-4. Salin file environment dan atur koneksi:
-   ```bash
-   cp .env.example .env
-   ```
-   Pastikan pengaturan pada file `.env` telah sesuai:
-   ```env
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=salut_db
-   DB_USERNAME=root
-   DB_PASSWORD=
-   ```
-5. Install seluruh dependensi Composer:
-   ```bash
    composer install
-   ```
-6. Generate aplikasi key & jalankan migrasi database beserta data awal (_seeder_):
-   ```bash
+   cp .env.example .env
    php artisan key:generate
-   php artisan migrate:fresh --seed
+   php artisan jwt:secret
+   php artisan storage:link
    ```
-7. Jalankan server lokal backend:
+3. Buat tabel. Tambahkan `--seed` **hanya pada database baru** untuk mengisi akun dan data contoh:
    ```bash
-   php artisan serve --host=127.0.0.1 --port=8000
+   php artisan migrate --seed
    ```
-   > Server REST API siap diakses melalui: `http://127.0.0.1:8000/api`
+
+> ⚠️ **`UserSeeder` mengosongkan tabel `users` dan tabel terkait.** Jangan jalankan `db:seed`, `migrate --seed`, atau `migrate:fresh` pada database yang datanya ingin dipertahankan.
 
 ---
 
-### Langkah 2: Menjalankan Web Administrator
+### Langkah 2: Menjalankan Backend dan Web Admin
 
-1. Navigasikan ke direktori web admin:
-   ```bash
-   cd salut_web_admin
-   ```
-2. Anda dapat langsung membuka file `index.html` pada browser modern atau menyajikan melalui live server lokal:
-   ```bash
-   # Alternatif via PHP Built-in Server
-   php -S 127.0.0.1:5500
-   ```
-3. Akses antarmuka login melalui browser: `http://127.0.0.1:5500/index.html`.
+Di Windows dengan XAMPP, jalankan `start_salut.bat` dari root proyek. Skrip ini mengecek MySQL di port 3306, menjalankan `php artisan serve` di port 8000 dan `php artisan schedule:work` di jendela terpisah, lalu membuka `salut_web_admin/index.html`.
+
+Cara manual:
+
+```bash
+cd salut_backend
+php artisan serve --port=8000
+php artisan schedule:work   # di terminal lain
+```
+
+Lalu buka `salut_web_admin/index.html` di browser. Jika alamat backend berbeda, ubah `API_BASE` di `salut_web_admin/js/config.js`.
 
 ---
 
@@ -349,46 +341,139 @@ apps_sekolah/
 
 ---
 
-## 🔑 7. Daftar Kredensial Akun Pengujian (Testing Accounts)
+## 🔑 7. Akun Pengujian
 
-Untuk mempermudah demonstrasi dan evaluasi seluruh peran pengguna, sistem telah dilengkapi dengan akun bawaan (_seeders_):
+Akun berikut dibuat oleh `salut_backend/database/seeders/UserSeeder.php` dan dipakai untuk login dengan **NISN**:
 
-| Peran (_Role_)       | Identitas / Username                 | Kata Sandi Default | Hak Akses Utama                       |
-| :------------------- | :----------------------------------- | :----------------- | :------------------------------------ |
-| **Super Admin**      | `admin@salut.sch.id`                 | `password`         | Master administrator (Web Admin)      |
-| **Guru / Validator** | `guru@salut.sch.id`                  | `password`         | Verifikator SKPI & Data Rapor         |
-| **Siswa Aktif**      | `siswa@salut.sch.id` _(NISN: 1001)_  | `password`         | Portal Siswa Aktif (Mobile Flutter)   |
-| **Alumni**           | `alumni@salut.sch.id` _(NISN: 2001)_ | `password`         | Portal Alumni & Tracer Study (Mobile) |
+| Peran  | NISN         | Platform         |
+| :----- | :----------- | :--------------- |
+| Admin  | `0000000001` | Web Admin        |
+| Guru   | `0000000002` | Web Admin        |
+| Siswa  | `0054321987` | Aplikasi Android |
+| Alumni | `0067890123` | Aplikasi Android |
+
+Password ada di seeder dan di `_privat/` pada komputer lokal. Format contohnya ada di `DATA_LOGIN_SALUT.example.txt`. Akun ini hanya untuk pengembangan.
 
 ---
 
 ## 🌐 8. Dokumentasi Ringkas Endpoint REST API
 
-| HTTP Method | URL Endpoint                    | Proteksi Auth | Deskripsi Fungsi                                         |
-| :---------: | :------------------------------ | :-----------: | :------------------------------------------------------- |
-|   `POST`    | `/api/login`                    |    Publik     | Otentikasi pengguna & pembuatan JWT Bearer Token         |
-|    `GET`    | `/api/me`                       |   JWT Token   | Mendapatkan detail profil dan peran pengguna aktif       |
-|   `POST`    | `/api/change-password`          |   JWT Token   | Mengubah kata sandi pengguna secara mandiri              |
-|    `GET`    | `/api/skills`                   |   JWT Token   | Mengambil daftar portofolio keahlian siswa / SKPI        |
-|   `POST`    | `/api/skills`                   |   JWT Token   | Mengajukan bukti sertifikasi/keahlian baru               |
-|    `GET`    | `/api/arsip`                    |   JWT Token   | Mengambil tautan berkas arsip digital resmi siswa/alumni |
-|   `POST`    | `/api/tracer-study`             |   JWT Token   | Mengirimkan jawaban kuesioner pelacakan alumni           |
-|    `GET`    | `/api/admin/dashboard`          |  Admin Only   | Mengambil data agregasi analitik jurusan & tracer SMK    |
-|    `GET`    | `/api/admin/arsip-alumni`       |  Admin Only   | Master rekapitulasi kelengkapan berkas seluruh alumni    |
-|   `POST`    | `/api/admin/skills/{id}/verify` |  Guru/Admin   | Memberikan status persetujuan (_Approve/Reject_) SKPI    |
+Semua endpoint selain `POST /api/login` wajib memakai header `Authorization: Bearer <token>`. Daftar lengkap: `php artisan route:list --path=api`.
+
+| Method         | Endpoint                              | Akses             | Fungsi                               |
+| :------------- | :------------------------------------ | :---------------- | :----------------------------------- |
+| `POST`         | `/api/login`                          | Publik            | Login dengan NISN dan password       |
+| `POST`         | `/api/logout`, `/api/refresh`         | Login             | Mengakhiri atau memperbarui token    |
+| `GET`, `PATCH` | `/api/profile`                        | Login             | Melihat dan mengubah profil          |
+| `PATCH`        | `/api/profile/password`               | Login             | Mengganti password                   |
+| `PATCH`        | `/api/profile/fcm-token`              | Login             | Mendaftarkan perangkat untuk notifikasi |
+| `GET`, `POST`  | `/api/prestasi`                       | Login             | Daftar dan unggah prestasi           |
+| `GET`          | `/api/prestasi/{id}/sertifikat`       | Pemilik/Guru/Admin | Mengunduh sertifikat                |
+| `GET`          | `/api/arsip`                          | Login             | Daftar arsip milik sendiri           |
+| `POST`         | `/api/arsip`                          | Admin             | Mengunggah arsip siswa               |
+| `GET`          | `/api/arsip/{id}/download`            | Pemilik/Admin     | Mengunduh dokumen rahasia            |
+| `GET`, `POST`  | `/api/tracer-study`                   | Login             | Melihat dan mengisi tracer study     |
+| `GET`          | `/api/rapor/my`, `/api/skills/my`     | Login             | Nilai rapor dan portofolio sendiri   |
+| `GET`          | `/api/admin/stats`                    | Admin/Guru        | Statistik dashboard                  |
+| `GET`, `POST`  | `/api/admin/users`                    | Admin (`GET` juga Guru) | Daftar dan tambah pengguna     |
+| `POST`         | `/api/admin/users/import-csv`         | Admin             | Impor pengguna dari CSV              |
+| `GET`, `POST`  | `/api/admin/schedules`                | Admin             | Jadwal kelulusan                     |
+| `GET`          | `/api/admin/arsip-alumni`             | Admin             | Rekap kelengkapan arsip alumni       |
+| `GET`, `POST`  | `/api/guru/rapor/students/{id}`       | Guru/Admin        | Melihat dan mengisi rapor siswa      |
+| `POST`         | `/api/guru/skills`                    | Guru/Admin        | Menambah kompetensi siswa            |
+
+### Penyimpanan Dokumen
+
+Dokumen disimpan di disk privat (`storage/app/private`) dengan struktur `angkatan_{tahun}/nisn_{nisn}/...` dan hanya bisa diunduh lewat endpoint berproteksi JWT. Folder `public/storage` tidak boleh berisi dokumen rahasia.
 
 ---
 
-## 📈 9. Milestone & Log Progres Pengembangan
+## 🔔 9. Setup Push Notification (FCM)
 
-Pengerjaan sistem SALUT terbagi ke dalam fase-fase pencapaian sistematis yang terdokumentasi penuh pada `GEMINI.md`:
+**Status saat ini:** kode sudah lengkap, tetapi kredensial Firebase belum dipasang dan pengiriman belum pernah diuji ke Firebase sungguhan. Tanpa kredensial, aplikasi dan backend tetap berjalan, lalu mencatat `[FCM]` di log.
+
+- **Penerima:** `lib/services/fcm_service.dart` mendaftarkan token perangkat ke server.
+- **Pengirim:** `salut_backend/app/Services/FcmService.php` memberi tahu siswa saat `salut:promote-alumni` atau tombol promosi admin mengubah statusnya menjadi alumni.
+
+Langkah mengaktifkan penerima di Android:
+
+1. Buat proyek di [Firebase Console](https://console.firebase.google.com), lalu tambahkan aplikasi Android dengan package name `com.example.apps_sekolah`.
+2. Unduh `google-services.json` ke `android/app/`.
+3. Tambahkan plugin di `android/settings.gradle.kts`, pada blok `plugins`:
+   ```kotlin
+   id("com.google.gms.google-services") version "4.4.2" apply false
+   ```
+4. Tambahkan plugin di `android/app/build.gradle.kts`, pada blok `plugins`:
+   ```kotlin
+   id("com.google.gms.google-services")
+   ```
+5. Jalankan `flutter clean`, lalu `flutter run`. Log `FCM Token: ...` menandakan penerima sudah aktif.
+
+Langkah mengaktifkan pengirim di backend:
+
+1. Di Firebase Console, buka **Project settings > Service accounts**, lalu pilih **Generate new private key**.
+2. Simpan file JSON itu **di luar folder proyek**, karena file ini tidak boleh masuk git.
+3. Tambahkan path-nya ke `salut_backend/.env`:
+   ```env
+   FIREBASE_CREDENTIALS=C:/rahasia/firebase-adminsdk.json
+   ```
+
+---
+
+## 🛡️ 10. Panduan Produksi
+
+Sesuaikan `salut_backend/.env` di server:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://api.sekolah.sch.id
+LOG_LEVEL=warning
+DB_USERNAME=salut_app
+DB_PASSWORD=isi-password-yang-kuat
+FILESYSTEM_DISK=local
+CORS_ALLOWED_ORIGINS=https://admin.sekolah.sch.id
+```
+
+Daftar periksa:
+
+- [ ] Buat `APP_KEY` dan `JWT_SECRET` baru khusus server: `php artisan key:generate` dan `php artisan jwt:secret`.
+- [ ] Pakai pengguna database khusus berpassword, bukan `root` tanpa password.
+- [ ] Batasi CORS. Saat `APP_ENV=production`, hanya origin di `CORS_ALLOWED_ORIGINS` yang diizinkan, sehingga web admin harus dibuka dari domain tersebut, bukan dari `file://`.
+- [ ] Jangan jalankan seeder. Buat akun admin asli dan jangan pakai akun uji.
+- [ ] Pakai HTTPS, lalu ubah `API_BASE` di `salut_web_admin/js/config.js` dan `kBaseUrl` di `lib/services/api_service.dart`.
+- [ ] Jalankan `php artisan storage:link` dan `php artisan config:cache`.
+- [ ] Daftarkan `php artisan schedule:run` tiap menit di cron atau Task Scheduler.
+
+Jika konfigurasi sudah di-cache, jalankan `php artisan config:clear` sebelum `php artisan test`.
+
+---
+
+## 📈 11. Milestone & Riwayat Pembaruan
+
+Catatan rinci per sesi ada di `progres.txt`.
 
 - **Milestone 1**: Instalasi environment, perancangan basis data relasional 8 tabel, dan arsitektur repositori.
-- **Milestone 2**: Pembangunan backend API Laravel 11, otentikasi JWT, proteksi CORS, dan model data Eloquent.
+- **Milestone 2**: Pembangunan backend API Laravel, otentikasi JWT, proteksi CORS, dan model data Eloquent.
 - **Milestone 3**: Pengembangan antarmuka mobile Flutter, Dio Client, Keystore Token Storage, dan Dynamic Role Logic.
 - **Milestone 4**: Modul SKPI (Surat Keterangan Pendamping Ijazah), upload portofolio, dan pengarsipan digital.
 - **Milestone 5**: Penjadwalan otomatis kelulusan (_Cron Scheduler_), integrasi Firebase Cloud Messaging (FCM), kuesioner Tracer Study, dan proteksi ganti sandi.
 - **Milestone 6**: Redesign total antarmuka web dan mobile mengusung filosofi _Cyber-Academic Elite_, analitik grafik Chart.js offline SMK, dan integrasi logo resmi resolusi tinggi.
+
+### Pembaruan 5 November 2026: Keamanan dan Perapian
+
+- **Dokumen:** unggahan baru memakai `angkatan_{tahun}/nisn_{nisn}/...`, nama file dari klien tidak lagi dipakai untuk sertifikat, dan rute `/storage` milik disk privat dimatikan.
+- **Web admin:** alamat backend dipusatkan di `js/config.js`.
+- **Konfigurasi:** `.env.example` dilengkapi tanpa secret, dan `config/cors.php` dibuat tanpa wildcard.
+- **Kredensial:** data login asli dipindah ke `_privat/`, dengan contoh di `DATA_LOGIN_SALUT.example.txt`.
+- **FCM:** galat inisialisasi kini tertangkap dan dicatat. Backend kini punya pengirim notifikasi kelulusan, dan token perangkat tersimpan di server.
+- **Hak akses:** unggah arsip kini hanya untuk Admin.
+- **Skrip dan tes:** menambah `start_salut.bat` dan `tests/Feature/DokumenRahasiaTest.php`.
+- **Dokumentasi:** README diselaraskan dengan kode: versi Laravel, cara login, daftar endpoint, dan status FCM.
+
+**Data lama:** 180 dokumen dan 1 sertifikat dipindah ke struktur `angkatan_{tahun}/nisn_{nisn}/...`. Lima file sertifikat di `achievements/6/` tetap di tempatnya karena tidak tercatat di database.
+
+**Kunci dan riwayat git:** `APP_KEY` dan `JWT_SECRET` diganti karena pernah bocor, dan riwayat git dibersihkan. Hash commit lama berubah, sehingga salinan repo lain perlu di-clone ulang.
 
 ---
 

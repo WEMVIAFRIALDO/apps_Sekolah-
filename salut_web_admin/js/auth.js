@@ -2,6 +2,53 @@
  * auth.js — Utilitas autentikasi & navigasi role-aware Web Admin SALUT
  * Mendukung role: admin (akses penuh) dan guru (akses terbatas)
  */
+/**
+ * Icons — satu set ikon SVG garis (stroke 1.75, grid 24). Sprite disuntik sekali di halaman ber-sidebar;
+ * dipakai lewat Icons.svg('nama') atau <svg class="icon"><use href="#i-nama"/></svg>.
+ */
+const Icons = {
+    paths: {
+        'dashboard':      `<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>`,
+        'users':          `<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8"/><path d="M18 14.3c2.3.7 3.5 2.6 3.5 5.7"/>`,
+        'clipboard-check':`<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/><path d="m9 14 2 2 4-4"/>`,
+        'badge-check':    `<circle cx="12" cy="9" r="6"/><path d="m9 9 2 2 3-3.5"/><path d="M8.5 14.5 7 21l5-3 5 3-1.5-6.5"/>`,
+        'archive':        `<rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"/><path d="M10 12h4"/>`,
+        'flask':          `<path d="M9 3h6"/><path d="M10 3v6.2L4.8 18.2A1.5 1.5 0 0 0 6.1 20.5h11.8a1.5 1.5 0 0 0 1.3-2.3L14 9.2V3"/><path d="M7.5 15h9"/>`,
+        'chart-bar':      `<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M3 20h18"/>`,
+        'calendar':       `<rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/>`,
+        'log-out':        `<path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><path d="m16 8 4 4-4 4"/><path d="M20 12H9"/>`,
+        'menu':           `<path d="M4 6h16M4 12h16M4 18h16"/>`,
+        'x':              `<path d="M6 6l12 12M18 6 6 18"/>`,
+        'sun':            `<circle cx="12" cy="12" r="4"/><path d="M12 2.5V5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/>`,
+        'moon':           `<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>`,
+        'arrow-right':    `<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>`,
+        'clock':          `<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>`,
+        'check-circle':   `<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>`,
+        'x-circle':       `<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>`,
+        'alert':          `<path d="M12 3.5 2.5 20h19z"/><path d="M12 10v5M12 17.5v.5"/>`,
+        'download':       `<path d="M12 4v11"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/>`,
+        'upload':         `<path d="M12 16V5"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/>`,
+        'plus':           `<path d="M12 5v14M5 12h14"/>`,
+        'search':         `<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>`,
+        'refresh':        `<path d="M20 11a8 8 0 0 0-14.5-4"/><path d="M5 3v4h4"/><path d="M4 13a8 8 0 0 0 14.5 4"/><path d="M19 21v-4h-4"/>`,
+        'graduation':     `<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/>`,
+        'briefcase':      `<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M3 13h18"/>`,
+        'file':           `<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>`,
+        'info':           `<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.5"/>`,
+        'check':          `<path d="m5 12 5 5 9-10"/>`,
+        'trash':          `<path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/>`,
+        'folder':         `<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>`,
+    },
+    svg(name, size = 18) {
+        return `<svg class="icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="#i-${name}"/></svg>`;
+    },
+    inject() {
+        if (document.getElementById('icon-sprite') || !document.querySelector('.sidebar')) return;
+        const symbols = Object.keys(this.paths).map(n => `<symbol id="i-${n}" viewBox="0 0 24 24">${this.paths[n]}</symbol>`).join('');
+        document.body.insertAdjacentHTML('afterbegin', `<svg id="icon-sprite" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><defs>${symbols}</defs></svg>`);
+    },
+};
+
 const Auth = {
     login(token, user) {
         localStorage.setItem('salut_token', token);
@@ -54,7 +101,7 @@ const Auth = {
 
         // Update label panel
         const roleLabel = document.getElementById('sidebar-role-label');
-        if (roleLabel) roleLabel.textContent = isAdmin ? 'Admin Panel v1.0' : 'Panel Guru';
+        if (roleLabel) roleLabel.textContent = isAdmin ? 'Admin Panel' : 'Panel Guru';
 
         // Update user info
         const nameEl = document.getElementById('nav-user-name');
@@ -71,21 +118,21 @@ const Auth = {
                 href: 'dashboard.html',
                 label: 'Dashboard',
                 roles: ['admin', 'guru'],
-                icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>',
+                icon: 'dashboard',
             },
             {
                 id: 'students',
                 href: 'students.html',
                 label: 'Siswa &amp; Alumni',
                 roles: ['admin'],  // Guru TIDAK bisa lihat menu ini
-                icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>',
+                icon: 'users',
             },
             {
                 id: 'rapor',
                 href: 'rapor.html',
                 label: 'Nilai Rapor',
                 roles: ['admin', 'guru'],
-                icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>',
+                icon: 'clipboard-check',
             },
             {
                 id: 'prestasi',
@@ -93,35 +140,35 @@ const Auth = {
                 label: 'Validasi Prestasi',
                 roles: ['admin', 'guru'],
                 badge: 'badge-pending',
-                icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>',
+                icon: 'badge-check',
             },
             {
                 id: 'arsip',
                 href: 'arsip.html',
                 label: 'Arsip Dokumen',
                 roles: ['admin'],  // Guru TIDAK bisa upload arsip
-                icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>',
+                icon: 'archive',
             },
             {
                 id: 'skills',
                 href: 'skills.html',
                 label: 'Portofolio Keahlian',
                 roles: ['admin', 'guru'],
-                icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>',
+                icon: 'flask',
             },
             {
                 id: 'tracer',
                 href: 'tracer.html',
                 label: 'Tracer Study',
                 roles: ['admin', 'guru'],
-                icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>',
+                icon: 'chart-bar',
             },
             {
                 id: 'schedules',
                 href: 'schedules.html',
                 label: 'Jadwal Kelulusan',
                 roles: ['admin'],  // Admin only
-                icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>',
+                icon: 'calendar',
             },
         ];
 
@@ -135,12 +182,13 @@ const Auth = {
         const nav = document.getElementById('sidebar-nav');
         if (!nav) return;
 
-        let html = '<p class="nav-label">Menu Utama</p>';
+        let html = '';
         allMenus.forEach(function(menu) {
             if (!menu.roles.includes(user.role)) return; // skip jika tidak diizinkan
-            const active = menu.id === activePage ? ' active' : '';
-            const badge  = menu.badge ? `<span id="${menu.badge}" style="margin-left:auto;background:rgba(245,158,11,0.2);color:#FBBF24;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700;display:none"></span>` : '';
-            html += `<a href="${menu.href}" class="nav-item${active}">${menu.icon}${menu.label}${badge}</a>`;
+            const active  = menu.id === activePage ? ' active' : '';
+            const current = menu.id === activePage ? ' aria-current="page"' : '';
+            const badge   = menu.badge ? `<span id="${menu.badge}" class="nav-count"></span>` : '';
+            html += `<a href="${menu.href}" class="nav-item${active}"${current}>${Icons.svg(menu.icon)}${menu.label}${badge}</a>`;
         });
 
         nav.innerHTML = html;
@@ -157,19 +205,19 @@ const Auth = {
 };
 
 /**
- * Theme Engine — Pengatur Mode Gelap / Terang (Dark / Light)
- * Menyimpan preferensi di localStorage dan otomatis menyuntikkan switch interaktif
- * dengan posisi tetap dan tidak mengganggu elemen aksi halaman lainnya.
+ * Theme Engine — Mode Gelap / Terang. Pilihan disimpan di localStorage (salut_theme).
+ * Halaman ber-topbar mendapat pemilih dua tombol; halaman tanpa topbar (login)
+ * mendapat switch melayang bergaya lama.
  */
 const Theme = {
     get() {
-        return localStorage.getItem('salut_theme') || 'dark';
+        try { return localStorage.getItem('salut_theme') || 'dark'; } catch { return 'dark'; }
     },
     set(theme) {
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('salut_theme', theme);
+        try { localStorage.setItem('salut_theme', theme); } catch { /* penyimpanan tidak tersedia */ }
         this.updateButtons(theme);
-        if (typeof window !== 'undefined' && typeof window.onThemeChange === 'function') {
+        if (typeof window.onThemeChange === 'function') {
             window.onThemeChange(theme);
         }
     },
@@ -178,9 +226,8 @@ const Theme = {
         this.set(next);
     },
     updateButtons(theme) {
-        document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
-            btn.innerHTML = theme === 'dark' ? '☀️ Mode Terang' : '🌙 Mode Gelap';
-            btn.setAttribute('title', theme === 'dark' ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap');
+        document.querySelectorAll('[data-theme-set]').forEach(btn => {
+            btn.setAttribute('aria-pressed', String(btn.dataset.themeSet === theme));
         });
     },
     init() {
@@ -192,11 +239,26 @@ const Theme = {
             this.injectHeaderButton();
         }
     },
-    injectHeaderButton() {
-        // Hapus toggle lama jika ada
-        const oldSwitcher = document.getElementById('global-theme-switcher');
-        if (oldSwitcher) oldSwitcher.remove();
-
+    /** Pemilih tema halaman ber-topbar: dua tombol, yang aktif ditandai aria-pressed */
+    buildTopbarSwitch() {
+        const group = document.createElement('div');
+        group.id = 'global-theme-switcher';
+        group.className = 'theme-toggle';
+        group.setAttribute('role', 'group');
+        group.setAttribute('aria-label', 'Tema tampilan');
+        [['dark', 'moon', 'Gelap'], ['light', 'sun', 'Terang']].forEach(([value, icon, label]) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.dataset.themeSet = value;
+            btn.setAttribute('aria-label', 'Mode ' + label.toLowerCase());
+            btn.innerHTML = Icons.svg(icon, 16) + '<span class="theme-label">' + label + '</span>';
+            btn.addEventListener('click', () => Theme.set(value));
+            group.appendChild(btn);
+        });
+        return group;
+    },
+    /** Switch melayang bergaya lama untuk halaman tanpa topbar (login) */
+    buildFloatingSwitch() {
         const toggleEl = document.createElement('div');
         toggleEl.id = 'global-theme-switcher';
         toggleEl.className = 'theme-switch-control';
@@ -215,6 +277,12 @@ const Theme = {
                 <span class="theme-opt-text">Terang</span>
             </div>
         `;
+        return toggleEl;
+    },
+    injectHeaderButton() {
+        // Hapus toggle lama jika ada
+        const oldSwitcher = document.getElementById('global-theme-switcher');
+        if (oldSwitcher) oldSwitcher.remove();
 
         const topbar = document.querySelector('.topbar');
         if (topbar) {
@@ -248,7 +316,7 @@ const Theme = {
                 rightSlot.appendChild(themeSlot);
             }
             themeSlot.innerHTML = '';
-            themeSlot.appendChild(toggleEl);
+            themeSlot.appendChild(this.buildTopbarSwitch());
         } else {
             // Halaman tanpa topbar (seperti index.html Login)
             let floatWrap = document.getElementById('floating-theme-container');
@@ -259,15 +327,183 @@ const Theme = {
                 document.body.appendChild(floatWrap);
             }
             floatWrap.innerHTML = '';
-            floatWrap.appendChild(toggleEl);
+            floatWrap.appendChild(this.buildFloatingSwitch());
         }
 
         this.updateButtons(this.get());
     }
 };
 
-// Jalankan auto-init tema saat script dimuat
+/**
+ * Drawer — Sidebar sebagai drawer di layar <= 768px.
+ * Menyuntikkan tombol hamburger ke topbar, tombol tutup ke sidebar, dan overlay gelap.
+ * Ditutup lewat overlay, tombol tutup, tombol Esc, atau klik menu. Berlaku di semua halaman ber-sidebar.
+ */
+const Drawer = {
+    mq: window.matchMedia('(max-width: 768px)'),
+    sidebar: null, main: null, toggle: null, closeBtn: null, backdrop: null,
+
+    isOpen() {
+        return this.sidebar.classList.contains('is-open');
+    },
+    open() {
+        this.sidebar.classList.add('is-open');
+        this.backdrop.classList.add('show');
+        document.body.classList.add('nav-open');
+        this.sidebar.inert = false;
+        this.main.inert = true; // fokus keyboard hanya di dalam drawer selama terbuka
+        this.toggle.setAttribute('aria-expanded', 'true');
+        this.toggle.setAttribute('aria-label', 'Tutup menu navigasi');
+        this.closeBtn.focus();
+    },
+    close(returnFocus) {
+        this.sidebar.classList.remove('is-open');
+        this.backdrop.classList.remove('show');
+        document.body.classList.remove('nav-open');
+        this.main.inert = false;
+        this.sidebar.inert = this.mq.matches; // drawer tertutup tidak boleh bisa difokus
+        this.toggle.setAttribute('aria-expanded', 'false');
+        this.toggle.setAttribute('aria-label', 'Buka menu navigasi');
+        if (returnFocus) this.toggle.focus();
+    },
+    init() {
+        this.sidebar = document.querySelector('.sidebar');
+        this.main    = document.querySelector('.main');
+        const topbar = document.querySelector('.topbar');
+        if (!this.sidebar || !this.main || !topbar) return; // mis. halaman login
+
+        if (!this.sidebar.id) this.sidebar.id = 'app-sidebar';
+
+        this.toggle = document.createElement('button');
+        this.toggle.type = 'button';
+        this.toggle.className = 'nav-toggle';
+        this.toggle.setAttribute('aria-controls', this.sidebar.id);
+        this.toggle.innerHTML = Icons.svg('menu', 22);
+        topbar.prepend(this.toggle);
+
+        this.closeBtn = document.createElement('button');
+        this.closeBtn.type = 'button';
+        this.closeBtn.className = 'sidebar-close';
+        this.closeBtn.setAttribute('aria-label', 'Tutup menu navigasi');
+        this.closeBtn.innerHTML = Icons.svg('x', 18);
+        const logo = this.sidebar.querySelector('.sidebar-logo');
+        (logo || this.sidebar).appendChild(this.closeBtn);
+
+        this.backdrop = document.createElement('div');
+        this.backdrop.className = 'sidebar-backdrop';
+        this.backdrop.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(this.backdrop);
+
+        this.toggle.addEventListener('click', () => this.isOpen() ? this.close(true) : this.open());
+        this.closeBtn.addEventListener('click', () => this.close(true));
+        this.backdrop.addEventListener('click', () => this.close(false));
+        // Menu dibangun dinamis oleh Auth.buildNav(), jadi pakai delegasi event
+        this.sidebar.addEventListener('click', (e) => { if (e.target.closest('a.nav-item')) this.close(false); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && this.isOpen()) this.close(true); });
+        window.addEventListener('pageshow', () => this.close(false)); // kembali via tombol Back (bfcache)
+        this.mq.addEventListener('change', () => this.close(false));
+
+        this.close(false);
+    }
+};
+
+/**
+ * UI — pembantu tampilan bersama halaman admin: keadaan memuat/kosong/galat dan toast.
+ * Satu implementasi dipakai semua halaman (menggantikan salinan toast di tiap halaman).
+ */
+const UI = {
+    esc(text) {
+        return String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    },
+    /** Kerangka tabel saat data dimuat */
+    loading(rows = 6, wrap = true) {
+        let html = '<span class="sr-only" role="status">Memuat data...</span>';
+        for (let i = 0; i < rows; i++) {
+            html += '<div class="skeleton-row" aria-hidden="true"><span class="skeleton-bar"></span><span class="skeleton-bar"></span><span class="skeleton-bar"></span></div>';
+        }
+        return wrap ? '<div class="table-wrap">' + html + '</div>' : html;
+    },
+    /** Keadaan kosong: apa yang terjadi dan apa yang bisa dilakukan berikutnya */
+    empty(title, hint, icon = 'file') {
+        return '<div class="empty">' + Icons.svg(icon, 32) +
+            '<div class="empty-title">' + title + '</div>' +
+            (hint ? '<div class="empty-sub">' + hint + '</div>' : '') + '</div>';
+    },
+    /** Keadaan galat: apa yang gagal dan cara mengulang (retry = ekspresi JS, mis. "loadUsers(1)") */
+    error(message, retry) {
+        return '<div class="empty empty-error" role="alert">' + Icons.svg('alert', 32) +
+            '<div class="empty-title">Gagal memuat data</div>' +
+            '<div class="empty-sub">' + UI.esc(message || 'Terjadi kesalahan. Coba lagi.') + '</div>' +
+            (retry ? '<button type="button" class="btn btn-ghost btn-sm" onclick="' + retry + '">Coba lagi</button>' : '') + '</div>';
+    },
+    toast(msg, type = 'info') {
+        const box = document.getElementById('toast-container');
+        if (!box) return;
+        if (!box.hasAttribute('role')) { box.setAttribute('role', 'status'); box.setAttribute('aria-live', 'polite'); }
+        const el = document.createElement('div');
+        el.className = 'toast toast-' + type;
+        el.innerHTML = Icons.svg(type === 'success' ? 'check-circle' : type === 'error' ? 'x-circle' : 'info', 16);
+        const text = document.createElement('span');
+        text.textContent = msg;
+        el.appendChild(text);
+        box.appendChild(el);
+        setTimeout(() => el.remove(), 4000);
+    }
+};
+function toast(msg, type) { UI.toast(msg, type); }
+
+/**
+ * Modals — perilaku dialog yang sama untuk semua .modal-overlay (halaman membuka/menutup lewat kelas "show"):
+ * role dialog, fokus pindah ke dalam saat terbuka, Tab berputar di dalam, Esc menutup, fokus kembali ke pemicu.
+ */
+const Modals = {
+    FOCUSABLE: 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    init() {
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            const modal = overlay.querySelector('.modal');
+            if (!modal) return;
+            modal.setAttribute('role', 'dialog');
+            modal.setAttribute('aria-modal', 'true');
+            const title = modal.querySelector('.modal-title');
+            if (title) {
+                title.id = title.id || overlay.id + '-title';
+                modal.setAttribute('aria-labelledby', title.id);
+            }
+            new MutationObserver(() => {
+                const open = overlay.classList.contains('show');
+                if (open && !overlay._opener) {
+                    overlay._opener = document.activeElement;
+                    const first = modal.querySelector(this.FOCUSABLE);
+                    if (first) first.focus();
+                } else if (!open && overlay._opener) {
+                    const opener = overlay._opener;
+                    overlay._opener = null;
+                    if (document.contains(opener)) opener.focus();
+                }
+            }).observe(overlay, { attributes: true, attributeFilter: ['class'] });
+        });
+        document.addEventListener('keydown', (e) => {
+            const open = document.querySelector('.modal-overlay.show');
+            if (!open) return;
+            if (e.key === 'Escape') { open.classList.remove('show'); return; }
+            if (e.key !== 'Tab') return;
+            const items = Array.from(open.querySelectorAll(this.FOCUSABLE)).filter(el => el.offsetParent !== null);
+            if (!items.length) return;
+            const first = items[0], last = items[items.length - 1];
+            if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        });
+    }
+};
+
+// Inisialisasi saat script dimuat. Urutan penting: tema membentuk slot kanan topbar dulu,
+// baru sprite ikon dan tombol hamburger disuntik.
 Theme.init();
 if (typeof document !== 'undefined') {
-    document.addEventListener('DOMContentLoaded', () => Theme.injectHeaderButton());
+    const start = () => { Icons.inject(); Drawer.init(); Modals.init(); };
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start);
+    } else {
+        start();
+    }
 }

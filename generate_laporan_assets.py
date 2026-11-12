@@ -94,7 +94,7 @@ def make_screenshot_laporan3_01_env():
     lines = [
         ("APP_NAME=SALUT", (156, 220, 254)),
         ("APP_ENV=local", (156, 220, 254)),
-        ("APP_KEY=DISAMARKAN", (156, 220, 254)),
+        ("APP_KEY=base64:DISAMARKAN", (156, 220, 254)),
         ("APP_DEBUG=true", (156, 220, 254)),
         ("APP_URL=http://localhost:8000", (156, 220, 254)),
         ("", (255, 255, 255)),

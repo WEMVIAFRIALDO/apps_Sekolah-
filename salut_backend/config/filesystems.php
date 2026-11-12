@@ -33,7 +33,8 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Dokumen rahasia hanya keluar lewat endpoint JWT, tanpa rute /storage bertanda tangan.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],

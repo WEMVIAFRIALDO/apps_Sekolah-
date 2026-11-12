@@ -63,7 +63,7 @@ class ArsipController extends Controller
     public function store(Request $request): JsonResponse
     {
         $uploader = JWTAuth::user();
-        if (!$uploader->isAdmin() && !$uploader->isGuru()) {
+        if (!$uploader->isAdmin()) {
             return response()->json(['message' => 'Hanya Admin yang bisa upload arsip.'], 403);
         }
 
@@ -76,9 +76,14 @@ class ArsipController extends Controller
 
         $targetUser = \App\Models\User::findOrFail($validated['user_id']);
 
+        $folder = $targetUser->storageFolder();
+        if (!$folder) {
+            return response()->json(['message' => 'Pengguna tujuan belum memiliki angkatan atau NISN yang valid.'], 422);
+        }
+
         // Simpan ke path hierarkis: angkatan_{year}/nisn_{nisn}/{doc_type}.pdf
         $path = $request->file('file')->storeAs(
-            "angkatan_{$targetUser->angkatan}/nisn_{$targetUser->nisn}",
+            $folder,
             $validated['doc_type'] . '.pdf',
             'local'
         );

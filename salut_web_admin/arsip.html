@@ -5,104 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arsip Dokumen Alumni — SALUT Admin</title>
 <meta name="description" content="Arsip Dokumen Kelulusan Alumni (Ijazah, SKL, SKHUN) SALUT">
-<link rel="stylesheet" href="css/style.css">
-<style>
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 20px;
-}
-.stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.stat-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  background: rgba(99, 102, 241, 0.12);
-  color: var(--indigo);
-}
-.stat-val { font-size: 22px; font-weight: 800; color: var(--text); }
-.stat-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-.badge-doc {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-right: 4px;
-}
-.badge-doc-yes {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10B981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-.badge-doc-no {
-  background: rgba(148, 163, 184, 0.1);
-  color: var(--muted);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-.doc-item-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-</style>
+<script src="js/theme-init.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 <div id="toast-container"></div>
 
 <!-- Modal Detail & Kelola Arsip -->
 <div class="modal-overlay" id="modal-manage-arsip">
-  <div class="modal" style="max-width: 650px; max-height: 90vh; overflow-y: auto;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+  <div class="modal modal-lg">
+    <div class="modal-head">
       <div>
-        <h3 id="modal-alumni-name" style="margin:0; font-size:18px;">Dokumen Kelulusan</h3>
-        <p id="modal-alumni-nisn" style="margin:4px 0 0; color:var(--muted); font-size:13px;">NISN: -</p>
+        <h2 class="modal-title" id="modal-alumni-name">Dokumen Kelulusan</h2>
+        <p class="modal-sub mono" id="modal-alumni-nisn">NISN: -</p>
       </div>
-      <button class="btn btn-ghost" onclick="closeManageModal()" style="font-size:16px; padding:4px 10px;">✕</button>
+      <button type="button" class="icon-btn" aria-label="Tutup" onclick="closeManageModal()"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
     </div>
 
-    <!-- Tab atau Section Dokumen Tersimpan -->
-    <div style="margin-bottom:20px;">
-      <h4 style="font-size:14px; margin-bottom:12px; color:var(--cyan); display:flex; align-items:center; gap:6px;">
-        <span>📂</span> Dokumen Tersimpan di Server
-      </h4>
-      <div id="doc-list-container">
-        <div style="text-align:center; padding:20px; color:var(--muted);">Memuat berkas...</div>
-      </div>
-    </div>
+    <section class="modal-section">
+      <h3 class="modal-section-title"><svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg>Dokumen tersimpan di server</h3>
+      <div id="doc-list-container"><p class="text-muted">Memuat berkas...</p></div>
+    </section>
 
-    <!-- Form Upload Berkas Baru -->
-    <div style="border-top:1px solid var(--border); padding-top:16px;">
-      <h4 style="font-size:14px; margin-bottom:12px; color:var(--indigo); display:flex; align-items:center; gap:6px;">
-        <span>⬆️</span> Unggah / Perbarui Dokumen
-      </h4>
-      <div id="upload-alert" class="alert alert-error" style="display:none; margin-bottom:12px;"></div>
-      
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
-        <div class="form-group" style="margin:0;">
-          <label class="form-label">Jenis Dokumen</label>
+    <section class="modal-section">
+      <h3 class="modal-section-title"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>Unggah atau perbarui dokumen</h3>
+      <div id="upload-alert" class="alert alert-error" role="alert" hidden></div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label" for="inp-doctype">Jenis dokumen</label>
           <select id="inp-doctype" class="form-input form-select">
             <option value="ijazah">Ijazah Kelulusan</option>
             <option value="skl">Surat Keterangan Lulus (SKL)</option>
@@ -111,137 +45,113 @@
             <option value="rapor">Buku Rapor Lengkap</option>
           </select>
         </div>
-        <div class="form-group" style="margin:0;">
-          <label class="form-label">Judul Dokumen</label>
+        <div class="form-group">
+          <label class="form-label" for="inp-title">Judul dokumen</label>
           <input type="text" id="inp-title" class="form-input" placeholder="Contoh: Ijazah SMK 2024">
         </div>
       </div>
 
       <div class="form-group">
-        <label class="form-label">File PDF (Maks. 5 MB)</label>
-        <div style="border: 2px dashed var(--border); border-radius: 10px; padding: 18px; text-align: center; cursor: pointer; transition: 0.2s;" 
-             onclick="document.getElementById('file-upload').click()">
-          <input type="file" id="file-upload" accept="application/pdf" style="display:none" onchange="onFileChange(this)">
-          <div id="file-name" style="font-size: 13px; color: var(--muted);">📄 Klik untuk memilih file PDF dokumen</div>
-        </div>
+        <span class="form-label" id="file-label">File PDF (maks. 5 MB)</span>
+        <input type="file" id="file-upload" class="sr-only" accept="application/pdf" aria-labelledby="file-label" onchange="onFileChange(this)">
+        <label class="dropzone" for="file-upload"><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg><span id="file-name">Klik untuk memilih file PDF</span></label>
       </div>
 
-      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
-        <button class="btn btn-ghost" onclick="closeManageModal()">Tutup</button>
-        <button class="btn btn-primary" id="btn-upload" onclick="doUpload()">⬆️ Unggah Dokumen</button>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="btn-upload" onclick="doUpload()"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>Unggah dokumen</button>
+        <button type="button" class="btn btn-ghost" onclick="closeManageModal()">Tutup</button>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 
 <div class="layout">
   <!-- Sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="Navigasi utama">
     <div class="sidebar-logo">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <img src="img/logo_salut.png" alt="SALUT Logo" style="width:42px; height:42px; object-fit:contain; filter:drop-shadow(0 2px 8px rgba(6,182,212,0.4));">
-        <div>
-          <p id="sidebar-role-label" style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin:0;">Admin Panel</p>
-          <span style="font-size:10px; color:var(--cyan); font-weight:500;">v1.0 • SMK 1 Teladan</span>
-        </div>
+      <img class="brand-mark" src="img/logo_salut.png" alt="">
+      <div>
+        <p class="brand-role" id="sidebar-role-label">Admin Panel</p>
+        <span class="brand-sub">v1.0 • SMK 1 Teladan</span>
       </div>
     </div>
-    <nav class="nav-section" id="sidebar-nav"></nav>
+    <nav class="nav-section" id="sidebar-nav" aria-label="Menu"></nav>
     <div class="sidebar-footer">
-      <div class="user-card"><div class="user-avatar" id="user-avatar">A</div><div><div class="user-name" id="nav-user-name">Loading...</div><div class="user-role" id="nav-user-role">role</div></div></div>
-      <button class="btn-logout" id="btn-logout">🚪 Keluar</button>
+      <div class="user-card">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div class="user-name" id="nav-user-name">Memuat...</div>
+          <div class="user-role" id="nav-user-role">peran</div>
+        </div>
+      </div>
+      <button type="button" class="btn-logout" id="btn-logout"><svg class="icon" aria-hidden="true"><use href="#i-log-out"/></svg>Keluar</button>
     </div>
   </aside>
 
   <!-- Main Content -->
   <main class="main">
-    <div class="topbar">
+    <header class="topbar">
       <div>
-        <div class="page-title">Arsip Dokumen Alumni</div>
-        <div class="page-sub">Digitalisasi & Manajemen Dokumen Kelulusan (Ijazah, SKL, SKHUN, Transkrip)</div>
+        <h1 class="page-title">Arsip Dokumen Alumni</h1>
+        <p class="page-sub">Digitalisasi dan manajemen dokumen kelulusan (ijazah, SKL, SKHUN, transkrip)</p>
       </div>
-    </div>
-    
+    </header>
+
     <div class="content">
       <!-- Ringkasan Statistik Arsip -->
-      <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="background:rgba(99,102,241,0.12); color:#6366F1;">🎓</div>
-          <div>
-            <div class="stat-val" id="st-alumni">11</div>
-            <div class="stat-lbl">Total Alumni Terdata</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:rgba(16,185,129,0.12); color:#10B981;">📜</div>
-          <div>
-            <div class="stat-val" id="st-ijazah">—</div>
-            <div class="stat-lbl">Ijazah Tersimpan</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:rgba(6,182,212,0.12); color:#06B6D4;">📑</div>
-          <div>
-            <div class="stat-val" id="st-skl">—</div>
-            <div class="stat-lbl">SKL Tersimpan</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:rgba(245,158,11,0.12); color:#F59E0B;">📁</div>
-          <div>
-            <div class="stat-val" id="st-total-docs">—</div>
-            <div class="stat-lbl">Total Dokumen PDF</div>
-          </div>
-        </div>
-      </div>
+      <dl class="card kpi-list kpi-list--4" aria-label="Ringkasan arsip">
+        <div class="kpi"><dt class="kpi-label">Total alumni terdata</dt><dd class="kpi-value" id="st-alumni" data-count>—</dd></div>
+        <div class="kpi"><dt class="kpi-label">Ijazah tersimpan</dt><dd class="kpi-value" id="st-ijazah" data-count>—</dd></div>
+        <div class="kpi"><dt class="kpi-label">SKL tersimpan</dt><dd class="kpi-value" id="st-skl" data-count>—</dd></div>
+        <div class="kpi"><dt class="kpi-label">Total dokumen PDF</dt><dd class="kpi-value" id="st-total-docs" data-count>—</dd></div>
+      </dl>
 
       <!-- Toolbar Filter & Search -->
-      <div class="toolbar" style="margin-bottom: 16px;">
+      <div class="toolbar">
         <div class="search-input-wrap">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
-          </svg>
-          <input type="text" class="search-input" id="search-input" placeholder="Cari nama alumni atau NISN..." oninput="handleSearch()">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+          <input type="text" class="search-input" id="search-input" aria-label="Cari nama alumni atau NISN" placeholder="Cari nama alumni atau NISN..." oninput="handleSearch()">
         </div>
-        <select class="form-input form-select" id="filter-angkatan" style="width:160px;" onchange="loadAlumniArsip()">
+        <select class="form-input form-select" id="filter-angkatan" aria-label="Filter angkatan" onchange="loadAlumniArsip()">
           <option value="">Semua Angkatan</option>
           <option value="2026">Angkatan 2026</option>
           <option value="2025">Angkatan 2025</option>
           <option value="2024">Angkatan 2024</option>
         </select>
-        <button class="btn btn-ghost" onclick="loadAlumniArsip()" style="border:1px solid var(--border)">🔄 Refresh Data</button>
+        <button type="button" class="btn btn-ghost" onclick="loadAlumniArsip()"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg>Muat ulang</button>
       </div>
 
       <!-- Tabel Daftar Alumni & Dokumen Kelulusan -->
-      <div class="card" style="padding: 0; overflow: hidden;">
-        <div style="overflow-x:auto;">
-          <table class="data-table" id="alumni-arsip-table">
-            <thead>
-              <tr>
-                <th>Nama Alumni</th>
-                <th>NISN</th>
-                <th>Angkatan &amp; Jurusan</th>
-                <th>Status Berkas Kelulusan</th>
-                <th style="text-align:right;">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="table-body">
-              <tr><td colspan="5" style="text-align:center; padding:32px;">Memuat data arsip alumni...</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="table-wrap">
+        <table id="alumni-arsip-table">
+          <thead>
+            <tr>
+              <th>Nama alumni</th>
+              <th>NISN</th>
+              <th>Angkatan dan jurusan</th>
+              <th>Status berkas kelulusan</th>
+              <th class="col-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
       </div>
-      <div id="pagination" style="display:flex; justify-content:center; gap:8px; margin-top:16px;"></div>
+      <div id="pagination" class="pagination"></div>
     </div>
   </main>
 </div>
 
+<script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script src="js/motion.js"></script>
 <script>
   let currentActiveAlumni = null;
   let selectedFile = null;
   let searchTimer = null;
+  const docLabel = { ijazah: 'Ijazah', skl: 'SKL', skhun: 'SKHUN', transkrip: 'Transkrip', rapor: 'Rapor' };
+  const FILE_HINT = 'Klik untuk memilih file PDF';
 
   document.addEventListener('DOMContentLoaded', () => {
     Auth.guard();
@@ -263,12 +173,40 @@
     }, 400);
   }
 
+  function resetFilePicker() {
+    selectedFile = null;
+    document.getElementById('file-upload').value = '';
+    document.getElementById('file-name').textContent = FILE_HINT;
+    document.querySelector('.dropzone').classList.remove('is-set');
+  }
+
+  function stateRow(html) {
+    return `<tr><td colspan="5">${html}</td></tr>`;
+  }
+
+  function docBadge(has, label) {
+    return has
+      ? `<span class="badge badge-success">${Icons.svg('check', 12)}${label}<span class="sr-only"> tersedia</span></span>`
+      : `<span class="badge badge-neutral">${Icons.svg('x', 12)}${label}<span class="sr-only"> belum ada</span></span>`;
+  }
+
+  function renderPagination(meta) {
+    const el = document.getElementById('pagination');
+    if (!meta || !meta.last_page || meta.last_page <= 1) { el.innerHTML = ''; return; }
+    let html = '';
+    for (let p = 1; p <= meta.last_page; p++) {
+      const current = p === meta.current_page;
+      html += `<button type="button" class="btn btn-ghost btn-sm${current ? ' is-current' : ''}"${current ? ' aria-current="page"' : ''} aria-label="Halaman ${p}" onclick="loadAlumniArsip(${p})">${p}</button>`;
+    }
+    el.innerHTML = html;
+  }
+
   async function loadAlumniArsip(page = 1) {
     const angkatan = document.getElementById('filter-angkatan').value;
     const search = document.getElementById('search-input').value.trim();
     const tbody = document.getElementById('table-body');
-    
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:32px;"><div class="loading"><div class="spinner"></div>Memuat data arsip alumni...</div></td></tr>`;
+
+    tbody.innerHTML = stateRow(UI.loading(6, false));
 
     let url = `/admin/arsip-alumni?page=${page}`;
     if (angkatan) url += `&angkatan=${encodeURIComponent(angkatan)}`;
@@ -277,7 +215,7 @@
     try {
       const res = await Api.get(url);
       if (!res.success) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:24px;">Gagal memuat data.</td></tr>`;
+        tbody.innerHTML = stateRow(UI.error('Server menolak permintaan.', `loadAlumniArsip(${page})`));
         return;
       }
 
@@ -291,8 +229,10 @@
       if (summary.total_ijazah !== undefined) document.getElementById('st-ijazah').textContent = summary.total_ijazah;
       if (summary.total_skl !== undefined)    document.getElementById('st-skl').textContent = summary.total_skl;
 
+      renderPagination(paginationData);
+
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:32px;">Tidak ditemukan data alumni yang sesuai filter.</td></tr>`;
+        tbody.innerHTML = stateRow(UI.empty('Tidak ada alumni yang cocok', 'Ubah angkatan atau kata kunci pencarian.', 'users'));
         return;
       }
 
@@ -306,45 +246,35 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>
-            <div style="display:flex; align-items:center; gap:10px;">
-              <div class="user-avatar" style="width:34px; height:34px; font-size:13px; background:linear-gradient(135deg, var(--indigo), var(--cyan));">
-                ${a.name.charAt(0).toUpperCase()}
-              </div>
+            <div class="cell-person">
+              <div class="avatar-sm" aria-hidden="true">${UI.esc(a.name.charAt(0).toUpperCase())}</div>
               <div>
-                <div style="font-weight:700; color:var(--text);">${a.name}</div>
-                <div style="font-size:11px; color:var(--muted);">${a.email || 'Email belum diisi'}</div>
+                <div class="cell-name">${UI.esc(a.name)}</div>
+                <div class="cell-sub">${UI.esc(a.email || 'Email belum diisi')}</div>
               </div>
             </div>
           </td>
-          <td style="font-family:monospace; font-size:13px; color:var(--cyan); font-weight:600;">${a.nisn}</td>
+          <td class="mono">${UI.esc(a.nisn)}</td>
           <td>
-            <div style="font-size:13px; font-weight:600; color:var(--text);">Angkatan ${a.angkatan || '-'}</div>
-            <div style="font-size:12px; color:var(--muted);">${a.class_name || a.jurusan || 'Kejuruan SMK'}</div>
+            <div class="cell-name">Angkatan <span class="mono">${UI.esc(a.angkatan || '-')}</span></div>
+            <div class="cell-sub">${UI.esc(a.class_name || a.jurusan || 'Kejuruan SMK')}</div>
           </td>
           <td>
-            <div style="display:flex; flex-wrap:wrap; gap:4px;">
-              <span class="badge-doc ${hasIjazah ? 'badge-doc-yes' : 'badge-doc-no'}">
-                ${hasIjazah ? '✓' : '✗'} Ijazah
-              </span>
-              <span class="badge-doc ${hasSkl ? 'badge-doc-yes' : 'badge-doc-no'}">
-                ${hasSkl ? '✓' : '✗'} SKL
-              </span>
-              <span class="badge-doc ${hasSkhun ? 'badge-doc-yes' : 'badge-doc-no'}">
-                ${hasSkhun ? '✓' : '✗'} SKHUN
-              </span>
+            <div class="btn-group">
+              ${docBadge(hasIjazah, 'Ijazah')}
+              ${docBadge(hasSkl, 'SKL')}
+              ${docBadge(hasSkhun, 'SKHUN')}
             </div>
           </td>
-          <td style="text-align:right;">
-            <button class="btn btn-ghost" style="padding:6px 12px; font-size:12px; border:1px solid var(--border);" onclick='openManageModal(${JSON.stringify(a).replace(/'/g, "&#39;")})'>
-              📁 Kelola Berkas
-            </button>
+          <td class="col-right">
+            <button type="button" class="btn btn-ghost btn-sm" onclick='openManageModal(${JSON.stringify(a).replace(/'/g, "&#39;")})'>${Icons.svg('folder', 16)}Kelola berkas</button>
           </td>
         `;
         tbody.appendChild(tr);
       });
 
     } catch (e) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:24px;">Terjadi kesalahan memuat data.</td></tr>`;
+      tbody.innerHTML = stateRow(UI.error(e.message, `loadAlumniArsip(${page})`));
     }
   }
 
@@ -354,63 +284,55 @@
     document.getElementById('modal-alumni-nisn').textContent = `NISN: ${alumni.nisn} | Angkatan: ${alumni.angkatan || '-'} • ${alumni.class_name || 'SMK 1 Teladan'}`;
     document.getElementById('inp-title').value = `Dokumen Kelulusan - ${alumni.name}`;
     document.getElementById('modal-manage-arsip').classList.add('show');
-    
+
     await loadStudentDocs(alumni.id);
   }
 
   function closeManageModal() {
     document.getElementById('modal-manage-arsip').classList.remove('show');
-    selectedFile = null;
-    document.getElementById('file-name').textContent = '📄 Klik untuk memilih file PDF dokumen';
-    document.getElementById('file-name').style.color = 'var(--muted)';
+    resetFilePicker();
     document.getElementById('upload-alert').style.display = 'none';
   }
 
   async function loadStudentDocs(userId) {
     const container = document.getElementById('doc-list-container');
-    container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--muted);">Memuat berkas dokumen...</div>`;
+    container.innerHTML = UI.loading(3);
 
     try {
       const res = await Api.get('/admin/arsip/' + userId);
       const docs = res.data || [];
 
       if (docs.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:20px; background:rgba(255,255,255,0.02); border-radius:8px; color:var(--muted); font-size:13px;">Belum ada berkas dokumen yang terunggah untuk siswa ini.</div>`;
+        container.innerHTML = UI.empty('Belum ada berkas', 'Unggah dokumen pertama untuk alumni ini lewat formulir di bawah.', 'folder');
         return;
       }
 
       container.innerHTML = '';
       docs.forEach(d => {
         const item = document.createElement('div');
-        item.className = 'doc-item-card';
+        item.className = 'list-item';
         item.innerHTML = `
-          <div style="display:flex; align-items:center; gap:12px;">
-            <div style="font-size:24px;">📄</div>
+          <div class="list-item-main">
+            ${Icons.svg('file', 20)}
             <div>
-              <div style="font-weight:700; font-size:13px; color:var(--text); text-transform:uppercase;">
-                ${d.doc_type} • <span style="font-weight:400; text-transform:none; color:var(--muted);">${d.title}</span>
-              </div>
-              <div style="font-size:11px; color:var(--muted); margin-top:2px;">
-                Ukuran: ${d.file_size || '1.2 MB'} • Status: <span style="color:#10B981; font-weight:600;">Terverifikasi</span>
-              </div>
+              <div class="list-item-title">${UI.esc(docLabel[d.doc_type] || d.doc_type)} <span class="text-muted">• ${UI.esc(d.title)}</span></div>
+              ${d.file_size ? `<div class="cell-sub">Ukuran ${UI.esc(d.file_size)}</div>` : ''}
             </div>
           </div>
-          <div>
-            <span class="badge badge-success" style="font-size:11px; padding:4px 8px;">Tersimpan</span>
-          </div>
+          <span class="badge badge-success">${Icons.svg('check', 12)}Tersimpan</span>
         `;
         container.appendChild(item);
       });
     } catch(e) {
-      container.innerHTML = `<div style="color:var(--muted); font-size:13px; text-align:center;">Gagal memuat daftar berkas.</div>`;
+      container.innerHTML = UI.error(e.message, `loadStudentDocs(${userId})`);
     }
   }
 
   function onFileChange(input) {
     if (input.files && input.files[0]) {
       selectedFile = input.files[0];
-      document.getElementById('file-name').textContent = `✅ ${selectedFile.name} (${(selectedFile.size/1024/1024).toFixed(2)} MB)`;
-      document.getElementById('file-name').style.color = '#10B981';
+      document.getElementById('file-name').textContent = `${selectedFile.name} (${(selectedFile.size/1024/1024).toFixed(2)} MB)`;
+      document.querySelector('.dropzone').classList.add('is-set');
     }
   }
 
@@ -435,12 +357,13 @@
     fd.append('file', selectedFile);
 
     const btn = document.getElementById('btn-upload');
+    const btnLabel = btn.innerHTML;
     btn.disabled = true;
-    btn.textContent = '⏳ Mengunggah...';
+    btn.textContent = 'Mengunggah...';
 
     try {
       const token = localStorage.getItem('salut_token');
-      const res = await fetch('http://127.0.0.1:8000/api/arsip', {
+      const res = await fetch(API_BASE + '/arsip', {
         method: 'POST',
         headers: { 'Authorization': 'Bearer ' + token },
         body: fd
@@ -448,11 +371,9 @@
       const json = await res.json();
       if (!res.ok) throw new Error(json.message || 'Gagal mengunggah berkas.');
 
-      toast('Dokumen berhasil diunggah & tersimpan! ✅', 'success');
-      selectedFile = null;
-      document.getElementById('file-name').textContent = '📄 Klik untuk memilih file PDF dokumen';
-      document.getElementById('file-name').style.color = 'var(--muted)';
-      
+      toast('Dokumen berhasil diunggah dan tersimpan.', 'success');
+      resetFilePicker();
+
       await loadStudentDocs(currentActiveAlumni.id);
       loadAlumniArsip();
     } catch(e) {
@@ -460,16 +381,8 @@
       alertEl.style.display = 'block';
     } finally {
       btn.disabled = false;
-      btn.textContent = '⬆️ Unggah Dokumen';
+      btn.innerHTML = btnLabel;
     }
-  }
-
-  function toast(msg, type = 'info') {
-    const el = document.createElement('div');
-    el.className = `toast toast-${type}`;
-    el.innerHTML = `${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'} ${msg}`;
-    document.getElementById('toast-container').appendChild(el);
-    setTimeout(() => el.remove(), 4000);
   }
 </script>
 </body>

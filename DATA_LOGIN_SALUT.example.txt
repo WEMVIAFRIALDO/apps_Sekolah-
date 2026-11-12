@@ -1,0 +1,20 @@
+SALUT - CONTOH DATA LOGIN (PASSWORD DISAMARKAN)
+Hanya untuk development/testing lokal.
+
+Backend API : http://localhost:8000/api
+Web Admin   : salut_web_admin/index.html
+Database    : MySQL salut_db (XAMPP, port 3306)
+
+Role    NISN         Password   Dipakai di
+admin   0000000001   ********   Web Admin
+guru    0000000002   ********   Web Admin
+siswa   0054321987   ********   Aplikasi Android
+alumni  0067890123   ********   Aplikasi Android
+
+Password asli:
+- Salinan lokal ada di _privat/ (tidak masuk git).
+- Akun dan password dibuat oleh salut_backend/database/seeders/UserSeeder.php.
+
+PERINGATAN: seeder mengosongkan tabel users dan tabel terkait.
+Jangan jalankan `php artisan db:seed` pada database yang datanya ingin dipertahankan.
+Ganti semua password sebelum sistem dipakai di produksi.

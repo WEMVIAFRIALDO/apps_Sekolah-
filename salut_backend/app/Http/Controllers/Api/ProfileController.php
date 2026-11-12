@@ -41,6 +41,14 @@ class ProfileController extends Controller
         return response()->json(['success' => true, 'message' => 'Profil diperbarui.']);
     }
 
+    /** PATCH /api/profile/fcm-token — Mendaftarkan perangkat untuk push notification */
+    public function updateFcmToken(Request $request): JsonResponse
+    {
+        $validated = $request->validate(['fcm_token' => 'required|string|max:255']);
+        JWTAuth::user()->assignFcmToken($validated['fcm_token']);
+        return response()->json(['success' => true, 'message' => 'Token perangkat disimpan.']);
+    }
+
     public function changePassword(Request $request): JsonResponse
     {
         $user = JWTAuth::user();

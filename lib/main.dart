@@ -24,9 +24,11 @@ void main() async {
 Future<void> _initServicesAsync() async {
   try {
     await Firebase.initializeApp().timeout(const Duration(seconds: 3));
-    Get.putAsync(() => FcmService().init());
+    // Wajib di-await: tanpa itu galat dari init() lolos dari blok catch ini.
+    await Get.putAsync(() => FcmService().init());
   } catch (e) {
-    debugPrint("Firebase background info: $e");
+    // Mis. google-services.json belum dipasang: aplikasi tetap jalan tanpa push.
+    debugPrint("[FCM] Push notification nonaktif: $e");
   }
 }
 

@@ -257,6 +257,8 @@ class AdminController extends Controller
 
         $user = User::create([
             ...$validated,
+            // Kolom email NOT NULL: bila dikosongkan, isi otomatis dengan {nisn}@salut.sch.id
+            'email'    => $validated['email'] ?? "{$validated['nisn']}@salut.sch.id",
             'password' => Hash::make($validated['password']),
             'school'   => 'SMA Negeri 1 Teladan',
         ]);
@@ -287,6 +289,7 @@ class AdminController extends Controller
         
         $header = fgetcsv($handle); // Lewati header
         $importedCount = 0;
+        $accounts = []; // akun yang dibuat + kata sandi sementara (ditampilkan sekali ke admin)
 
         while (($row = fgetcsv($handle)) !== false) {
             // Asumsi kolom CSV: Nama, NISN, Email, Role, Class, Angkatan, Phone
@@ -297,11 +300,14 @@ class AdminController extends Controller
                 continue; // Skip kalau NISN kosong atau sudah ada
             }
 
-            User::create([
+            $tempPassword = $this->generateTempPassword();
+
+            $user = User::create([
                 'name'       => trim($row[0]),
                 'nisn'       => $nisn,
-                'email'      => trim($row[2]) ?: null,
-                'password'   => Hash::make('rahasia123'), // Default password
+                // Kolom email NOT NULL: bila kosong, isi otomatis dengan {nisn}@salut.sch.id
+                'email'      => trim($row[2]) ?: "{$nisn}@salut.sch.id",
+                'password'   => Hash::make($tempPassword), // acak per akun; hanya hash yang disimpan
                 'role'       => strtolower(trim($row[3])) ?: 'siswa',
                 'class_name' => trim($row[4]) ?: null,
                 'angkatan'   => trim($row[5]) ?: null,
@@ -309,13 +315,38 @@ class AdminController extends Controller
                 'school'     => 'SMA Negeri 1 Teladan',
             ]);
             $importedCount++;
+
+            $accounts[] = [
+                'name'     => $user->name,
+                'nisn'     => $user->nisn,
+                'email'    => $user->email,
+                'role'     => $user->role,
+                'password' => $tempPassword,
+            ];
         }
         fclose($handle);
 
+        // Berisi kata sandi sementara: jangan biarkan perantara menyimpan respons ini.
         return response()->json([
-            'success' => true,
-            'message' => "Berhasil mengimpor $importedCount data siswa."
-        ]);
+            'success'  => true,
+            'message'  => "Berhasil mengimpor $importedCount data siswa.",
+            'accounts' => $accounts,
+        ])->header('Cache-Control', 'no-store');
+    }
+
+    /**
+     * Kata sandi sementara acak (10 karakter, tanpa huruf/angka yang mudah tertukar: 0 O 1 l I).
+     * Memakai random_int (CSPRNG).
+     */
+    private function generateTempPassword(int $length = 10): string
+    {
+        $alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+        $max = strlen($alphabet) - 1;
+        $password = '';
+        for ($i = 0; $i < $length; $i++) {
+            $password .= $alphabet[random_int(0, $max)];
+        }
+        return $password;
     }
 
     /**
@@ -323,7 +354,7 @@ class AdminController extends Controller
      * REQ-F-07: Transisi manual Siswa → Alumni oleh Admin.
      * (Otomatis dijalankan via cron job saat jadwal pengumuman tiba)
      */
-    public function promoteToAlumni(User $user): JsonResponse
+    public function promoteToAlumni(User $user, \App\Services\FcmService $fcm): JsonResponse
     {
         $admin = JWTAuth::user();
         if (!$admin->isAdmin()) {
@@ -335,6 +366,12 @@ class AdminController extends Controller
         }
 
         $user->update(['role' => 'alumni', 'graduation_date' => now()]);
+
+        $fcm->send(
+            [$user->fcm_token],
+            'Selamat, kamu telah lulus',
+            'Status akunmu kini Alumni. Buka SALUT untuk melihat arsip dokumen dan mengisi tracer study.'
+        );
 
         return response()->json([
             'success' => true,

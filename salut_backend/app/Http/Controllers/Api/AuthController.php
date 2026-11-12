@@ -25,6 +25,7 @@ class AuthController extends Controller
         $request->validate([
             'nisn'     => 'required|string|digits:10',
             'password' => 'required|string|min:6',
+            'fcm_token' => 'nullable|string|max:255',
         ]);
 
         $user = User::where('nisn', $request->nisn)->first();
@@ -44,8 +45,8 @@ class AuthController extends Controller
         }
 
         try {
-            if ($request->has('fcm_token')) {
-                $user->update(['fcm_token' => $request->fcm_token]);
+            if ($request->filled('fcm_token')) {
+                $user->assignFcmToken($request->fcm_token);
             }
             $token = JWTAuth::fromUser($user);
         } catch (JWTException $e) {
@@ -68,6 +69,7 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         try {
+            JWTAuth::user()?->update(['fcm_token' => null]);
             JWTAuth::invalidate(JWTAuth::getToken());
             return response()->json(['success' => true, 'message' => 'Berhasil logout.']);
         } catch (JWTException $e) {

@@ -3,193 +3,147 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — SALUT Admin</title>
-<link rel="stylesheet" href="css/style.css">
+<script src="js/theme-init.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
 <script src="js/chart.umd.min.js"></script>
+<script src="js/charts.js"></script>
 </head>
 <body>
 <div id="toast-container"></div>
 <div class="layout">
-  <!-- Sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="Navigasi utama">
     <div class="sidebar-logo">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <img src="img/logo_salut.png" alt="SALUT Logo" style="width:42px; height:42px; object-fit:contain; filter:drop-shadow(0 2px 8px rgba(6,182,212,0.4));">
-        <div>
-          <p id="sidebar-role-label" style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:1px; margin:0;">Admin Panel</p>
-          <span style="font-size:10px; color:var(--cyan); font-weight:500;">v1.0 • SMK 1 Teladan</span>
-        </div>
+      <img class="brand-mark" src="img/logo_salut.png" alt="">
+      <div>
+        <p class="brand-role" id="sidebar-role-label">Admin Panel</p>
+        <span class="brand-sub">v1.0 • SMK 1 Teladan</span>
       </div>
     </div>
-    <nav class="nav-section" id="sidebar-nav">
+    <nav class="nav-section" id="sidebar-nav" aria-label="Menu">
       <!-- Navigasi otomatis dibangun oleh Auth.buildNav() -->
-      <p class="nav-label">Menu Utama</p>
-      <a href="dashboard.html" class="nav-item active">Dashboard</a>
+      <a href="dashboard.html" class="nav-item active" aria-current="page">Dashboard</a>
     </nav>
     <div class="sidebar-footer">
       <div class="user-card">
         <div class="user-avatar" id="user-avatar">A</div>
         <div>
-          <div class="user-name" id="nav-user-name">Loading...</div>
-          <div class="user-role" id="nav-user-role">role</div>
+          <div class="user-name" id="nav-user-name">Memuat...</div>
+          <div class="user-role" id="nav-user-role">peran</div>
         </div>
       </div>
-      <button class="btn-logout" id="btn-logout">🚪 Keluar</button>
+      <button type="button" class="btn-logout" id="btn-logout"><svg class="icon" aria-hidden="true"><use href="#i-log-out"/></svg>Keluar</button>
     </div>
   </aside>
 
-  <!-- Main -->
   <main class="main">
-    <div class="topbar">
+    <header class="topbar">
       <div>
-        <div class="page-title">Dashboard Analitik SMK</div>
-        <div class="page-sub" id="greeting">Selamat datang di panel admin SALUT</div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-sub" id="greeting">Selamat datang di panel admin SALUT</p>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span id="live-time" style="font-size:13px;color:var(--muted);font-weight:500"></span>
-      </div>
-    </div>
+      <div><span class="topbar-time" id="live-time"></span></div>
+    </header>
+
     <div class="content">
-      <!-- Stats Ringkasan Utama -->
-      <div class="stat-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-        <div class="stat-card indigo">
-          <div class="stat-icon" style="background:rgba(99,102,241,0.15)">👨‍🎓</div>
-          <div class="stat-value" id="stat-siswa">—</div>
-          <div class="stat-label">Siswa Aktif</div>
-          <div class="stat-delta">↑ Total Terdaftar</div>
-        </div>
-        <div class="stat-card cyan">
-          <div class="stat-icon" style="background:rgba(6,182,212,0.15)">🎓</div>
-          <div class="stat-value" id="stat-alumni">—</div>
-          <div class="stat-label">Alumni Lulusan</div>
-          <div class="stat-delta">↑ Lulusan SMK</div>
-        </div>
-        <div class="stat-card" style="border-color:rgba(168,85,247,0.3);">
-          <div class="stat-icon" style="background:rgba(168,85,247,0.15)">🛠️</div>
-          <div class="stat-value" id="stat-skills" style="color:#C084FC;">—</div>
-          <div class="stat-label">Kompetensi Keahlian</div>
-          <div class="stat-delta" style="color:#C084FC;">↑ Portofolio SKPI</div>
-        </div>
-        <div class="stat-card orange">
-          <div class="stat-icon" style="background:rgba(245,158,11,0.15)">⏳</div>
-          <div class="stat-value" id="stat-pending">—</div>
-          <div class="stat-label">Prestasi Pending</div>
-          <div class="stat-delta" style="color:var(--orange)">⚠ Perlu Validasi</div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-icon" style="background:rgba(16,185,129,0.15)">📊</div>
-          <div class="stat-value" id="stat-tracer">—</div>
-          <div class="stat-label">Tracer Study Terisi</div>
-          <div class="stat-delta">↑ Respon Alumni</div>
-        </div>
+      <div id="dash-error" class="state state-error" role="alert" hidden>
+        <span>Data dashboard gagal dimuat. Periksa koneksi ke server, lalu coba lagi.</span>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="loadStats()">Coba lagi</button>
       </div>
 
-      <!-- Section: Statistik Jurusan & Penyerapan SMK (Saran Dosen) -->
-      <div style="margin-top:8px;margin-bottom:20px;">
-        <h2 style="font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px;">
-          <span>🏫</span> Statistik Kejuruan & Sebaran Lulusan SMK
-        </h2>
-        <p style="font-size:13px;color:var(--muted);margin-top:2px;">
-          Data sebaran siswa per kompetensi keahlian dan status penyerapan alumni (Kerja, Kuliah, Wirausaha)
-        </p>
+      <!-- Ringkasan: satu blok tindakan, sisanya deretan angka -->
+      <section class="overview" aria-label="Ringkasan">
+        <div class="card pending-panel">
+          <p class="pending-label">Prestasi menunggu validasi</p>
+          <p class="pending-value" id="stat-pending" data-count>—</p>
+          <p class="pending-hint">Prestasi yang dikirim siswa dan belum divalidasi.</p>
+          <a class="btn btn-primary" href="prestasi.html">Buka validasi prestasi <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+        </div>
+        <dl class="card kpi-list">
+          <div class="kpi"><dt class="kpi-label">Siswa aktif</dt><dd class="kpi-value" id="stat-siswa" data-count>—</dd></div>
+          <div class="kpi"><dt class="kpi-label">Alumni</dt><dd class="kpi-value" id="stat-alumni" data-count>—</dd></div>
+          <div class="kpi"><dt class="kpi-label">Kompetensi keahlian</dt><dd class="kpi-value" id="stat-skills" data-count>—</dd></div>
+          <div class="kpi"><dt class="kpi-label">Tracer study terisi</dt><dd class="kpi-value" id="stat-tracer" data-count>—</dd></div>
+        </dl>
+      </section>
+
+      <div class="section-head">
+        <h2 class="section-title">Kejuruan dan lulusan</h2>
+        <p class="section-sub">Sebaran siswa per kompetensi keahlian dan status penyerapan alumni (kerja, kuliah, wirausaha)</p>
       </div>
 
       <div class="charts-grid">
-        <div class="chart-card">
-          <div class="chart-title">Jumlah Siswa per Jurusan SMK</div>
-          <div class="chart-sub">Sebaran siswa aktif per kompetensi keahlian (TKJ, RPL, Multimedia, dll.)</div>
-          <canvas id="chartJurusan" height="220"></canvas>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title">Sebaran Status Alumni (Tracer Study)</div>
-          <div class="chart-sub">Perbandingan Bekerja vs Kuliah vs Wirausaha</div>
-          <canvas id="chartTracer" height="220"></canvas>
-        </div>
+        <section class="card">
+          <div class="card-head">
+            <h3 class="card-title">Jumlah siswa per jurusan</h3>
+            <p class="card-sub">Siswa aktif per kompetensi keahlian</p>
+          </div>
+          <div class="chart-box"><canvas id="chartJurusan" role="img" aria-label="Diagram batang jumlah siswa per jurusan"></canvas></div>
+        </section>
+        <section class="card">
+          <div class="card-head">
+            <h3 class="card-title">Status alumni (tracer study)</h3>
+            <p class="card-sub">Bekerja, kuliah, dan wirausaha</p>
+          </div>
+          <div class="chart-box"><canvas id="chartTracer" role="img" aria-label="Diagram sebaran status alumni"></canvas></div>
+        </section>
       </div>
 
-      <!-- Sebaran Perguruan Tinggi & Lapangan Kerja -->
-      <div class="charts-grid" style="margin-top:24px;">
-        <div class="card">
-          <div style="font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px;">
-            <span>🎓</span> Top Perguruan Tinggi Alumni
+      <div class="charts-grid">
+        <section class="card">
+          <div class="card-head">
+            <h3 class="card-title">Perguruan tinggi tujuan alumni</h3>
+            <p class="card-sub">Kampus yang paling banyak dituju alumni yang melanjutkan studi</p>
           </div>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Kampus tujuan alumni yang melanjutkan studi</div>
-          <div id="list-kampus" style="display:flex;flex-direction:column;gap:10px;">
-            <div style="color:var(--muted);font-size:13px;">Memuat data sebaran kampus...</div>
+          <div class="rank-list" id="list-kampus"><p class="card-sub">Memuat data sebaran kampus...</p></div>
+        </section>
+        <section class="card">
+          <div class="card-head">
+            <h3 class="card-title">Sektor industri tempat alumni bekerja</h3>
+            <p class="card-sub">Bidang industri yang paling banyak menyerap lulusan</p>
           </div>
-        </div>
-
-        <div class="card">
-          <div style="font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px;">
-            <span>💼</span> Top Sektor Industri & Lapangan Kerja
-          </div>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Bidang industri yang menyerap lulusan SMK</div>
-          <div id="list-industri" style="display:flex;flex-direction:column;gap:10px;">
-            <div style="color:var(--muted);font-size:13px;">Memuat data sebaran industri...</div>
-          </div>
-        </div>
+          <div class="rank-list rank-list--alt" id="list-industri"><p class="card-sub">Memuat data sebaran industri...</p></div>
+        </section>
       </div>
 
-      <!-- Charts Sekunder -->
-      <div class="charts-grid" style="margin-top:24px;">
-        <div class="chart-card">
-          <div class="chart-title">Distribusi Pengguna Sistem</div>
-          <div class="chart-sub">Perbandingan Siswa vs Alumni vs Guru</div>
-          <canvas id="chartUsers" height="200"></canvas>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title">Status Validasi Prestasi</div>
-          <div class="chart-sub">Pending vs Terverifikasi</div>
-          <canvas id="chartPrestasi" height="200"></canvas>
-        </div>
+      <div class="charts-grid">
+        <section class="card">
+          <div class="card-head">
+            <h3 class="card-title">Distribusi pengguna</h3>
+            <p class="card-sub">Siswa, alumni, dan guru</p>
+          </div>
+          <div class="chart-box"><canvas id="chartUsers" role="img" aria-label="Diagram distribusi pengguna"></canvas></div>
+        </section>
+        <section class="card">
+          <div class="card-head">
+            <h3 class="card-title">Status validasi prestasi</h3>
+            <p class="card-sub">Pending dan terverifikasi</p>
+          </div>
+          <div class="chart-box"><canvas id="chartPrestasi" role="img" aria-label="Diagram status validasi prestasi"></canvas></div>
+        </section>
       </div>
 
-      <!-- Aksi Cepat -->
-      <div class="card" style="margin-top:24px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-          <div>
-            <div style="font-size:16px;font-weight:700;">Aksi Cepat Panel</div>
-            <div style="font-size:13px;color:var(--muted);margin-top:2px;">Akses cepat fitur pendataan dan verifikasi</div>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:16px;">
-          <a href="students.html" style="text-decoration:none;">
-            <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.15);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
-              <div style="font-size:28px;margin-bottom:10px;">👨‍🎓</div>
-              <div style="font-size:13px;font-weight:600;color:#A5B4FC;">Data Siswa & Alumni</div>
-            </div>
-          </a>
-          <a href="skills.html" style="text-decoration:none;">
-            <div style="background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.15);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
-              <div style="font-size:28px;margin-bottom:10px;">🛠️</div>
-              <div style="font-size:13px;font-weight:600;color:#C084FC;">Portofolio Keahlian</div>
-            </div>
-          </a>
-          <a href="rapor.html" style="text-decoration:none;">
-            <div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.15);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
-              <div style="font-size:28px;margin-bottom:10px;">📝</div>
-              <div style="font-size:13px;font-weight:600;color:#93C5FD;">Nilai Rapor</div>
-            </div>
-          </a>
-          <a href="prestasi.html" style="text-decoration:none;">
-            <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.15);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
-              <div style="font-size:28px;margin-bottom:10px;">✅</div>
-              <div style="font-size:13px;font-weight:600;color:#FCD34D;">Validasi Prestasi</div>
-            </div>
-          </a>
-          <a href="tracer.html" style="text-decoration:none;">
-            <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.15);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
-              <div style="font-size:28px;margin-bottom:10px;">📊</div>
-              <div style="font-size:13px;font-weight:600;color:#6EE7B7;">Tracer Study</div>
-            </div>
-          </a>
-        </div>
-      </div>
+      <section class="card" style="margin-top: var(--s4);">
+        <div class="card-head"><h3 class="card-title">Pintasan</h3></div>
+        <nav class="link-list" aria-label="Pintasan">
+          <a href="students.html"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg>Siswa dan alumni<svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+          <a href="skills.html"><svg class="icon" aria-hidden="true"><use href="#i-flask"/></svg>Portofolio keahlian<svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+          <a href="rapor.html"><svg class="icon" aria-hidden="true"><use href="#i-clipboard-check"/></svg>Nilai rapor<svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+          <a href="prestasi.html"><svg class="icon" aria-hidden="true"><use href="#i-badge-check"/></svg>Validasi prestasi<svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+          <a href="tracer.html"><svg class="icon" aria-hidden="true"><use href="#i-chart-bar"/></svg>Tracer study<svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+        </nav>
+      </section>
     </div>
   </main>
 </div>
 
+<script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
+<script src="js/motion.js"></script>
 <script>
 Auth.guard();
 Auth.buildNav('dashboard');
@@ -208,12 +162,23 @@ const user = Auth.user();
 if (user) {
     const hr = new Date().getHours();
     const greet = hr < 11 ? 'Selamat pagi' : hr < 15 ? 'Selamat siang' : hr < 18 ? 'Selamat sore' : 'Selamat malam';
-    document.getElementById('greeting').textContent = `${greet}, ${user.name} 👋`;
+    document.getElementById('greeting').textContent = `${greet}, ${user.name}`;
     document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+}
+
+function rankItem(index, name, total, pct) {
+    return `
+        <div class="rank-item">
+            <span class="rank-no">${index + 1}</span>
+            <span class="rank-name">${UI.esc(name)}</span>
+            <span class="rank-count">${total} alumni</span>
+            <div class="rank-bar"><span style="width:${pct}%"></span></div>
+        </div>`;
 }
 
 // Load stats
 async function loadStats() {
+    document.getElementById('dash-error').hidden = true;
     try {
         const res = await Api.get('/admin/stats');
         const d = res.data;
@@ -231,52 +196,28 @@ async function loadStats() {
             }
         }
 
-        const palette = {
-            indigo: '#6366F1',
-            cyan: '#06B6D4',
-            purple: '#A855F7',
-            emerald: '#10B981',
-            amber: '#F59E0B',
-            rose: '#F43F5E',
-            blue: '#3B82F6'
-        };
+        const baseOptions = ChartTheme.baseOptions;
+        const barScales = ChartTheme.barScales;
 
-        const chartCfg = {
-            responsive: true,
-            plugins: {
-                legend: {
-                    labels: { color: '#94A3B8', font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' } }
-                }
-            }
-        };
-
-        // 1. Chart Jurusan Siswa SMK
+        // 1. Chart Jurusan Siswa SMK (satu warna: data berurutan, bukan kategori)
         if (d.siswa_per_jurusan && d.siswa_per_jurusan.length > 0) {
             const jurusanLabels = d.siswa_per_jurusan.map(item => item.jurusan);
             const jurusanData   = d.siswa_per_jurusan.map(item => item.total);
-            const bgColors = [palette.indigo, palette.cyan, palette.purple, palette.emerald, palette.amber];
 
-            new Chart(document.getElementById('chartJurusan'), {
+            ChartTheme.make('chartJurusan', {
                 type: 'bar',
                 data: {
                     labels: jurusanLabels,
                     datasets: [{
                         label: 'Siswa Aktif',
                         data: jurusanData,
-                        backgroundColor: bgColors.slice(0, jurusanLabels.length),
-                        borderRadius: 8,
+                        paletteVars: jurusanLabels.map(() => '--chart-1'),
+                        borderRadius: 4,
                         borderSkipped: false
                     }]
                 },
-                options: {
-                    ...chartCfg,
-                    scales: {
-                        x: { ticks: { color: '#94A3B8', font: { weight: '600' } }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                        y: { ticks: { color: '#94A3B8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
+                options: { ...baseOptions, scales: barScales, plugins: { legend: { display: false } } }
+            }, 'Diagram batang jumlah siswa per jurusan: ' + jurusanLabels.map((l, i) => `${l} ${jurusanData[i]}`).join(', '));
         }
 
         // 2. Chart Sebaran Status Tracer Alumni
@@ -284,105 +225,76 @@ async function loadStats() {
             const tracerLabels = d.tracer_status.map(item => item.status);
             const tracerData   = d.tracer_status.map(item => item.total);
 
-            new Chart(document.getElementById('chartTracer'), {
+            ChartTheme.make('chartTracer', {
                 type: 'doughnut',
                 data: {
                     labels: tracerLabels,
                     datasets: [{
                         data: tracerData,
-                        backgroundColor: [palette.emerald, palette.blue, palette.amber, palette.rose],
+                        paletteVars: tracerLabels.map(ChartTheme.statusVar, ChartTheme),
                         borderWidth: 2,
-                        borderColor: '#0B0F19',
-                        hoverOffset: 6
+                        hoverOffset: 4
                     }]
                 },
-                options: { ...chartCfg, cutout: '65%' }
-            });
+                options: { ...baseOptions, cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+            }, 'Diagram sebaran status alumni: ' + tracerLabels.map((l, i) => `${l} ${tracerData[i]}`).join(', '));
         }
 
         // 3. Render Top Kampus Alumni
         const listKampusEl = document.getElementById('list-kampus');
         if (d.top_kampus && d.top_kampus.length > 0) {
             const maxKampus = Math.max(...d.top_kampus.map(k => k.total)) || 1;
-            listKampusEl.innerHTML = d.top_kampus.map(k => {
-                const pct = Math.round((k.total / maxKampus) * 100);
-                return `
-                    <div style="background:rgba(255,255,255,0.03);padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.08)">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;">
-                            <span style="font-weight:700;color:#F8FAFC;">${k.kampus}</span>
-                            <span style="color:#60A5FA;font-weight:700;">${k.total} alumni</span>
-                        </div>
-                        <div style="background:rgba(255,255,255,0.08);border-radius:6px;height:6px;overflow:hidden;">
-                            <div style="width:${pct}%;background:linear-gradient(90deg,#3B82F6,#06B6D4);height:100%;"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            listKampusEl.innerHTML = d.top_kampus.map((k, i) =>
+                rankItem(i, k.kampus, k.total, Math.round((k.total / maxKampus) * 100))
+            ).join('');
         } else {
-            listKampusEl.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px;text-align:center;">Belum ada data studi lanjut.</div>';
+            listKampusEl.innerHTML = '<div class="empty"><p class="empty-sub">Belum ada data studi lanjut.</p></div>';
         }
 
         // 4. Render Top Sektor Industri Alumni
         const listIndustriEl = document.getElementById('list-industri');
         if (d.top_industri && d.top_industri.length > 0) {
             const maxIndustri = Math.max(...d.top_industri.map(i => i.total)) || 1;
-            listIndustriEl.innerHTML = d.top_industri.map(i => {
-                const pct = Math.round((i.total / maxIndustri) * 100);
-                return `
-                    <div style="background:rgba(255,255,255,0.03);padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.08)">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;">
-                            <span style="font-weight:700;color:#F8FAFC;">${i.bidang_industri}</span>
-                            <span style="color:#34D399;font-weight:700;">${i.total} alumni</span>
-                        </div>
-                        <div style="background:rgba(255,255,255,0.08);border-radius:6px;height:6px;overflow:hidden;">
-                            <div style="width:${pct}%;background:linear-gradient(90deg,#10B981,#F59E0B);height:100%;"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            listIndustriEl.innerHTML = d.top_industri.map((it, i) =>
+                rankItem(i, it.bidang_industri, it.total, Math.round((it.total / maxIndustri) * 100))
+            ).join('');
         } else {
-            listIndustriEl.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px;text-align:center;">Belum ada data sektor industri.</div>';
+            listIndustriEl.innerHTML = '<div class="empty"><p class="empty-sub">Belum ada data sektor industri.</p></div>';
         }
 
         // 5. Chart Distribusi Pengguna
-        new Chart(document.getElementById('chartUsers'), {
+        const usersData = [d.total_siswa, d.total_alumni, d.total_guru];
+        ChartTheme.make('chartUsers', {
             type: 'doughnut',
             data: {
                 labels: ['Siswa', 'Alumni', 'Guru'],
                 datasets: [{
-                    data: [d.total_siswa, d.total_alumni, d.total_guru],
-                    backgroundColor: [palette.indigo, palette.cyan, palette.amber],
+                    data: usersData,
+                    paletteVars: ['--chart-1', '--chart-6', '--chart-7'],
                     borderWidth: 2,
-                    borderColor: '#0B0F19',
-                    hoverOffset: 6
+                    hoverOffset: 4
                 }]
             },
-            options: { ...chartCfg, cutout: '65%' }
-        });
+            options: { ...baseOptions, cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+        }, `Diagram distribusi pengguna: siswa ${usersData[0]}, alumni ${usersData[1]}, guru ${usersData[2]}`);
 
         // 6. Chart Status Prestasi
-        new Chart(document.getElementById('chartPrestasi'), {
+        ChartTheme.make('chartPrestasi', {
             type: 'bar',
             data: {
                 labels: ['Pending', 'Approved'],
                 datasets: [{
                     data: [d.prestasi_pending, d.prestasi_approved],
-                    backgroundColor: [palette.amber, palette.emerald],
-                    borderRadius: 8,
+                    paletteVars: ['--chart-3', '--chart-5'],
+                    borderRadius: 4,
                     borderSkipped: false
                 }]
             },
-            options: {
-                ...chartCfg,
-                scales: {
-                    x: { ticks: { color: '#94A3B8', font: { weight: '600' } }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                    y: { ticks: { color: '#94A3B8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
-                },
-                plugins: { legend: { display: false } }
-            }
-        });
+            options: { ...baseOptions, scales: barScales, plugins: { legend: { display: false } } }
+        }, `Diagram status validasi prestasi: pending ${d.prestasi_pending}, approved ${d.prestasi_approved}`);
     } catch(e) {
         console.error('Error loading dashboard stats:', e);
+        document.getElementById('dash-error').hidden = false;
     }
 }
 loadStats();
