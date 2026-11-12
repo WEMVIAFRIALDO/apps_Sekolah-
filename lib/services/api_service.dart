@@ -57,7 +57,11 @@ class ApiService {
           // Catatan: JANGAN intercept jika request berasal dari endpoint /login atau /auth
           // karena 401 saat login berarti kredensial salah, bukan token kadaluarsa.
           final requestPath = err.requestOptions.path;
-          final isLoginEndpoint = requestPath.contains('/login') || requestPath.contains('/auth');
+          // /logout juga dikecualikan: 401 di sana berarti token sudah tidak valid,
+          // dan ProfileController sendiri yang mengurus pembersihan sesi + navigasi.
+          final isLoginEndpoint = requestPath.contains('/login') ||
+              requestPath.contains('/auth') ||
+              requestPath.contains('/logout');
 
           if (err.response?.statusCode == 401 && !isLoginEndpoint) {
             await AuthService().deleteToken();

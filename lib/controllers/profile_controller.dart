@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart' show Options;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../routes/app_routes.dart';
+import '../services/api_service.dart';
 import '../services/auth_service.dart';
 
 /// Controller untuk halaman Profil.
@@ -72,6 +74,17 @@ class ProfileController extends GetxController {
     );
 
     if (confirmed == true) {
+      // Cabut token di server (blacklist JWT). Gagal jaringan/token sudah
+      // kadaluarsa tidak boleh menghalangi logout lokal.
+      try {
+        await ApiService().post(
+          '/logout',
+          options: Options(
+            sendTimeout: const Duration(seconds: 5),
+            receiveTimeout: const Duration(seconds: 5),
+          ),
+        );
+      } catch (_) {}
       await _auth.clearSession();
       Get.offAllNamed(AppRoutes.login);
     }
